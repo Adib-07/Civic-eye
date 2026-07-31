@@ -26,7 +26,7 @@ export function useTheme() {
 
   useEffect(() => {
     const stored = localStorage.getItem("civiceye_theme");
-    const isDark = stored ? stored === "dark" : true;
+    const isDark = stored ? stored === "dark" : false;
     setDark(isDark);
     document.documentElement.classList.toggle("dark", isDark);
   }, []);
