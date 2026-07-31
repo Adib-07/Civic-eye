@@ -19,16 +19,17 @@ export function Navbar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <header className="sticky top-0 z-50 w-full">
-      <div className="glass mx-auto mt-3 flex w-[min(1200px,94vw)] items-center justify-between rounded-2xl px-4 py-3">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur">
+      <div className="mx-auto flex w-[min(1200px,94vw)] items-center justify-between py-3">
         <Link to="/" className="flex min-w-0 items-center gap-2">
-          <span className="bg-brand grid h-9 w-9 shrink-0 place-items-center rounded-xl text-primary-foreground">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
             <FiEye className="h-5 w-5" />
           </span>
           <span className="truncate font-display text-lg font-extrabold tracking-tight">
-            Civic<span className="text-gradient">Eye</span>
+            Civic<span className="text-primary">Eye</span>
           </span>
         </Link>
+
 
         <nav className="hidden items-center gap-1 lg:flex">
           {links.map((l) => (
