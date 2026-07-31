@@ -1,4 +1,8 @@
+import garbageImg from "@/assets/garbage.jpg.asset.json";
+import potholeImg from "@/assets/pothole.jpg.asset.json";
+import streetlightImg from "@/assets/streetlight.jpg.asset.json";
 import type { Category, Report, Status } from "./types";
+
 
 const KEY = "civiceye_reports";
 
