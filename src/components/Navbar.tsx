@@ -50,16 +50,17 @@ export function Navbar() {
           <button
             onClick={toggle}
             aria-label="Toggle dark mode"
-            className="grid h-9 w-9 place-items-center rounded-xl border border-border bg-card/60 text-foreground transition-colors hover:bg-secondary"
+            className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
             {dark ? <FiSun className="h-4 w-4" /> : <FiMoon className="h-4 w-4" />}
           </button>
           <Link
             to="/login"
-            className="bg-brand hidden rounded-xl px-4 py-2 text-sm font-bold text-primary-foreground shadow-lg transition-transform hover:scale-[1.03] sm:block"
+            className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:block"
           >
-            Sign in
+            Staff sign in
           </Link>
+
           <button
             onClick={() => setOpen((o) => !o)}
             aria-label="Toggle menu"
