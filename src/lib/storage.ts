@@ -1,4 +1,8 @@
+import garbageImg from "@/assets/garbage.jpg.asset.json";
+import potholeImg from "@/assets/pothole.jpg.asset.json";
+import streetlightImg from "@/assets/streetlight.jpg.asset.json";
 import type { Category, Report, Status } from "./types";
+
 
 const KEY = "civiceye_reports";
 
@@ -16,7 +20,7 @@ const SEED: Report[] = [
     location: "MG Road Junction",
     lat: 28.6139,
     lng: 77.209,
-    image: null,
+    image: potholeImg.url,
     status: "Pending",
     aiCategory: "Pothole",
     aiConfidence: 96,
@@ -31,7 +35,7 @@ const SEED: Report[] = [
     location: "Sector 12 Bus Stop",
     lat: 28.6219,
     lng: 77.2185,
-    image: null,
+    image: garbageImg.url,
     status: "In Progress",
     aiCategory: "Garbage",
     aiConfidence: 95,
@@ -45,7 +49,7 @@ const SEED: Report[] = [
     location: "Green Park Lane",
     lat: 28.6045,
     lng: 77.2005,
-    image: null,
+    image: streetlightImg.url,
     status: "Resolved",
     aiCategory: "Broken Street Light",
     aiConfidence: 97,

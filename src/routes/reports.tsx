@@ -145,7 +145,7 @@ function ReportsPage() {
                     {r.lng.toFixed(3)}
                   </p>
                   {r.aiCategory && (
-                    <p className="mt-2 text-xs font-semibold text-accent">
+                    <p className="mt-2 text-xs font-semibold text-primary">
                       AI: {r.aiCategory} ({r.aiConfidence}%)
                     </p>
                   )}

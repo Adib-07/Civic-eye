@@ -19,16 +19,17 @@ export function Navbar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <header className="sticky top-0 z-50 w-full">
-      <div className="glass mx-auto mt-3 flex w-[min(1200px,94vw)] items-center justify-between rounded-2xl px-4 py-3">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur">
+      <div className="mx-auto flex w-[min(1200px,94vw)] items-center justify-between py-3">
         <Link to="/" className="flex min-w-0 items-center gap-2">
-          <span className="bg-brand grid h-9 w-9 shrink-0 place-items-center rounded-xl text-primary-foreground">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
             <FiEye className="h-5 w-5" />
           </span>
           <span className="truncate font-display text-lg font-extrabold tracking-tight">
-            Civic<span className="text-gradient">Eye</span>
+            Civic<span className="text-primary">Eye</span>
           </span>
         </Link>
+
 
         <nav className="hidden items-center gap-1 lg:flex">
           {links.map((l) => (
@@ -36,9 +37,10 @@ export function Navbar() {
               key={l.to}
               to={l.to}
               className={cn(
-                "rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
-                pathname === l.to && "bg-secondary text-foreground",
+                "rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+                pathname === l.to && "bg-accent font-semibold text-primary",
               )}
+
             >
               {l.label}
             </Link>
@@ -49,16 +51,17 @@ export function Navbar() {
           <button
             onClick={toggle}
             aria-label="Toggle dark mode"
-            className="grid h-9 w-9 place-items-center rounded-xl border border-border bg-card/60 text-foreground transition-colors hover:bg-secondary"
+            className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
             {dark ? <FiSun className="h-4 w-4" /> : <FiMoon className="h-4 w-4" />}
           </button>
           <Link
             to="/login"
-            className="bg-brand hidden rounded-xl px-4 py-2 text-sm font-bold text-primary-foreground shadow-lg transition-transform hover:scale-[1.03] sm:block"
+            className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:block"
           >
-            Sign in
+            Staff sign in
           </Link>
+
           <button
             onClick={() => setOpen((o) => !o)}
             aria-label="Toggle menu"
@@ -73,7 +76,7 @@ export function Navbar() {
         <motion.nav
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass mx-auto mt-2 flex w-[min(1200px,94vw)] flex-col rounded-2xl p-2 lg:hidden"
+          className="mx-auto flex w-[min(1200px,94vw)] flex-col border-t border-border py-2 lg:hidden"
         >
           {links.map((l) => (
             <Link

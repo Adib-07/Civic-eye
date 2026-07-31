@@ -3,21 +3,22 @@ import { FiEye, FiGithub, FiTwitter, FiMail } from "react-icons/fi";
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-border/60 bg-card/40">
+    <footer className="mt-24 border-t border-border bg-secondary/50">
       <div className="mx-auto grid w-[min(1200px,94vw)] gap-10 py-14 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="bg-brand grid h-9 w-9 place-items-center rounded-xl text-primary-foreground">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground">
               <FiEye className="h-5 w-5" />
             </span>
             <span className="font-display text-lg font-extrabold">
-              Civic<span className="text-gradient">Eye</span>
+              Civic<span className="text-primary">Eye</span>
             </span>
           </div>
-          <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-            AI-assisted civic issue reporting. Snap it, send it, and watch your city fix it.
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
+            Photo-first civic issue reporting for residents and municipal field teams.
           </p>
         </div>
+
 
         <div>
           <h4 className="text-sm font-bold">Product</h4>
@@ -62,7 +63,7 @@ export function Footer() {
             {[FiGithub, FiTwitter, FiMail].map((Icon, i) => (
               <span
                 key={i}
-                className="grid h-9 w-9 place-items-center rounded-xl border border-border bg-card/60 text-muted-foreground"
+                className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-card text-muted-foreground"
               >
                 <Icon className="h-4 w-4" />
               </span>
@@ -70,9 +71,10 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
+      <div className="border-t border-border py-5 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} CivicEye. Built for cleaner, safer streets.
       </div>
     </footer>
+
   );
 }

@@ -26,18 +26,19 @@ export function StatCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
-      className="glass card-hover rounded-2xl p-5"
+      className="card-hover rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)]"
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="min-w-0 truncate text-sm font-semibold text-muted-foreground">{label}</p>
-        <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-secondary", accent)}>
+        <p className="min-w-0 truncate text-sm font-medium text-muted-foreground">{label}</p>
+        <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent", accent)}>
           <Icon className="h-5 w-5" />
         </span>
       </div>
       <p className="mt-3 font-display text-3xl font-extrabold">
-        {count}
+        {count.toLocaleString()}
         {suffix}
       </p>
+
     </motion.div>
   );
 }
