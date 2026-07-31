@@ -63,7 +63,7 @@ export function Footer() {
             {[FiGithub, FiTwitter, FiMail].map((Icon, i) => (
               <span
                 key={i}
-                className="grid h-9 w-9 place-items-center rounded-xl border border-border bg-card/60 text-muted-foreground"
+                className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-card text-muted-foreground"
               >
                 <Icon className="h-4 w-4" />
               </span>
@@ -71,9 +71,10 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
+      <div className="border-t border-border py-5 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} CivicEye. Built for cleaner, safer streets.
       </div>
     </footer>
+
   );
 }
