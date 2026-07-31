@@ -76,7 +76,7 @@ export function Navbar() {
         <motion.nav
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass mx-auto mt-2 flex w-[min(1200px,94vw)] flex-col rounded-2xl p-2 lg:hidden"
+          className="mx-auto flex w-[min(1200px,94vw)] flex-col border-t border-border py-2 lg:hidden"
         >
           {links.map((l) => (
             <Link
