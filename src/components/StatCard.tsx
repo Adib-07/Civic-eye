@@ -8,6 +8,7 @@ export function StatCard({
   label,
   value,
   suffix = "",
+  decimals = 0,
   accent = "text-primary",
   delay = 0,
 }: {
@@ -15,10 +16,13 @@ export function StatCard({
   label: string;
   value: number;
   suffix?: string;
+  decimals?: number;
   accent?: string;
   delay?: number;
 }) {
-  const count = useCountUp(value);
+  const factor = 10 ** decimals;
+  const raw = useCountUp(Math.round(value * factor));
+  const count = raw / factor;
 
   return (
     <motion.div
@@ -26,19 +30,28 @@ export function StatCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
-      className="card-hover rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)]"
+      className="card-hover rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-card)] sm:p-5"
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="min-w-0 truncate text-sm font-medium text-muted-foreground">{label}</p>
-        <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent", accent)}>
-          <Icon className="h-5 w-5" />
+        <p className="min-w-0 text-xs font-medium leading-snug text-muted-foreground sm:text-sm">
+          {label}
+        </p>
+        <span
+          className={cn(
+            "grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-accent sm:h-10 sm:w-10",
+            accent,
+          )}
+        >
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </span>
       </div>
-      <p className="mt-3 font-display text-3xl font-extrabold">
-        {count.toLocaleString()}
+      <p className="mt-3 font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
+        {count.toLocaleString("en-IN", {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        })}
         {suffix}
       </p>
-
     </motion.div>
   );
 }

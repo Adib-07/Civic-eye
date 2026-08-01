@@ -1,5 +1,6 @@
 import L from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { useEffect } from "react";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import type { Report } from "@/lib/types";
 
 const icon = (color: string) =>
@@ -17,7 +18,46 @@ const colors: Record<string, string> = {
   Resolved: "#2fae76",
 };
 
+/** Keeps Leaflet's canvas in sync with its container and frames every marker. */
+function MapFitter({ reports }: { reports: Report[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const resize = () => map.invalidateSize();
+    // Container is often still animating/laying out on first paint.
+    const t1 = window.setTimeout(resize, 0);
+    const t2 = window.setTimeout(resize, 300);
+
+    const container = map.getContainer();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(resize) : null;
+    ro?.observe(container);
+    window.addEventListener("resize", resize);
+    window.addEventListener("orientationchange", resize);
+
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      ro?.disconnect();
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("orientationchange", resize);
+    };
+  }, [map]);
+
+  useEffect(() => {
+    if (!reports.length) return;
+    const points = reports.map((r) => [r.lat, r.lng] as [number, number]);
+    if (points.length === 1) {
+      map.setView(points[0], 15);
+      return;
+    }
+    map.fitBounds(L.latLngBounds(points).pad(0.25), { animate: false, maxZoom: 15 });
+  }, [map, reports]);
+
+  return null;
+}
+
 export default function MapView({ reports }: { reports: Report[] }) {
+  // Fallback: New Delhi.
   const center: [number, number] = reports.length
     ? [reports[0].lat, reports[0].lng]
     : [28.6139, 77.209];
@@ -26,24 +66,31 @@ export default function MapView({ reports }: { reports: Report[] }) {
     <MapContainer
       center={center}
       zoom={12}
+      minZoom={3}
+      maxZoom={19}
       scrollWheelZoom
-      style={{ height: "100%", width: "100%" }}
+      tap={false}
+      style={{ height: "100%", width: "100%", background: "#e8eef7" }}
     >
+      <MapFitter reports={reports} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        maxZoom={19}
+        crossOrigin
       />
       {reports.map((r) => (
         <Marker key={r.id} position={[r.lat, r.lng]} icon={icon(colors[r.status] ?? "#2aa5b8")}>
           <Popup>
-            <div style={{ width: 220 }}>
+            <div style={{ width: 200, maxWidth: "60vw" }}>
               {r.image && (
                 <img
                   src={r.image}
                   alt={r.title}
+                  loading="lazy"
                   style={{
                     width: "100%",
-                    height: 110,
+                    height: 100,
                     objectFit: "cover",
                     borderRadius: 10,
                     marginBottom: 8,
