@@ -13,11 +13,11 @@ function isBrowser() {
 const SEED: Report[] = [
   {
     id: "seed-1",
-    title: "Deep pothole near market crossing",
+    title: "Deep pothole near the sabzi mandi crossing",
     description:
-      "A large pothole has formed at the junction and is causing two-wheelers to swerve dangerously during rush hour.",
+      "A large water-filled pothole has formed at the junction and two-wheelers are swerving dangerously during peak hours.",
     category: "Pothole",
-    location: "MG Road Junction",
+    location: "MG Road Junction, Ward 14",
     lat: 28.6139,
     lng: 77.209,
     image: potholeImg.url,
@@ -28,11 +28,11 @@ const SEED: Report[] = [
   },
   {
     id: "seed-2",
-    title: "Garbage piling up beside bus stop",
+    title: "Nagar Nigam bin overflowing at the bus stop",
     description:
-      "Uncollected waste for the past four days. Strong smell and stray animals around the bus shelter.",
+      "Waste has not been lifted for four days. Strong smell and stray animals around the bus shelter.",
     category: "Garbage",
-    location: "Sector 12 Bus Stop",
+    location: "Sector 12 Bus Stop, Ward 7",
     lat: 28.6219,
     lng: 77.2185,
     image: garbageImg.url,
@@ -43,10 +43,11 @@ const SEED: Report[] = [
   },
   {
     id: "seed-3",
-    title: "Street light out on the whole lane",
-    description: "Six consecutive poles are dark after 7pm, making the walkway unsafe.",
+    title: "Street lights out on the entire lane",
+    description:
+      "Six poles in a row stay dark after 7 pm, making the lane unsafe for women walking home.",
     category: "Broken Street Light",
-    location: "Green Park Lane",
+    location: "Gandhi Nagar 2nd Lane, Ward 9",
     lat: 28.6045,
     lng: 77.2005,
     image: streetlightImg.url,
