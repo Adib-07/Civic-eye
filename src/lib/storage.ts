@@ -4,7 +4,7 @@ import streetlightImg from "@/assets/streetlight.jpg.asset.json";
 import type { Category, Report, Status } from "./types";
 
 
-const KEY = "civiceye_reports";
+const KEY = "civiceye_reports_v2";
 
 function isBrowser() {
   return typeof window !== "undefined";
