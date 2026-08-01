@@ -69,7 +69,7 @@ export default function MapView({ reports }: { reports: Report[] }) {
       minZoom={3}
       maxZoom={19}
       scrollWheelZoom
-      tap={false}
+      style={{ height: "100%", width: "100%", background: "#e8eef7" }}
       style={{ height: "100%", width: "100%", background: "#e8eef7" }}
     >
       <MapFitter reports={reports} />
