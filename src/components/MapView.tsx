@@ -70,7 +70,6 @@ export default function MapView({ reports }: { reports: Report[] }) {
       maxZoom={19}
       scrollWheelZoom
       style={{ height: "100%", width: "100%", background: "#e8eef7" }}
-      style={{ height: "100%", width: "100%", background: "#e8eef7" }}
     >
       <MapFitter reports={reports} />
       <TileLayer
