@@ -48,15 +48,15 @@ function MapPage() {
         />
       ) : (
         <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
-          <div className="glass h-[70vh] overflow-hidden rounded-2xl p-1.5">
-            <div className="h-full w-full overflow-hidden rounded-2xl">
+          <div className="glass overflow-hidden rounded-2xl p-1.5">
+            <div className="h-[55vh] min-h-[320px] w-full overflow-hidden rounded-2xl sm:h-[60vh] lg:h-[70vh]">
               <Suspense fallback={<Loader label="Preparing map" />}>
                 <MapView reports={reports} />
               </Suspense>
             </div>
           </div>
 
-          <div className="glass max-h-[70vh] overflow-y-auto rounded-2xl p-5">
+          <div className="glass max-h-[60vh] overflow-y-auto rounded-2xl p-4 sm:p-5 lg:max-h-[70vh]">
             <h2 className="text-sm font-bold">Pinned reports ({reports.length})</h2>
             <ul className="mt-4 space-y-3">
               {reports.map((r) => (
