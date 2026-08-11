@@ -1,13 +1,36 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { FiUploadCloud, FiCpu, FiMapPin, FiSend, FiImage } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  FiUploadCloud,
+  FiMapPin,
+  FiSend,
+  FiAlertCircle,
+  FiCheck,
+  FiChevronDown,
+  FiCamera,
+} from "react-icons/fi";
 import { toast } from "sonner";
+
 import { AppShell } from "@/components/AppShell";
 import { ImageModal } from "@/components/ImageModal";
-import { predictCategory } from "@/lib/auth";
+import { predictCategory } from "@/lib/ai";
+import { isSupabaseConfigured } from "@/lib/env";
+import { useReportMutations } from "@/lib/hooks";
+import {
+  buildQuickReportPayload,
+  requestDeviceLocation,
+  suggestDescription,
+  suggestTitle,
+  type GeoStatus,
+} from "@/lib/report-quick";
 import { addReport } from "@/lib/storage";
 import { CATEGORIES, type Category } from "@/lib/types";
+import { cn } from "@/lib/utils";
+
+const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+const DEFAULT_LAT = 28.6139;
+const DEFAULT_LNG = 77.209;
 
 export const Route = createFileRoute("/report")({
   head: () => ({
@@ -16,12 +39,7 @@ export const Route = createFileRoute("/report")({
       {
         name: "description",
         content:
-          "Upload a photo, let CivicEye's AI predict the category, and submit a geo-tagged civic issue report in under a minute.",
-      },
-      { property: "og:title", content: "Report a City Issue — CivicEye" },
-      {
-        property: "og:description",
-        content: "Photo-first civic reporting with instant AI category prediction.",
+          "Snap a photo, confirm the issue type, and submit a geo-tagged report in under 30 seconds.",
       },
     ],
   }),
@@ -30,240 +48,387 @@ export const Route = createFileRoute("/report")({
 
 function ReportPage() {
   const navigate = useNavigate();
-  const [image, setImage] = useState<string | null>(null);
+  const { create } = useReportMutations();
+  const configured = isSupabaseConfigured();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [zoom, setZoom] = useState<string | null>(null);
-  const [analyzing, setAnalyzing] = useState(false);
   const [ai, setAi] = useState<{ category: Category; confidence: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
 
+  const [category, setCategory] = useState<Category>("Pothole");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState<Category>("Pothole");
   const [location, setLocation] = useState("");
-  const [lat, setLat] = useState("28.6139");
-  const [lng, setLng] = useState("77.2090");
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
+  const [geoStatus, setGeoStatus] = useState<GeoStatus>("idle");
+
+  const captureLocation = useCallback(async (silent = false) => {
+    setGeoStatus("loading");
+    try {
+      const coords = await requestDeviceLocation();
+      setLat(coords.lat);
+      setLng(coords.lng);
+      setGeoStatus("ready");
+      if (!silent) toast.success("Location captured");
+    } catch (err) {
+      const code = err instanceof GeolocationPositionError ? err.code : null;
+      if (code === 1) {
+        setGeoStatus("denied");
+        if (!silent) toast.error("Location permission denied — enter details manually");
+      } else if (String(err).includes("unsupported")) {
+        setGeoStatus("unsupported");
+      } else {
+        setGeoStatus("denied");
+        if (!silent) toast.error("Could not get your location");
+      }
+      setLat(DEFAULT_LAT);
+      setLng(DEFAULT_LNG);
+    }
+  }, []);
+
+  useEffect(() => {
+    void captureLocation(true);
+  }, [captureLocation]);
+
+  const applyCategory = (next: Category, fromAi = false) => {
+    setCategory(next);
+    if (!title.trim() || fromAi) setTitle(suggestTitle(next));
+    if (!description.trim() || fromAi) setDescription(suggestDescription(next));
+  };
 
   const onFile = (file?: File) => {
     if (!file) return;
+    setError(null);
+
+    if (file.size > MAX_IMAGE_BYTES) {
+      setError(`Image must be under ${MAX_IMAGE_BYTES / (1024 * 1024)} MB.`);
+      toast.error("Image too large");
+      return;
+    }
+
+    setImageFile(file);
     const reader = new FileReader();
+    reader.onerror = () => {
+      setError("Could not read the selected image.");
+      toast.error("Failed to read image");
+    };
     reader.onload = () => {
-      setImage(reader.result as string);
-      setAnalyzing(true);
-      setAi(null);
-      setTimeout(() => {
-        const result = predictCategory(file.name);
-        setAi(result);
-        setCategory(result.category);
-        setAnalyzing(false);
-        toast.success(`AI detected: ${result.category} (${result.confidence}%)`);
-      }, 1100);
+      setImagePreview(reader.result as string);
+      const result = predictCategory(file.name);
+      setAi(result);
+      applyCategory(result.category, true);
     };
     reader.readAsDataURL(file);
   };
 
-  const useMyLocation = () => {
-    if (!navigator.geolocation) return toast.error("Geolocation is not supported here");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLat(pos.coords.latitude.toFixed(6));
-        setLng(pos.coords.longitude.toFixed(6));
-        toast.success("Coordinates captured");
-      },
-      () => toast.error("Could not get your location"),
-    );
-  };
+  const readyToSubmit = lat !== null && lng !== null && !submitting && geoStatus !== "loading";
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const latN = Number(lat);
-    const lngN = Number(lng);
-    if (Number.isNaN(latN) || Number.isNaN(lngN)) return toast.error("Enter valid coordinates");
+  const submit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    setError(null);
+
+    if (lat === null || lng === null) {
+      toast.error("Waiting for location — tap Retry or add coordinates in details");
+      return;
+    }
 
     setSubmitting(true);
-    setTimeout(() => {
-      addReport({
+
+    try {
+      const payload = buildQuickReportPayload({
+        category,
+        lat,
+        lng,
         title,
         description,
-        category,
         location,
-        lat: latN,
-        lng: lngN,
-        image,
-        aiCategory: ai?.category ?? null,
-        aiConfidence: ai?.confidence ?? null,
       });
-      toast.success("Report submitted successfully");
+
+      if (configured) {
+        await create.mutateAsync({
+          ...payload,
+          imageFile,
+          aiCategory: ai?.category ?? null,
+          aiConfidence: ai?.confidence ?? null,
+        });
+      } else {
+        if (imageFile && imageFile.size > 800_000) {
+          throw new Error(
+            "Offline mode: image too large for local storage. Use a smaller photo or configure Supabase.",
+          );
+        }
+        addReport({
+          ...payload,
+          image: imagePreview,
+          aiCategory: ai?.category ?? null,
+          aiConfidence: ai?.confidence ?? null,
+        });
+      }
+
+      toast.success("Report submitted — thank you!");
       navigate({ to: "/reports" });
-    }, 700);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Submission failed";
+      setError(message);
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const field =
     "mt-1.5 w-full rounded-xl border border-border bg-card/60 px-3 py-3 text-sm outline-none focus:border-primary";
 
   return (
-    <AppShell title="Report an issue" subtitle="Photo, details and AI-assisted classification">
-      <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-        <form onSubmit={submit} className="glass space-y-4 rounded-2xl p-6">
-          <div>
-            <span className="text-xs font-bold text-muted-foreground">Photo of the issue</span>
-            <label className="mt-1.5 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-card/40 px-4 py-8 text-center transition-colors hover:border-primary">
-              <FiUploadCloud className="h-7 w-7 text-primary" />
-              <span className="text-sm font-semibold">Click to upload an image</span>
-              <span className="text-xs text-muted-foreground">
-                Tip: filenames like “pothole.jpg” or “garbage.png” drive the AI prediction
+    <AppShell title="Report an issue" subtitle="Photo → category → submit (under 30 seconds)">
+      {!configured && (
+        <div className="mb-4 flex items-start gap-3 rounded-2xl border border-warning/30 bg-warning/10 p-3 text-sm">
+          <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+          <p className="text-muted-foreground">
+            Offline demo mode — reports save to this device only.
+          </p>
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={submit} className="pb-24 lg:pb-0">
+        {/* 1 — Photo (primary action) */}
+        <section className="glass rounded-2xl p-4 sm:p-5">
+          <p className="text-xs font-bold uppercase tracking-wide text-primary">Step 1 · Photo</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => onFile(e.target.files?.[0])}
+          />
+
+          {imagePreview ? (
+            <button
+              type="button"
+              onClick={() => setZoom(imagePreview)}
+              className="mt-3 block w-full overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <img
+                src={imagePreview}
+                alt="Your report photo"
+                className="h-48 w-full object-cover sm:h-56"
+              />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="mt-3 flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 px-4 py-10 transition-colors hover:border-primary hover:bg-primary/10 active:scale-[0.99]"
+            >
+              <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-primary-foreground">
+                <FiCamera className="h-7 w-7" />
               </span>
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => onFile(e.target.files?.[0])}
-              />
-            </label>
+              <span className="text-base font-bold">Tap to take or upload a photo</span>
+              <span className="text-xs text-muted-foreground">Camera works best on your phone</span>
+            </button>
+          )}
+
+          {imagePreview && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="mt-2 text-xs font-semibold text-primary hover:underline"
+            >
+              Change photo
+            </button>
+          )}
+        </section>
+
+        {/* 2 — Category chips */}
+        <section className="glass mt-4 rounded-2xl p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs font-bold uppercase tracking-wide text-primary">
+              Step 2 · Issue type
+            </p>
+            {ai && (
+              <span className="text-[11px] font-semibold text-success">
+                Suggested · {ai.confidence}%
+              </span>
+            )}
           </div>
-
-          <label className="block">
-            <span className="text-xs font-bold text-muted-foreground">Title</span>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              placeholder="Deep pothole near market crossing"
-              className={field}
-            />
-          </label>
-
-          <label className="block">
-            <span className="text-xs font-bold text-muted-foreground">Description</span>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              rows={4}
-              placeholder="Describe what you saw, how long it's been there and why it's a risk."
-              className={field}
-            />
-          </label>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="text-xs font-bold text-muted-foreground">Category</span>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as Category)}
-                className={field}
+          <div className="mt-3 -mx-1 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {CATEGORIES.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => applyCategory(c)}
+                className={cn(
+                  "shrink-0 rounded-full border px-3.5 py-2 text-xs font-bold transition-colors",
+                  category === c
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card hover:bg-secondary",
+                )}
               >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="text-xs font-bold text-muted-foreground">Location name</span>
-              <input
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                required
-                placeholder="MG Road Junction"
-                className={field}
-              />
-            </label>
-
-            <label className="block">
-              <span className="text-xs font-bold text-muted-foreground">Latitude</span>
-              <input value={lat} onChange={(e) => setLat(e.target.value)} required className={field} />
-            </label>
-
-            <label className="block">
-              <span className="text-xs font-bold text-muted-foreground">Longitude</span>
-              <input value={lng} onChange={(e) => setLng(e.target.value)} required className={field} />
-            </label>
+                {c}
+              </button>
+            ))}
           </div>
+        </section>
 
+        {/* 3 — Location status */}
+        <section className="glass mt-4 rounded-2xl p-4 sm:p-5">
+          <p className="text-xs font-bold uppercase tracking-wide text-primary">
+            Step 3 · Location
+          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm">
+              {geoStatus === "loading" && (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
+                  <span className="text-muted-foreground">Getting GPS…</span>
+                </>
+              )}
+              {geoStatus === "ready" && (
+                <>
+                  <FiCheck className="h-4 w-4 text-success" />
+                  <span className="font-semibold text-success">Location ready</span>
+                  {lat !== null && lng !== null && (
+                    <span className="text-xs text-muted-foreground">
+                      {lat.toFixed(4)}, {lng.toFixed(4)}
+                    </span>
+                  )}
+                </>
+              )}
+              {(geoStatus === "denied" || geoStatus === "unsupported") && (
+                <>
+                  <FiAlertCircle className="h-4 w-4 text-warning" />
+                  <span className="text-sm text-muted-foreground">
+                    GPS unavailable — check details below
+                  </span>
+                </>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => void captureLocation(false)}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-xs font-bold hover:bg-secondary"
+            >
+              <FiMapPin className="h-3.5 w-3.5" /> Retry GPS
+            </button>
+          </div>
+        </section>
+
+        {/* Optional details (collapsed by default) */}
+        <section className="glass mt-4 overflow-hidden rounded-2xl">
           <button
             type="button"
-            onClick={useMyLocation}
-            className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-xs font-bold hover:bg-secondary"
+            onClick={() => setShowDetails((v) => !v)}
+            className="flex w-full items-center justify-between px-4 py-4 text-left sm:px-5"
           >
-            <FiMapPin /> Use my current location
+            <span className="text-sm font-bold">Add more details (optional)</span>
+            <FiChevronDown
+              className={cn("h-4 w-4 transition-transform", showDetails && "rotate-180")}
+            />
           </button>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-brand flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-primary-foreground disabled:opacity-70"
-          >
-            {submitting ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
-            ) : (
-              <FiSend />
-            )}
-            {submitting ? "Submitting" : "Submit report"}
-          </button>
-        </form>
-
-        <div className="space-y-5">
-          <div className="glass rounded-2xl p-6">
-            <h2 className="flex items-center gap-2 text-sm font-bold">
-              <FiImage className="text-primary" /> Image preview
-            </h2>
-            {image ? (
-              <img
-                src={image}
-                alt="Preview of the reported issue"
-                onClick={() => setZoom(image)}
-                className="mt-4 h-56 w-full cursor-zoom-in rounded-2xl object-cover"
-              />
-            ) : (
-              <div className="mt-4 grid h-56 place-items-center rounded-2xl bg-secondary text-sm text-muted-foreground">
-                No image uploaded yet
-              </div>
-            )}
-          </div>
-
-          <div className="glass rounded-2xl p-6">
-            <h2 className="flex items-center gap-2 text-sm font-bold">
-              <FiCpu className="text-accent" /> AI analysis
-            </h2>
-
-            {analyzing && (
-              <div className="mt-6 flex items-center gap-3">
-                <span className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary" />
-                <p className="text-sm text-muted-foreground">Analyzing image…</p>
-              </div>
-            )}
-
-            {!analyzing && ai && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
-                <p className="text-xs font-bold text-muted-foreground">Predicted category</p>
-                <p className="text-gradient font-display text-2xl font-extrabold">{ai.category}</p>
-                <div className="mt-4 flex items-center justify-between text-xs font-bold">
-                  <span className="text-muted-foreground">Confidence</span>
-                  <span className="text-success">{ai.confidence}%</span>
+          <AnimatePresence initial={false}>
+            {showDetails && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden border-t border-border"
+              >
+                <div className="space-y-3 px-4 pb-5 pt-3 sm:px-5">
+                  <label className="block">
+                    <span className="text-xs font-bold text-muted-foreground">Title</span>
+                    <input
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder={suggestTitle(category)}
+                      className={field}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-xs font-bold text-muted-foreground">Description</span>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={2}
+                      placeholder={suggestDescription(category)}
+                      className={field}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-xs font-bold text-muted-foreground">Place name</span>
+                    <input
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="e.g. MG Road junction"
+                      className={field}
+                    />
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="block">
+                      <span className="text-xs font-bold text-muted-foreground">Latitude</span>
+                      <input
+                        value={lat ?? ""}
+                        onChange={(e) => setLat(Number(e.target.value) || null)}
+                        className={field}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-xs font-bold text-muted-foreground">Longitude</span>
+                      <input
+                        value={lng ?? ""}
+                        onChange={(e) => setLng(Number(e.target.value) || null)}
+                        className={field}
+                      />
+                    </label>
+                  </div>
                 </div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-secondary">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${ai.confidence}%` }}
-                    transition={{ duration: 0.8 }}
-                    className="bg-brand h-full rounded-full"
-                  />
-                </div>
-                <p className="mt-4 text-xs text-muted-foreground">
-                  Category auto-applied to the form. You can override it any time.
-                </p>
               </motion.div>
             )}
+          </AnimatePresence>
+        </section>
 
-            {!analyzing && !ai && (
-              <p className="mt-4 text-sm text-muted-foreground">
-                Upload a photo to get an instant category prediction with a confidence score.
-              </p>
-            )}
-          </div>
-        </div>
+        {/* Desktop submit */}
+        <button
+          type="submit"
+          disabled={!readyToSubmit}
+          className="bg-brand mt-5 hidden w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-50 lg:flex"
+        >
+          {submitting ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+          ) : (
+            <FiSend />
+          )}
+          {submitting ? "Submitting…" : "Submit report"}
+        </button>
+      </form>
+
+      {/* Mobile sticky submit */}
+      <div className="fixed inset-x-0 bottom-0 z-[850] border-t border-border bg-background/95 p-4 backdrop-blur-lg lg:hidden">
+        <button
+          type="button"
+          disabled={!readyToSubmit}
+          onClick={() => void submit()}
+          className="bg-brand flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-primary-foreground shadow-lg disabled:opacity-50"
+        >
+          {submitting ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+          ) : (
+            <FiSend />
+          )}
+          {submitting ? "Submitting…" : "Submit report"}
+        </button>
       </div>
 
       <ImageModal src={zoom} onClose={() => setZoom(null)} />
