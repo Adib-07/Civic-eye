@@ -47,18 +47,18 @@ There is **no server-side data layer**. The SSR server only renders HTML and ser
 
 ## Technology Stack
 
-| Layer | Choice | Notes |
-|-------|--------|-------|
-| Framework | **TanStack Start** (React 19) | SSR-capable; not plain Vite SPA |
-| Routing | **TanStack Router** (file-based) | 6 routes under `src/routes/` |
-| Styling | **Tailwind CSS v4** | Custom design tokens in `src/styles.css` |
-| UI primitives | **shadcn/ui** (Radix) | ~40 components scaffolded; **only `Toaster` is used in app code** |
-| Maps | **Leaflet + react-leaflet** | OpenStreetMap tiles |
-| Charts | **Chart.js + react-chartjs-2** | Dashboard only |
-| Animation | **Framer Motion** | Landing, cards, modals |
-| Notifications | **Sonner** | Toast messages |
-| Build / deploy | **Vite 8 + Nitro** (Lovable config) | Default Cloudflare target |
-| Package manager | **Bun** (`bun.lock` present) | README still mentions npm |
+| Layer           | Choice                              | Notes                                                             |
+| --------------- | ----------------------------------- | ----------------------------------------------------------------- |
+| Framework       | **TanStack Start** (React 19)       | SSR-capable; not plain Vite SPA                                   |
+| Routing         | **TanStack Router** (file-based)    | 6 routes under `src/routes/`                                      |
+| Styling         | **Tailwind CSS v4**                 | Custom design tokens in `src/styles.css`                          |
+| UI primitives   | **shadcn/ui** (Radix)               | ~40 components scaffolded; **only `Toaster` is used in app code** |
+| Maps            | **Leaflet + react-leaflet**         | OpenStreetMap tiles                                               |
+| Charts          | **Chart.js + react-chartjs-2**      | Dashboard only                                                    |
+| Animation       | **Framer Motion**                   | Landing, cards, modals                                            |
+| Notifications   | **Sonner**                          | Toast messages                                                    |
+| Build / deploy  | **Vite 8 + Nitro** (Lovable config) | Default Cloudflare target                                         |
+| Package manager | **Bun** (`bun.lock` present)        | README still mentions npm                                         |
 
 ---
 
@@ -93,14 +93,14 @@ src/
 
 ## Routing
 
-| Path | Page | Auth | Data source |
-|------|------|------|-------------|
-| `/` | Landing | Public | Hardcoded marketing content |
-| `/login` | Admin sign-in | Public | `localStorage` session |
-| `/dashboard` | Analytics dashboard | **Protected** (`requireAuth`) | `localStorage` reports |
-| `/report` | New issue form | Public | Writes to `localStorage` |
-| `/reports` | All reports | Public | Reads/writes `localStorage` |
-| `/map` | Interactive map | Public | Reads `localStorage` |
+| Path         | Page                | Auth                          | Data source                 |
+| ------------ | ------------------- | ----------------------------- | --------------------------- |
+| `/`          | Landing             | Public                        | Hardcoded marketing content |
+| `/login`     | Admin sign-in       | Public                        | `localStorage` session      |
+| `/dashboard` | Analytics dashboard | **Protected** (`requireAuth`) | `localStorage` reports      |
+| `/report`    | New issue form      | Public                        | Writes to `localStorage`    |
+| `/reports`   | All reports         | Public                        | Reads/writes `localStorage` |
+| `/map`       | Interactive map     | Public                        | Reads `localStorage`        |
 
 Route protection is **client-side only** in `AppShell.tsx`: if `requireAuth` is true and no session exists, redirect to `/login`. Only `/dashboard` sets `requireAuth`.
 
@@ -115,15 +115,15 @@ interface Report {
   id: string;
   title: string;
   description: string;
-  category: Category;      // 6 fixed categories
+  category: Category; // 6 fixed categories
   location: string;
   lat: number;
   lng: number;
-  image: string | null;    // base64 data URL when user uploads
-  status: Status;          // Pending | In Progress | Resolved
+  image: string | null; // base64 data URL when user uploads
+  status: Status; // Pending | In Progress | Resolved
   aiCategory: Category | null;
   aiConfidence: number | null;
-  createdAt: string;       // ISO timestamp
+  createdAt: string; // ISO timestamp
 }
 ```
 
@@ -137,10 +137,10 @@ interface Report {
 
 ## Authentication & Roles
 
-| Role | Implementation | Status |
-|------|----------------|--------|
-| Public citizen | No account | Can report, browse, edit, delete all reports |
-| Admin | Hardcoded `admin` / `admin123` | Can access dashboard after client-side login |
+| Role           | Implementation                 | Status                                       |
+| -------------- | ------------------------------ | -------------------------------------------- |
+| Public citizen | No account                     | Can report, browse, edit, delete all reports |
+| Admin          | Hardcoded `admin` / `admin123` | Can access dashboard after client-side login |
 
 There is **no role field**, **no JWT**, **no Supabase Auth**, and **no server-side session validation**. Anyone with browser devtools can set a fake session or edit reports directly.
 
@@ -188,14 +188,14 @@ There is **no role field**, **no JWT**, **no Supabase Auth**, and **no server-si
 
 ## External Integrations
 
-| Integration | Purpose | Present? |
-|-------------|---------|----------|
-| Supabase | Database / Auth / Storage | **No** |
-| OpenStreetMap | Map tiles | Yes |
-| Lovable assets CDN | Seed/marketing images | Yes |
-| Stripe / billing | Subscriptions | **No** |
-| Email / SMS / push | Notifications | **No** |
-| Real ML / vision API | Image classification | **No** (filename heuristics) |
+| Integration          | Purpose                   | Present?                     |
+| -------------------- | ------------------------- | ---------------------------- |
+| Supabase             | Database / Auth / Storage | **No**                       |
+| OpenStreetMap        | Map tiles                 | Yes                          |
+| Lovable assets CDN   | Seed/marketing images     | Yes                          |
+| Stripe / billing     | Subscriptions             | **No**                       |
+| Email / SMS / push   | Notifications             | **No**                       |
+| Real ML / vision API | Image classification      | **No** (filename heuristics) |
 
 ---
 

@@ -11,25 +11,25 @@ Run after applying `003_rls_hardening.sql` on a Supabase project with two test o
 
 ## Expected results
 
-| Actor | Action | Target | Result |
-|-------|--------|--------|--------|
-| Anonymous | SELECT reports | Org A (public) | ALLOW |
-| Anonymous | SELECT reports | Org B (public) | ALLOW (public feed only) |
-| Anonymous | SELECT profiles | any | DENY |
-| Anonymous | INSERT report | Org A | ALLOW |
-| Anonymous | INSERT report | fake UUID | DENY |
-| Staff A | SELECT reports | Org A | ALLOW |
-| Staff A | SELECT reports | Org B | **DENY** |
-| Staff B | SELECT reports | Org B | ALLOW |
-| Staff B | SELECT reports | Org A | **DENY** |
-| Staff A | UPDATE report | Org B issue | **DENY** |
-| Staff A | DELETE report | Org A issue | ALLOW (admin) |
-| Ward officer A | DELETE report | Org A issue | **DENY** |
-| Citizen (auth, non-staff) | SELECT reports | public org feed | ALLOW |
-| Citizen (auth, non-staff) | SELECT departments | any | **DENY** |
-| Staff A | SELECT storage object | Org B path | **DENY** |
-| Anonymous | SELECT storage object | Org A public path | ALLOW |
-| Staff A | SELECT storage object | Org A path | ALLOW |
+| Actor                     | Action                | Target            | Result                   |
+| ------------------------- | --------------------- | ----------------- | ------------------------ |
+| Anonymous                 | SELECT reports        | Org A (public)    | ALLOW                    |
+| Anonymous                 | SELECT reports        | Org B (public)    | ALLOW (public feed only) |
+| Anonymous                 | SELECT profiles       | any               | DENY                     |
+| Anonymous                 | INSERT report         | Org A             | ALLOW                    |
+| Anonymous                 | INSERT report         | fake UUID         | DENY                     |
+| Staff A                   | SELECT reports        | Org A             | ALLOW                    |
+| Staff A                   | SELECT reports        | Org B             | **DENY**                 |
+| Staff B                   | SELECT reports        | Org B             | ALLOW                    |
+| Staff B                   | SELECT reports        | Org A             | **DENY**                 |
+| Staff A                   | UPDATE report         | Org B issue       | **DENY**                 |
+| Staff A                   | DELETE report         | Org A issue       | ALLOW (admin)            |
+| Ward officer A            | DELETE report         | Org A issue       | **DENY**                 |
+| Citizen (auth, non-staff) | SELECT reports        | public org feed   | ALLOW                    |
+| Citizen (auth, non-staff) | SELECT departments    | any               | **DENY**                 |
+| Staff A                   | SELECT storage object | Org B path        | **DENY**                 |
+| Anonymous                 | SELECT storage object | Org A public path | ALLOW                    |
+| Staff A                   | SELECT storage object | Org A path        | ALLOW                    |
 
 ## SQL spot checks (as authenticated user via Supabase SQL editor with JWT)
 

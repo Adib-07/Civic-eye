@@ -4,42 +4,42 @@ Phase 1 establishes the **technical foundation** for CivicEye B2B SaaS. It does 
 
 ## What Phase 1 includes
 
-| Asset | Purpose |
-|-------|---------|
-| `@supabase/supabase-js` | Browser Supabase client |
-| `.env.example` | Documented env var template (no secrets) |
-| `src/lib/env.ts` | Safe env reads, placeholder detection |
-| `src/lib/supabase.ts` | Singleton client init |
-| `src/lib/database.types.ts` | TypeScript types aligned with SQL schema |
-| `supabase/migrations/001_foundation.sql` | Database schema + baseline RLS |
-| `docs/SUPABASE_SETUP.md` | Operator setup guide |
-| `docs/SECURITY_PHASE3.md` | Security hardening backlog |
+| Asset                                    | Purpose                                  |
+| ---------------------------------------- | ---------------------------------------- |
+| `@supabase/supabase-js`                  | Browser Supabase client                  |
+| `.env.example`                           | Documented env var template (no secrets) |
+| `src/lib/env.ts`                         | Safe env reads, placeholder detection    |
+| `src/lib/supabase.ts`                    | Singleton client init                    |
+| `src/lib/database.types.ts`              | TypeScript types aligned with SQL schema |
+| `supabase/migrations/001_foundation.sql` | Database schema + baseline RLS           |
+| `docs/SUPABASE_SETUP.md`                 | Operator setup guide                     |
+| `docs/SECURITY_PHASE3.md`                | Security hardening backlog               |
 
 ## Schema capability map
 
-| Product concept | Foundation support |
-|-----------------|-------------------|
-| Organizations | `organizations` |
-| Users / profiles | `profiles` (+ Supabase Auth) |
-| Staff | `profiles.role` |
-| Departments | `departments` |
-| Issues | `reports` (civic issues; name kept for app compatibility) |
-| Issue assignments | `reports.assigned_to` + timestamps |
-| Issue status history | `issue_status_history` (+ trigger on status change) |
-| SLA tracking | `sla_policies`, `reports.sla_due_at`, `mark_sla_breaches()` |
+| Product concept         | Foundation support                                             |
+| ----------------------- | -------------------------------------------------------------- |
+| Organizations           | `organizations`                                                |
+| Users / profiles        | `profiles` (+ Supabase Auth)                                   |
+| Staff                   | `profiles.role`                                                |
+| Departments             | `departments`                                                  |
+| Issues                  | `reports` (civic issues; name kept for app compatibility)      |
+| Issue assignments       | `reports.assigned_to` + timestamps                             |
+| Issue status history    | `issue_status_history` (+ trigger on status change)            |
+| SLA tracking            | `sla_policies`, `reports.sla_due_at`, `mark_sla_breaches()`    |
 | Issue evidence / photos | `reports.image_url`, `issue_evidence`, Storage `report-images` |
-| Issue verification | `resolution_verifications` |
-| Reports / analytics | Query `reports` + history (no separate analytics table yet) |
-| Notifications | `notifications` (outbox schema only) |
-| Audit logs | `audit_logs` (append-only schema) |
+| Issue verification      | `resolution_verifications`                                     |
+| Reports / analytics     | Query `reports` + history (no separate analytics table yet)    |
+| Notifications           | `notifications` (outbox schema only)                           |
+| Audit logs              | `audit_logs` (append-only schema)                              |
 
 ## Environment variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `VITE_SUPABASE_URL` | When using Supabase | Project URL from Supabase dashboard |
-| `VITE_SUPABASE_ANON_KEY` | When using Supabase | Anon/public key (browser-safe; RLS enforces access) |
-| `VITE_DEFAULT_ORGANIZATION_ID` | When using Supabase | UUID of the org receiving citizen reports |
+| Variable                       | Required            | Description                                         |
+| ------------------------------ | ------------------- | --------------------------------------------------- |
+| `VITE_SUPABASE_URL`            | When using Supabase | Project URL from Supabase dashboard                 |
+| `VITE_SUPABASE_ANON_KEY`       | When using Supabase | Anon/public key (browser-safe; RLS enforces access) |
+| `VITE_DEFAULT_ORGANIZATION_ID` | When using Supabase | UUID of the org receiving citizen reports           |
 
 Copy `.env.example` → `.env` locally. **Never commit `.env`.**
 

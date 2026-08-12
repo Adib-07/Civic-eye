@@ -77,12 +77,12 @@ SET organization_id = 'YOUR_ORG_UUID', role = 'admin'
 WHERE email = 'officer@your-municipality.gov.in';
 ```
 
-| Role | Purpose |
-|------|---------|
-| `citizen` | Default; can submit issues |
-| `ward_officer` | Assign, resolve, verify |
-| `admin` | Org administration |
-| `super_admin` | Cross-org (future) |
+| Role           | Purpose                    |
+| -------------- | -------------------------- |
+| `citizen`      | Default; can submit issues |
+| `ward_officer` | Assign, resolve, verify    |
+| `admin`        | Org administration         |
+| `super_admin`  | Cross-org (future)         |
 
 ## 7. Run the app
 
