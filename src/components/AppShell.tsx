@@ -12,18 +12,22 @@ import {
   FiEye,
   FiSun,
   FiMoon,
+  FiBookOpen,
 } from "react-icons/fi";
 import { toast } from "sonner";
-import { getSession, logout } from "@/lib/auth";
-import { useTheme } from "@/lib/hooks";
+
+import { signOut } from "@/lib/auth";
+import { useAuth, useTheme } from "@/lib/hooks";
+import { canManageReports, isStaffRole } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Loader } from "./EmptyState";
 
 const nav = [
-  { to: "/dashboard", label: "Dashboard", icon: FiGrid },
-  { to: "/report", label: "Report Issue", icon: FiPlusCircle },
-  { to: "/reports", label: "All Reports", icon: FiList },
-  { to: "/map", label: "Map", icon: FiMap },
+  { to: "/dashboard", label: "Dashboard", icon: FiGrid, staffOnly: true },
+  { to: "/report", label: "Report Issue", icon: FiPlusCircle, staffOnly: false },
+  { to: "/reports", label: "All Reports", icon: FiList, staffOnly: false },
+  { to: "/map", label: "Map", icon: FiMap, staffOnly: false },
+  { to: "/onboarding", label: "Quick tour", icon: FiBookOpen, staffOnly: false },
 ] as const;
 
 export function AppShell({
@@ -31,32 +35,44 @@ export function AppShell({
   subtitle,
   children,
   requireAuth = false,
+  requireStaff = false,
 }: {
   title: string;
   subtitle?: string;
   children: ReactNode;
   requireAuth?: boolean;
+  requireStaff?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const [ready, setReady] = useState(!requireAuth);
+  const [ready, setReady] = useState(!requireAuth && !requireStaff);
   const navigate = useNavigate();
   const { dark, toggle } = useTheme();
+  const { session, profile, loading: authLoading } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
-    if (!requireAuth) return;
-    if (!getSession()) {
-      toast.error("Please sign in to access the dashboard");
+    if (authLoading) return;
+
+    if (requireAuth && !session) {
+      toast.error("Please sign in to continue");
       navigate({ to: "/login" });
       return;
     }
+
+    if (requireStaff && !isStaffRole(profile?.role)) {
+      toast.error("Staff access required");
+      navigate({ to: "/login" });
+      return;
+    }
+
     setReady(true);
-  }, [requireAuth, navigate]);
+  }, [requireAuth, requireStaff, session, profile, authLoading, navigate]);
+
+  const visibleNav = nav.filter((item) => !item.staffOnly || isStaffRole(profile?.role));
 
   return (
     <div className="hero-bg min-h-screen">
       <div className="mx-auto flex w-[min(1400px,96vw)] gap-6 py-4">
-        {/* Sidebar */}
         <aside
           className={cn(
             "glass fixed inset-y-0 left-0 z-[900] flex w-64 shrink-0 flex-col rounded-none p-4 transition-transform lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:translate-x-0 lg:rounded-2xl",
@@ -72,33 +88,74 @@ export function AppShell({
             </span>
           </Link>
 
+          {profile && (
+            <p className="mt-3 truncate px-2 text-xs text-muted-foreground">
+              {profile.fullName ?? profile.email} · {profile.role.replace("_", " ")}
+            </p>
+          )}
+
           <nav className="mt-6 flex flex-1 flex-col gap-1">
-            {nav.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
-                  pathname === item.to && "bg-brand text-primary-foreground hover:text-primary-foreground",
-                )}
-              >
-                <item.icon className="h-4 w-4 shrink-0" />
-                <span className="truncate">{item.label}</span>
-              </Link>
-            ))}
+            <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              Workspace
+            </p>
+            {visibleNav
+              .filter((item) => item.staffOnly)
+              .map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+                    pathname === item.to &&
+                      "bg-brand text-primary-foreground hover:text-primary-foreground",
+                  )}
+                >
+                  <item.icon className="h-4 w-4 shrink-0" aria-hidden />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              ))}
+            <p className="mt-3 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              Public
+            </p>
+            {visibleNav
+              .filter((item) => !item.staffOnly)
+              .map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+                    pathname === item.to &&
+                      "bg-brand text-primary-foreground hover:text-primary-foreground",
+                  )}
+                >
+                  <item.icon className="h-4 w-4 shrink-0" aria-hidden />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              ))}
           </nav>
 
-          <button
-            onClick={() => {
-              logout();
-              toast.success("Signed out");
-              navigate({ to: "/" });
-            }}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-secondary hover:text-destructive"
-          >
-            <FiLogOut className="h-4 w-4" /> Sign out
-          </button>
+          {session ? (
+            <button
+              onClick={async () => {
+                await signOut();
+                toast.success("Signed out");
+                navigate({ to: "/" });
+              }}
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-secondary hover:text-destructive"
+            >
+              <FiLogOut className="h-4 w-4" /> Sign out
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-primary hover:bg-secondary"
+            >
+              Staff sign in
+            </Link>
+          )}
         </aside>
 
         {open && (
@@ -108,7 +165,6 @@ export function AppShell({
           />
         )}
 
-        {/* Main */}
         <main className="min-w-0 flex-1">
           <header className="glass grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-2xl px-4 py-3 sm:flex sm:justify-between">
             <div className="flex min-w-0 items-center gap-3">
@@ -120,7 +176,9 @@ export function AppShell({
                 {open ? <FiX className="h-4 w-4" /> : <FiMenu className="h-4 w-4" />}
               </button>
               <div className="min-w-0">
-                <h1 className="truncate font-display text-xl font-extrabold sm:text-2xl">{title}</h1>
+                <h1 className="truncate font-display text-xl font-extrabold sm:text-2xl">
+                  {title}
+                </h1>
                 {subtitle && (
                   <p className="truncate text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
                 )}
@@ -156,3 +214,5 @@ export function AppShell({
     </div>
   );
 }
+
+export { canManageReports };
