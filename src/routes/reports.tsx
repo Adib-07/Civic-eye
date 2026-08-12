@@ -25,9 +25,18 @@ import { IssueWorkflowBar } from "@/components/IssueWorkflowBar";
 import { OnboardingBanner } from "@/components/OnboardingBanner";
 import { SlaBadge } from "@/components/SlaBadge";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ReportImage } from "@/components/ReportImage";
 import { VerifyDialog } from "@/components/VerifyDialog";
-import { getDefaultOrganizationId } from "@/lib/sla";
-import { useAuth, useReportMutations, useReports, useStaffMembers } from "@/lib/hooks";
+import { ReportMiniMap } from "@/components/ReportMiniMap";
+import type { IssueStatusHistoryEntry } from "@/lib/reports";
+import { getDefaultOrganizationId, isSlaBreached } from "@/lib/sla";
+import {
+  useAuth,
+  useIssueStatusHistory,
+  useReportMutations,
+  useReports,
+  useStaffMembers,
+} from "@/lib/hooks";
 import {
   canManageReports,
   canVerifyReport,
@@ -52,8 +61,10 @@ export const Route = createFileRoute("/reports")({
   component: ReportsPage,
 });
 
+const PAGE_SIZE = 12;
+
 function ReportsPage() {
-  const { reports, loading, error, refetch, isConfigured } = useReports();
+  const { reports, loading, error, refetch, isConfigured, orgMissing } = useReports();
   const { profile, user } = useAuth();
   const orgId = profile?.organizationId ?? getDefaultOrganizationId();
   const { data: staff = [] } = useStaffMembers(isConfigured ? orgId : null);
@@ -64,30 +75,58 @@ function ReportsPage() {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<"All" | Category>("All");
   const [status, setStatus] = useState<"All" | Status>("All");
+  const [assignment, setAssignment] = useState<"all" | "assigned" | "unassigned">("all");
+  const [overdueOnly, setOverdueOnly] = useState(false);
+  const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [toDelete, setToDelete] = useState<Report | null>(null);
   const [editing, setEditing] = useState<Report | null>(null);
   const [assignTarget, setAssignTarget] = useState<Report | null>(null);
   const [verifyTarget, setVerifyTarget] = useState<Report | null>(null);
   const [detail, setDetail] = useState<Report | null>(null);
   const [zoom, setZoom] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  const filtered = useMemo(
-    () =>
-      reports.filter((r) => {
-        const q = query.trim().toLowerCase();
-        const matchQ =
-          !q ||
-          r.title.toLowerCase().includes(q) ||
-          r.description.toLowerCase().includes(q) ||
-          r.location.toLowerCase().includes(q);
-        return (
-          matchQ &&
-          (cat === "All" || r.category === cat) &&
-          (status === "All" || r.status === status)
-        );
-      }),
-    [reports, query, cat, status],
+  const filtered = useMemo(() => {
+    const list = reports.filter((r) => {
+      const q = query.trim().toLowerCase();
+      const matchQ =
+        !q ||
+        r.title.toLowerCase().includes(q) ||
+        r.description.toLowerCase().includes(q) ||
+        r.location.toLowerCase().includes(q);
+      const matchAssignment =
+        assignment === "all" || (assignment === "assigned" ? Boolean(r.assignedTo) : !r.assignedTo);
+      const matchOverdue =
+        !overdueOnly || (isSlaBreached(r) && r.status !== "Verified" && r.status !== "Closed");
+      return (
+        matchQ &&
+        matchAssignment &&
+        matchOverdue &&
+        (cat === "All" || r.category === cat) &&
+        (status === "All" || r.status === status)
+      );
+    });
+    return [...list].sort((a, b) => {
+      const ta = new Date(a.createdAt).getTime();
+      const tb = new Date(b.createdAt).getTime();
+      return sort === "newest" ? tb - ta : ta - tb;
+    });
+  }, [reports, query, cat, status, assignment, overdueOnly, sort]);
+
+  const liveDetail = useMemo(
+    () => (detail ? (reports.find((r) => r.id === detail.id) ?? detail) : null),
+    [detail, reports],
   );
+
+  const { data: statusHistory = [], isLoading: historyLoading } = useIssueStatusHistory(
+    liveDetail?.id,
+  );
+
+  const visibleReports = filtered.slice(0, visibleCount);
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [query, cat, status, assignment, overdueOnly, sort]);
 
   const field =
     "rounded-xl border border-border bg-card/60 px-3 py-2.5 text-sm outline-none focus:border-primary";
@@ -103,8 +142,18 @@ function ReportsPage() {
     >
       <OnboardingBanner />
 
-      <div className="glass grid gap-3 rounded-2xl p-4 md:grid-cols-[1.4fr_1fr_1fr]">
-        <div className="flex items-center gap-2 rounded-xl border border-border bg-card/60 px-3">
+      {orgMissing && (
+        <div className="mb-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
+          <p className="font-bold">Organization not configured</p>
+          <p className="mt-1 text-muted-foreground">
+            Set <code className="font-mono text-xs">VITE_DEFAULT_ORGANIZATION_ID</code> in your
+            environment to load organization reports.
+          </p>
+        </div>
+      )}
+
+      <div className="glass grid gap-3 rounded-2xl p-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="flex items-center gap-2 rounded-xl border border-border bg-card/60 px-3 md:col-span-2 xl:col-span-3">
           <FiSearch className="h-4 w-4 shrink-0 text-muted-foreground" />
           <input
             value={query}
@@ -137,10 +186,41 @@ function ReportsPage() {
             </option>
           ))}
         </select>
+        <select
+          value={assignment}
+          onChange={(e) => setAssignment(e.target.value as typeof assignment)}
+          className={field}
+        >
+          <option value="all">All assignments</option>
+          <option value="assigned">Assigned only</option>
+          <option value="unassigned">Unassigned only</option>
+        </select>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as typeof sort)}
+          className={field}
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+        <label className="flex items-center gap-2 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-sm">
+          <input
+            type="checkbox"
+            checked={overdueOnly}
+            onChange={(e) => setOverdueOnly(e.target.checked)}
+            className="rounded border-border"
+          />
+          <span className="font-semibold">SLA overdue only</span>
+        </label>
       </div>
 
       {loading ? (
         <Loader label="Loading reports" />
+      ) : orgMissing ? (
+        <QueryError
+          title="Organization not configured"
+          message="Set VITE_DEFAULT_ORGANIZATION_ID in your .env file to connect to your Supabase organization."
+        />
       ) : error ? (
         <QueryError
           message={error instanceof Error ? error.message : "Failed to load reports"}
@@ -168,7 +248,7 @@ function ReportsPage() {
       ) : (
         <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <AnimatePresence>
-            {filtered.map((r) => (
+            {visibleReports.map((r) => (
               <motion.article
                 key={r.id}
                 layout
@@ -178,16 +258,20 @@ function ReportsPage() {
                 className="glass card-hover overflow-hidden rounded-2xl"
               >
                 {r.image ? (
-                  <img
+                  <ReportImage
                     src={r.image}
                     alt={r.title}
                     onClick={() => setZoom(r.image)}
                     className="h-44 w-full cursor-zoom-in object-cover"
+                    placeholderClassName="h-44 w-full"
                   />
                 ) : (
-                  <div className="grid h-44 w-full place-items-center bg-secondary text-xs font-semibold text-muted-foreground">
-                    No photo attached
-                  </div>
+                  <ReportImage
+                    src={null}
+                    alt=""
+                    placeholderClassName="h-44 w-full rounded-none"
+                    className="h-44 w-full"
+                  />
                 )}
                 <div className="p-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -306,6 +390,25 @@ function ReportsPage() {
         </div>
       )}
 
+      {!loading && filtered.length > visibleCount && (
+        <div className="mt-6 text-center">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+            className="rounded-xl border border-border bg-card px-6 py-2.5 text-sm font-bold hover:bg-secondary"
+          >
+            Show more ({filtered.length - visibleCount} remaining)
+          </button>
+        </div>
+      )}
+
+      {filtered.length > 0 && !loading && (
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          Showing {Math.min(visibleCount, filtered.length)} of {filtered.length} reports
+          {filtered.length !== reports.length && ` (${reports.length} total)`}
+        </p>
+      )}
+
       <ConfirmDialog
         open={!!toDelete}
         title="Delete this report?"
@@ -385,27 +488,27 @@ function ReportsPage() {
       />
 
       <IssueDetailDialog
-        report={detail}
+        report={liveDetail}
         isStaff={isStaff}
         isConfigured={isConfigured}
-        canVerify={detail ? canVerifyReport(profile?.role, detail, user?.id) : false}
+        canVerify={liveDetail ? canVerifyReport(profile?.role, liveDetail, user?.id) : false}
         onClose={() => setDetail(null)}
         onAssign={() => {
-          if (detail) setAssignTarget(detail);
+          if (liveDetail) setAssignTarget(liveDetail);
           setDetail(null);
         }}
         onEdit={() => {
-          if (detail) setEditing(detail);
+          if (liveDetail) setEditing(liveDetail);
           setDetail(null);
         }}
         onResolve={async () => {
-          if (!detail) return;
+          if (!liveDetail) return;
           try {
             if (isConfigured) {
-              await update.mutateAsync({ id: detail.id, patch: { status: "Resolved" } });
+              await update.mutateAsync({ id: liveDetail.id, patch: { status: "Resolved" } });
             } else {
               const { setStatus } = await import("@/lib/storage");
-              setStatus(detail.id, "Resolved");
+              setStatus(liveDetail.id, "Resolved");
               window.dispatchEvent(new Event("civiceye:reports"));
             }
             toast.success("Marked as resolved");
@@ -415,9 +518,12 @@ function ReportsPage() {
           }
         }}
         onVerify={() => {
-          if (detail) setVerifyTarget(detail);
+          if (liveDetail) setVerifyTarget(liveDetail);
           setDetail(null);
         }}
+        onZoomImage={setZoom}
+        history={statusHistory}
+        historyLoading={historyLoading}
       />
 
       <EditDialog
@@ -610,6 +716,9 @@ function IssueDetailDialog({
   onEdit,
   onResolve,
   onVerify,
+  onZoomImage,
+  history,
+  historyLoading,
 }: {
   report: Report | null;
   isStaff: boolean;
@@ -620,6 +729,9 @@ function IssueDetailDialog({
   onEdit: () => void;
   onResolve: () => void;
   onVerify: () => void;
+  onZoomImage: (src: string) => void;
+  history: IssueStatusHistoryEntry[];
+  historyLoading: boolean;
 }) {
   return (
     <AnimatePresence>
@@ -639,7 +751,7 @@ function IssueDetailDialog({
             role="dialog"
             aria-modal="true"
             aria-labelledby="issue-detail-title"
-            className="glass my-8 w-full max-w-lg rounded-2xl p-6"
+            className="glass my-8 w-full max-w-2xl rounded-2xl p-6 sm:p-8"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -686,6 +798,9 @@ function IssueDetailDialog({
                 <dd className="mt-1 text-xs text-muted-foreground">
                   {report.lat.toFixed(5)}, {report.lng.toFixed(5)}
                 </dd>
+                <dd className="mt-3">
+                  <ReportMiniMap lat={report.lat} lng={report.lng} className="h-44 w-full" />
+                </dd>
               </div>
               {report.assigneeName && (
                 <div>
@@ -708,14 +823,46 @@ function IssueDetailDialog({
             </dl>
 
             {report.image && (
-              <img
+              <ReportImage
                 src={report.image}
                 alt={report.title}
-                className="mt-4 h-44 w-full rounded-xl object-cover"
+                onClick={() => onZoomImage(report.image!)}
+                className="mt-4 h-48 w-full rounded-xl object-cover"
+                placeholderClassName="mt-4 h-48 w-full rounded-xl"
               />
             )}
 
-            <div className="mt-6 flex flex-wrap justify-end gap-2">
+            <div className="mt-5">
+              <h4 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Activity
+              </h4>
+              {historyLoading ? (
+                <p className="mt-2 text-sm text-muted-foreground">Loading history…</p>
+              ) : history.length === 0 ? (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  No status changes recorded yet.
+                </p>
+              ) : (
+                <ul className="mt-3 space-y-2">
+                  {history.map((entry) => (
+                    <li
+                      key={entry.id}
+                      className="rounded-xl border border-border bg-secondary/40 px-3 py-2 text-sm"
+                    >
+                      <p className="font-semibold">
+                        {entry.fromStatus ? `${entry.fromStatus} → ` : ""}
+                        {entry.toStatus}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {new Date(entry.createdAt).toLocaleString()}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-border pt-5">
               {isStaff && !report.assignedTo && report.status === "Pending" && isConfigured && (
                 <button
                   onClick={onAssign}

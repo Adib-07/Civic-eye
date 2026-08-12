@@ -202,6 +202,12 @@ function Landing() {
                       Report an issue <FiArrowRight aria-hidden />
                     </Link>
                     <Link
+                      to="/start"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+                    >
+                      Start pilot
+                    </Link>
+                    <Link
                       to="/login"
                       className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
                     >
@@ -366,6 +372,12 @@ function Landing() {
                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-background px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-background/90"
                   >
                     Submit a report <FiArrowRight aria-hidden />
+                  </Link>
+                  <Link
+                    to="/start"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary-foreground/30 px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10"
+                  >
+                    Start pilot
                   </Link>
                   <Link
                     to="/pricing"

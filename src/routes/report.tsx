@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
   FiUploadCloud,
   FiMapPin,
@@ -13,10 +13,11 @@ import {
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
+import { Loader } from "@/components/EmptyState";
 import { ImageModal } from "@/components/ImageModal";
 import { predictCategory } from "@/lib/ai";
-import { isSupabaseConfigured } from "@/lib/env";
-import { useReportMutations } from "@/lib/hooks";
+import { getDefaultOrganizationId, isSupabaseConfigured } from "@/lib/env";
+import { useHydrated, useReportMutations } from "@/lib/hooks";
 import {
   buildQuickReportPayload,
   requestDeviceLocation,
@@ -27,6 +28,8 @@ import {
 import { addReport } from "@/lib/storage";
 import { CATEGORIES, type Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+const LocationPicker = lazy(() => import("@/components/LocationPicker"));
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 const DEFAULT_LAT = 28.6139;
@@ -50,6 +53,8 @@ function ReportPage() {
   const navigate = useNavigate();
   const { create } = useReportMutations();
   const configured = isSupabaseConfigured();
+  const orgMissing = configured && !getDefaultOrganizationId();
+  const hydrated = useHydrated();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -57,6 +62,7 @@ function ReportPage() {
   const [zoom, setZoom] = useState<string | null>(null);
   const [ai, setAi] = useState<{ category: Category; confidence: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadPhase, setUploadPhase] = useState<"idle" | "uploading" | "saving">("idle");
   const [error, setError] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -106,6 +112,12 @@ function ReportPage() {
     if (!file) return;
     setError(null);
 
+    if (!file.type.startsWith("image/")) {
+      setError("Please select a JPEG, PNG, or WebP image.");
+      toast.error("Invalid file type");
+      return;
+    }
+
     if (file.size > MAX_IMAGE_BYTES) {
       setError(`Image must be under ${MAX_IMAGE_BYTES / (1024 * 1024)} MB.`);
       toast.error("Image too large");
@@ -127,7 +139,14 @@ function ReportPage() {
     reader.readAsDataURL(file);
   };
 
-  const readyToSubmit = lat !== null && lng !== null && !submitting && geoStatus !== "loading";
+  const readyToSubmit =
+    lat !== null && lng !== null && !submitting && !orgMissing && geoStatus !== "loading";
+
+  const handleLocationPick = (nextLat: number, nextLng: number) => {
+    setLat(nextLat);
+    setLng(nextLng);
+    setGeoStatus("ready");
+  };
 
   const submit = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -139,6 +158,7 @@ function ReportPage() {
     }
 
     setSubmitting(true);
+    setUploadPhase(imageFile && configured ? "uploading" : "saving");
 
     try {
       const payload = buildQuickReportPayload({
@@ -151,6 +171,7 @@ function ReportPage() {
       });
 
       if (configured) {
+        if (imageFile) setUploadPhase("uploading");
         await create.mutateAsync({
           ...payload,
           imageFile,
@@ -179,8 +200,16 @@ function ReportPage() {
       toast.error(message);
     } finally {
       setSubmitting(false);
+      setUploadPhase("idle");
     }
   };
+
+  const submitLabel =
+    uploadPhase === "uploading"
+      ? "Uploading photo…"
+      : uploadPhase === "saving"
+        ? "Submitting…"
+        : "Submit report";
 
   const field =
     "mt-1.5 w-full rounded-xl border border-border bg-card/60 px-3 py-3 text-sm outline-none focus:border-primary";
@@ -192,6 +221,18 @@ function ReportPage() {
           <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
           <p className="text-muted-foreground">
             Offline demo mode — reports save to this device only.
+          </p>
+        </div>
+      )}
+
+      {orgMissing && (
+        <div className="mb-4 flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm">
+          <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+          <p>
+            <span className="font-bold">Organization not configured.</span> Set{" "}
+            <code className="font-mono text-xs">VITE_DEFAULT_ORGANIZATION_ID</code> in your{" "}
+            <code className="font-mono text-xs">.env</code> file before submitting reports to
+            production.
           </p>
         </div>
       )}
@@ -321,9 +362,25 @@ function ReportPage() {
               onClick={() => void captureLocation(false)}
               className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-xs font-bold hover:bg-secondary"
             >
-              <FiMapPin className="h-3.5 w-3.5" /> Retry GPS
+              <FiMapPin className="h-3.5 w-3.5" /> Use my location
             </button>
           </div>
+
+          {lat !== null && lng !== null && hydrated && (
+            <div className="mt-4">
+              <p className="mb-2 text-xs text-muted-foreground">
+                Tap the map or drag the pin to adjust the issue location.
+              </p>
+              <Suspense fallback={<Loader label="Loading map" />}>
+                <LocationPicker
+                  lat={lat}
+                  lng={lng}
+                  onChange={handleLocationPick}
+                  className="h-52 w-full overflow-hidden rounded-xl border border-border sm:h-56"
+                />
+              </Suspense>
+            </div>
+          )}
         </section>
 
         {/* Optional details (collapsed by default) */}
@@ -410,7 +467,7 @@ function ReportPage() {
           ) : (
             <FiSend />
           )}
-          {submitting ? "Submitting…" : "Submit report"}
+          {submitLabel}
         </button>
       </form>
 
@@ -427,7 +484,7 @@ function ReportPage() {
           ) : (
             <FiSend />
           )}
-          {submitting ? "Submitting…" : "Submit report"}
+          {submitLabel}
         </button>
       </div>
 

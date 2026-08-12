@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 import { signOut } from "@/lib/auth";
 import { useAuth, useTheme } from "@/lib/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { canManageReports, isStaffRole } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Loader } from "./EmptyState";
@@ -48,6 +49,7 @@ export function AppShell({
   const navigate = useNavigate();
   const { dark, toggle } = useTheme();
   const { session, profile, loading: authLoading } = useAuth();
+  const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
@@ -141,6 +143,9 @@ export function AppShell({
             <button
               onClick={async () => {
                 await signOut();
+                void qc.invalidateQueries({ queryKey: ["auth"] });
+                void qc.invalidateQueries({ queryKey: ["reports"] });
+                void qc.invalidateQueries({ queryKey: ["staff"] });
                 toast.success("Signed out");
                 navigate({ to: "/" });
               }}

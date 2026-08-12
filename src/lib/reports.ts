@@ -16,7 +16,9 @@ import type {
 const SIGNED_IMAGE_TTL_SEC = 86_400;
 
 function isStoragePath(value: string): boolean {
-  return !value.startsWith("http://") && !value.startsWith("https://");
+  return (
+    !value.startsWith("http://") && !value.startsWith("https://") && !value.startsWith("data:")
+  );
 }
 
 async function resolveImageUrl(
@@ -30,8 +32,53 @@ async function resolveImageUrl(
     .from("report-images")
     .createSignedUrl(imageRef, SIGNED_IMAGE_TTL_SEC);
 
-  if (error || !data?.signedUrl) return null;
-  return data.signedUrl;
+  if (!error && data?.signedUrl) return data.signedUrl;
+
+  const { data: blob, error: downloadError } = await sb.storage
+    .from("report-images")
+    .download(imageRef);
+
+  if (!downloadError && blob) {
+    return URL.createObjectURL(blob);
+  }
+
+  return null;
+}
+
+async function resolveImageUrlMap(
+  sb: SupabaseClient<Database>,
+  imageRefs: (string | null)[],
+): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  const storagePaths = [
+    ...new Set(imageRefs.filter((r): r is string => typeof r === "string" && isStoragePath(r))),
+  ];
+
+  for (const ref of imageRefs) {
+    if (ref && !isStoragePath(ref)) map.set(ref, ref);
+  }
+
+  if (!storagePaths.length) return map;
+
+  const { data } = await sb.storage
+    .from("report-images")
+    .createSignedUrls(storagePaths, SIGNED_IMAGE_TTL_SEC);
+
+  if (data) {
+    for (const item of data) {
+      if (item.path && item.signedUrl && !item.error) {
+        map.set(item.path, item.signedUrl);
+      }
+    }
+  }
+
+  for (const path of storagePaths) {
+    if (map.has(path)) continue;
+    const url = await resolveImageUrl(sb, path);
+    if (url) map.set(path, url);
+  }
+
+  return map;
 }
 
 function mapReport(row: DbReport, assigneeName?: string | null): Report {
@@ -103,13 +150,17 @@ export async function fetchReports(organizationId?: string): Promise<Report[]> {
     assigneeMap = new Map((profiles ?? []).map((p) => [p.id, p.full_name ?? p.email ?? "Staff"]));
   }
 
-  return Promise.all(
-    reports.map(async (r) => {
-      const image = await resolveImageUrl(sb, r.image_url);
-      const mapped = mapReport(r, r.assigned_to ? assigneeMap.get(r.assigned_to) : null);
-      return { ...mapped, image };
-    }),
+  const mappedReports = reports.map((r) =>
+    mapReport(r, r.assigned_to ? assigneeMap.get(r.assigned_to) : null),
   );
+  const imageMap = await resolveImageUrlMap(
+    sb,
+    mappedReports.map((r) => r.image),
+  );
+  return mappedReports.map((r) => ({
+    ...r,
+    image: r.image ? (imageMap.get(r.image) ?? null) : null,
+  }));
 }
 
 export async function createReport(input: CreateReportInput): Promise<Report> {
@@ -342,4 +393,35 @@ export function isToday(iso: string) {
     d.getMonth() === now.getMonth() &&
     d.getFullYear() === now.getFullYear()
   );
+}
+
+export type IssueStatusHistoryEntry = {
+  id: string;
+  fromStatus: string | null;
+  toStatus: string;
+  changedBy: string | null;
+  notes: string | null;
+  createdAt: string;
+};
+
+export async function fetchIssueStatusHistory(
+  reportId: string,
+): Promise<IssueStatusHistoryEntry[]> {
+  const sb = requireSupabase();
+  const { data, error } = await sb
+    .from("issue_status_history")
+    .select("id, from_status, to_status, changed_by, notes, created_at")
+    .eq("report_id", reportId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    fromStatus: row.from_status,
+    toStatus: row.to_status,
+    changedBy: row.changed_by,
+    notes: row.notes,
+    createdAt: row.created_at,
+  }));
 }

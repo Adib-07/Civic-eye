@@ -60,7 +60,7 @@ export const Route = createFileRoute("/dashboard")({
 const PALETTE = ["#2aa5b8", "#2fae76", "#e0a325", "#e0603a", "#7c8ce0", "#48c1a5"];
 
 function DashboardPage() {
-  const { reports, loading, error, refetch } = useReports();
+  const { reports, loading, error, refetch, orgMissing } = useReports();
   const { profile } = useAuth();
   const orgId = profile?.organizationId ?? getDefaultOrganizationId();
   const { data: org } = useOrganization(orgId);
@@ -78,6 +78,7 @@ function DashboardPage() {
       verified: reports.filter((r) => r.status === "Verified").length,
       slaBreached: reports.filter((r) => r.slaBreached).length,
       unassigned: reports.filter((r) => !r.assignedTo && r.status === "Pending").length,
+      assigned: reports.filter((r) => Boolean(r.assignedTo)).length,
       today: reports.filter((r) => isToday(r.createdAt)).length,
       byCategory,
       byStatus: STATUSES.map((s) => reports.filter((r) => r.status === s).length),
@@ -103,6 +104,11 @@ function DashboardPage() {
     >
       {loading ? (
         <Loader label="Loading organization data" />
+      ) : orgMissing ? (
+        <QueryError
+          title="Organization not configured"
+          message="Set VITE_DEFAULT_ORGANIZATION_ID in your environment, or ensure your staff profile has an organization_id assigned."
+        />
       ) : error ? (
         <QueryError
           message={error instanceof Error ? error.message : "Failed to load dashboard data"}
@@ -151,14 +157,25 @@ function DashboardPage() {
               <p className="mt-1 font-display text-3xl font-extrabold">{stats.inProgress}</p>
             </div>
             <div className="glass rounded-2xl p-5">
+              <p className="text-xs font-bold text-muted-foreground">Assigned</p>
+              <p className="mt-1 font-display text-3xl font-extrabold">{stats.assigned}</p>
+            </div>
+            <div className="glass rounded-2xl p-5">
+              <p className="text-xs font-bold text-muted-foreground">Unassigned</p>
+              <p className="mt-1 font-display text-3xl font-extrabold">{stats.unassigned}</p>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="glass rounded-2xl p-5">
               <p className="text-xs font-bold text-muted-foreground">Awaiting verification</p>
               <p className="mt-1 font-display text-3xl font-extrabold">
                 {stats.awaitingVerification.length}
               </p>
             </div>
             <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">Unassigned</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.unassigned}</p>
+              <p className="text-xs font-bold text-muted-foreground">Verified closed</p>
+              <p className="mt-1 font-display text-3xl font-extrabold">{stats.verified}</p>
             </div>
           </div>
 
@@ -184,10 +201,10 @@ function DashboardPage() {
                       key={r.id}
                       className="flex flex-wrap items-center justify-between gap-3 p-4"
                     >
-                      <div className="min-w-0 flex-1">
+                      <Link to="/reports" className="min-w-0 flex-1 hover:text-primary">
                         <p className="truncate font-semibold">{r.title}</p>
                         <p className="text-xs text-muted-foreground">{r.location}</p>
-                      </div>
+                      </Link>
                       <div className="flex items-center gap-2">
                         <SlaBadge report={r} />
                         <StatusBadge status={r.status} />
@@ -358,7 +375,7 @@ function DashboardPage() {
                             <StatusBadge status={r.status} />
                           </td>
                           <td className="px-5 py-3 text-right">
-                            {r.status === "Pending" || r.status === "In Progress" ? (
+                            {r.status === "In Progress" ? (
                               <button
                                 onClick={async () => {
                                   try {
@@ -375,6 +392,13 @@ function DashboardPage() {
                               >
                                 <FiCheck /> Resolve
                               </button>
+                            ) : r.status === "Pending" && !r.assignedTo ? (
+                              <Link
+                                to="/reports"
+                                className="text-xs font-bold text-primary hover:underline"
+                              >
+                                Assign
+                              </Link>
                             ) : r.status === "Verified" ? (
                               <span className="text-xs font-bold text-success">Verified</span>
                             ) : (
@@ -398,7 +422,7 @@ function DashboardPage() {
                       </p>
                       <div className="flex items-center justify-between gap-2">
                         <SlaBadge report={r} />
-                        {(r.status === "Pending" || r.status === "In Progress") && (
+                        {r.status === "In Progress" ? (
                           <button
                             type="button"
                             onClick={async () => {
@@ -416,7 +440,11 @@ function DashboardPage() {
                           >
                             Resolve
                           </button>
-                        )}
+                        ) : r.status === "Pending" && !r.assignedTo ? (
+                          <Link to="/reports" className="text-xs font-bold text-primary">
+                            Assign
+                          </Link>
+                        ) : null}
                       </div>
                     </li>
                   ))}

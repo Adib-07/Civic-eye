@@ -16,6 +16,8 @@ const colors: Record<string, string> = {
   Pending: "#e0a325",
   "In Progress": "#2aa5b8",
   Resolved: "#2fae76",
+  Verified: "#22c55e",
+  Closed: "#94a3b8",
 };
 
 /** Keeps Leaflet's canvas in sync with its container and frames every marker. */

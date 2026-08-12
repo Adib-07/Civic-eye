@@ -8,6 +8,7 @@ import {
   assignReport,
   createReport,
   deleteReport,
+  fetchIssueStatusHistory,
   fetchOrganization,
   fetchReports,
   fetchStaffMembers,
@@ -24,6 +25,7 @@ const AUTH_KEY = ["auth"] as const;
 const STAFF_KEY = ["staff"] as const;
 const ORG_KEY = ["organization"] as const;
 const SUBSCRIPTION_KEY = ["subscription"] as const;
+const HISTORY_KEY = ["issue-history"] as const;
 
 export function useAuth() {
   const qc = useQueryClient();
@@ -39,6 +41,9 @@ export function useAuth() {
     if (!isSupabaseConfigured()) return;
     const unsub = onAuthStateChange(() => {
       void qc.invalidateQueries({ queryKey: AUTH_KEY });
+      void qc.invalidateQueries({ queryKey: REPORTS_KEY });
+      void qc.invalidateQueries({ queryKey: STAFF_KEY });
+      void qc.invalidateQueries({ queryKey: SUBSCRIPTION_KEY });
     });
     return unsub;
   }, [qc]);
@@ -123,6 +128,8 @@ export function useReports() {
     error: query.error,
     refetch: query.refetch,
     isConfigured: configured,
+    orgId: orgId ?? null,
+    orgMissing: configured && !orgConfigured,
   };
 }
 
@@ -150,10 +157,22 @@ export function useStaffMembers(organizationId: string | null | undefined) {
   });
 }
 
+export function useIssueStatusHistory(reportId: string | null | undefined) {
+  return useQuery({
+    queryKey: [...HISTORY_KEY, reportId],
+    queryFn: () => fetchIssueStatusHistory(reportId!),
+    enabled: Boolean(reportId) && isSupabaseConfigured(),
+    staleTime: 15_000,
+  });
+}
+
 export function useReportMutations() {
   const qc = useQueryClient();
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: REPORTS_KEY });
+  const invalidate = () => {
+    void qc.invalidateQueries({ queryKey: REPORTS_KEY });
+    void qc.invalidateQueries({ queryKey: HISTORY_KEY });
+  };
 
   const create = useMutation({
     mutationFn: (input: CreateReportInput) => createReport(input),
