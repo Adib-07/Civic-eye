@@ -9,6 +9,7 @@ import {
   FiCheck,
   FiChevronDown,
   FiCamera,
+  FiX,
 } from "react-icons/fi";
 import { toast } from "sonner";
 
@@ -18,6 +19,7 @@ import { ImageModal } from "@/components/ImageModal";
 import { predictCategory } from "@/lib/ai";
 import { getDefaultOrganizationId, isSupabaseConfigured } from "@/lib/env";
 import { useHydrated, useReportMutations } from "@/lib/hooks";
+import { DEFAULT_MAP_CENTER, isValidCoordinate } from "@/lib/map-config";
 import {
   buildQuickReportPayload,
   requestDeviceLocation,
@@ -32,13 +34,11 @@ import { cn } from "@/lib/utils";
 const LocationPicker = lazy(() => import("@/components/LocationPicker"));
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
-const DEFAULT_LAT = 28.6139;
-const DEFAULT_LNG = 77.209;
 
 export const Route = createFileRoute("/report")({
   head: () => ({
     meta: [
-      { title: "Report a City Issue — CivicEye" },
+      { title: "Report an Issue — CivicEye" },
       {
         name: "description",
         content:
@@ -73,9 +73,12 @@ function ReportPage() {
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
   const [geoStatus, setGeoStatus] = useState<GeoStatus>("idle");
+  const [usingFallbackLocation, setUsingFallbackLocation] = useState(false);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   const captureLocation = useCallback(async (silent = false) => {
     setGeoStatus("loading");
+    setUsingFallbackLocation(false);
     try {
       const coords = await requestDeviceLocation();
       setLat(coords.lat);
@@ -86,15 +89,17 @@ function ReportPage() {
       const code = err instanceof GeolocationPositionError ? err.code : null;
       if (code === 1) {
         setGeoStatus("denied");
-        if (!silent) toast.error("Location permission denied — enter details manually");
+        if (!silent) toast.error("Location permission denied — pick a spot on the map");
       } else if (String(err).includes("unsupported")) {
         setGeoStatus("unsupported");
+        if (!silent) toast.error("Geolocation not supported — pick a spot on the map");
       } else {
         setGeoStatus("denied");
-        if (!silent) toast.error("Could not get your location");
+        if (!silent) toast.error("Could not get your location — pick a spot on the map");
       }
-      setLat(DEFAULT_LAT);
-      setLng(DEFAULT_LNG);
+      setLat(DEFAULT_MAP_CENTER.lat);
+      setLng(DEFAULT_MAP_CENTER.lng);
+      setUsingFallbackLocation(true);
     }
   }, []);
 
@@ -143,9 +148,21 @@ function ReportPage() {
     lat !== null && lng !== null && !submitting && !orgMissing && geoStatus !== "loading";
 
   const handleLocationPick = (nextLat: number, nextLng: number) => {
+    if (!isValidCoordinate(nextLat, nextLng)) {
+      toast.error("Invalid coordinates — please pick another spot");
+      return;
+    }
     setLat(nextLat);
     setLng(nextLng);
     setGeoStatus("ready");
+    setUsingFallbackLocation(false);
+  };
+
+  const clearImage = () => {
+    setImagePreview(null);
+    setImageFile(null);
+    setAi(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const submit = async (e?: React.FormEvent) => {
@@ -170,30 +187,37 @@ function ReportPage() {
         location,
       });
 
+      let reportId: string;
+
       if (configured) {
         if (imageFile) setUploadPhase("uploading");
-        await create.mutateAsync({
+        const created = await create.mutateAsync({
           ...payload,
           imageFile,
           aiCategory: ai?.category ?? null,
           aiConfidence: ai?.confidence ?? null,
         });
+        reportId = created.id;
       } else {
         if (imageFile && imageFile.size > 800_000) {
           throw new Error(
             "Offline mode: image too large for local storage. Use a smaller photo or configure Supabase.",
           );
         }
-        addReport({
+        const created = addReport({
           ...payload,
           image: imagePreview,
           aiCategory: ai?.category ?? null,
           aiConfidence: ai?.confidence ?? null,
         });
+        reportId = created.id;
       }
 
-      toast.success("Report submitted — thank you!");
-      navigate({ to: "/reports" });
+      toast.success("Report submitted successfully");
+      navigate({
+        to: "/reports",
+        search: { submitted: reportId },
+      });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Submission failed";
       setError(message);
@@ -215,7 +239,7 @@ function ReportPage() {
     "mt-1.5 w-full rounded-xl border border-border bg-card/60 px-3 py-3 text-sm outline-none focus:border-primary";
 
   return (
-    <AppShell title="Report an issue" subtitle="Photo → category → submit (under 30 seconds)">
+    <AppShell title="Report an issue" subtitle="What happened → where → evidence → submit">
       {!configured && (
         <div className="mb-4 flex items-start gap-3 rounded-2xl border border-warning/30 bg-warning/10 p-3 text-sm">
           <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
@@ -244,9 +268,45 @@ function ReportPage() {
       )}
 
       <form onSubmit={submit} className="pb-24 lg:pb-0">
+        {/* Progress indicator */}
+        <nav aria-label="Report progress" className="mb-5 flex gap-2">
+          {(
+            [
+              { n: 1, label: "What" },
+              { n: 2, label: "Where" },
+              { n: 3, label: "Evidence" },
+              { n: 4, label: "Submit" },
+            ] as const
+          ).map(({ n, label }) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setStep(n)}
+              className={cn(
+                "flex flex-1 flex-col items-center gap-1 rounded-xl border px-2 py-2 text-center transition-colors",
+                step === n
+                  ? "border-primary bg-primary/5 text-primary"
+                  : "border-border bg-card text-muted-foreground hover:bg-secondary",
+              )}
+            >
+              <span className="text-[10px] font-bold uppercase tracking-wide">{label}</span>
+              <span
+                className={cn(
+                  "grid h-6 w-6 place-items-center rounded-full text-xs font-bold",
+                  step >= n ? "bg-primary text-primary-foreground" : "bg-secondary",
+                )}
+              >
+                {n}
+              </span>
+            </button>
+          ))}
+        </nav>
+
         {/* 1 — Photo (primary action) */}
-        <section className="glass rounded-2xl p-4 sm:p-5">
-          <p className="text-xs font-bold uppercase tracking-wide text-primary">Step 1 · Photo</p>
+        <section className={cn("glass rounded-2xl p-4 sm:p-5", step !== 1 && "hidden lg:block")}>
+          <p className="text-xs font-bold uppercase tracking-wide text-primary">
+            Step 1 · What happened?
+          </p>
           <input
             ref={fileInputRef}
             type="file"
@@ -283,18 +343,42 @@ function ReportPage() {
           )}
 
           {imagePreview && (
+            <div className="mt-2 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-xs font-semibold text-primary hover:underline"
+              >
+                Change photo
+              </button>
+              <button
+                type="button"
+                onClick={clearImage}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-destructive"
+              >
+                <FiX className="h-3 w-3" /> Remove
+              </button>
+            </div>
+          )}
+
+          {step === 1 && (
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="mt-2 text-xs font-semibold text-primary hover:underline"
+              onClick={() => setStep(2)}
+              className="btn-primary mt-4 w-full lg:hidden"
             >
-              Change photo
+              Continue to location
             </button>
           )}
         </section>
 
         {/* 2 — Category chips */}
-        <section className="glass mt-4 rounded-2xl p-4 sm:p-5">
+        <section
+          className={cn(
+            "glass mt-4 rounded-2xl p-4 sm:p-5",
+            step !== 2 && step !== 1 && "hidden lg:block",
+          )}
+        >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs font-bold uppercase tracking-wide text-primary">
               Step 2 · Issue type
@@ -322,12 +406,26 @@ function ReportPage() {
               </button>
             ))}
           </div>
+          {step === 2 && (
+            <button
+              type="button"
+              onClick={() => setStep(3)}
+              className="btn-primary mt-4 w-full lg:hidden"
+            >
+              Continue to location
+            </button>
+          )}
         </section>
 
         {/* 3 — Location status */}
-        <section className="glass mt-4 rounded-2xl p-4 sm:p-5">
+        <section
+          className={cn(
+            "glass mt-4 rounded-2xl p-4 sm:p-5",
+            step !== 3 && step < 3 && "hidden lg:block",
+          )}
+        >
           <p className="text-xs font-bold uppercase tracking-wide text-primary">
-            Step 3 · Location
+            Step 3 · Where is it?
           </p>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-sm">
@@ -352,7 +450,7 @@ function ReportPage() {
                 <>
                   <FiAlertCircle className="h-4 w-4 text-warning" />
                   <span className="text-sm text-muted-foreground">
-                    GPS unavailable — check details below
+                    GPS unavailable — tap the map to set location
                   </span>
                 </>
               )}
@@ -360,11 +458,18 @@ function ReportPage() {
             <button
               type="button"
               onClick={() => void captureLocation(false)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-xs font-bold hover:bg-secondary"
+              className="btn-secondary text-xs"
             >
               <FiMapPin className="h-3.5 w-3.5" /> Use my location
             </button>
           </div>
+
+          {usingFallbackLocation && (
+            <div className="mt-3 rounded-xl border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-muted-foreground">
+              <strong className="text-warning-foreground">Approximate location.</strong> GPS was
+              unavailable — please tap the map or drag the pin to mark where the issue is.
+            </div>
+          )}
 
           {lat !== null && lng !== null && hydrated && (
             <div className="mt-4">
@@ -381,7 +486,44 @@ function ReportPage() {
               </Suspense>
             </div>
           )}
+
+          {step === 3 && (
+            <button
+              type="button"
+              onClick={() => setStep(4)}
+              className="btn-primary mt-4 w-full lg:hidden"
+            >
+              Review & submit
+            </button>
+          )}
         </section>
+
+        {/* Step 4 — Review summary (mobile) */}
+        {(step === 4 || step === 3) && (
+          <section
+            className={cn("glass mt-4 rounded-2xl p-4 sm:p-5", step !== 4 && "hidden lg:block")}
+          >
+            <p className="text-xs font-bold uppercase tracking-wide text-primary">
+              Step 4 · Review
+            </p>
+            <dl className="mt-3 space-y-2 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Category</dt>
+                <dd className="font-semibold">{category}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Location</dt>
+                <dd className="font-mono text-xs">
+                  {lat?.toFixed(4)}, {lng?.toFixed(4)}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Photo</dt>
+                <dd className="font-semibold">{imagePreview ? "Attached" : "None"}</dd>
+              </div>
+            </dl>
+          </section>
+        )}
 
         {/* Optional details (collapsed by default) */}
         <section className="glass mt-4 overflow-hidden rounded-2xl">
@@ -460,7 +602,7 @@ function ReportPage() {
         <button
           type="submit"
           disabled={!readyToSubmit}
-          className="bg-brand mt-5 hidden w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-50 lg:flex"
+          className="btn-primary mt-5 hidden w-full lg:flex"
         >
           {submitting ? (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
@@ -477,7 +619,7 @@ function ReportPage() {
           type="button"
           disabled={!readyToSubmit}
           onClick={() => void submit()}
-          className="bg-brand flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-primary-foreground shadow-lg disabled:opacity-50"
+          className="btn-primary w-full shadow-lg"
         >
           {submitting ? (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />

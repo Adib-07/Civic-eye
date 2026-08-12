@@ -12,7 +12,8 @@ import {
   FiEye,
   FiSun,
   FiMoon,
-  FiBookOpen,
+  FiUser,
+  FiAlertTriangle,
 } from "react-icons/fi";
 import { toast } from "sonner";
 
@@ -23,13 +24,34 @@ import { canManageReports, isStaffRole } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Loader } from "./EmptyState";
 
-const nav = [
-  { to: "/dashboard", label: "Dashboard", icon: FiGrid, staffOnly: true },
-  { to: "/report", label: "Report Issue", icon: FiPlusCircle, staffOnly: false },
-  { to: "/reports", label: "All Reports", icon: FiList, staffOnly: false },
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof FiGrid;
+  staffOnly: boolean;
+  search?: Record<string, string | boolean>;
+};
+
+const nav: NavItem[] = [
+  { to: "/dashboard", label: "Overview", icon: FiGrid, staffOnly: true },
+  { to: "/reports", label: "All reports", icon: FiList, staffOnly: true },
+  {
+    to: "/reports",
+    label: "Assigned to me",
+    icon: FiUser,
+    staffOnly: true,
+    search: { assigned: "me" },
+  },
+  {
+    to: "/reports",
+    label: "SLA / attention",
+    icon: FiAlertTriangle,
+    staffOnly: true,
+    search: { overdue: "1" },
+  },
+  { to: "/report", label: "Report issue", icon: FiPlusCircle, staffOnly: false },
   { to: "/map", label: "Map", icon: FiMap, staffOnly: false },
-  { to: "/onboarding", label: "Quick tour", icon: FiBookOpen, staffOnly: false },
-] as const;
+];
 
 export function AppShell({
   title,
@@ -51,6 +73,7 @@ export function AppShell({
   const { session, profile, loading: authLoading } = useAuth();
   const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const search = useRouterState({ select: (s) => s.location.search }) as Record<string, unknown>;
 
   useEffect(() => {
     if (authLoading) return;
@@ -71,6 +94,31 @@ export function AppShell({
   }, [requireAuth, requireStaff, session, profile, authLoading, navigate]);
 
   const visibleNav = nav.filter((item) => !item.staffOnly || isStaffRole(profile?.role));
+  const staffNav = visibleNav.filter((item) => item.staffOnly);
+  const publicNav = visibleNav.filter((item) => !item.staffOnly);
+
+  const isActive = (item: NavItem) => {
+    if (pathname !== item.to) return false;
+    if (!item.search) return !search.assigned && !search.overdue;
+    if (item.search.assigned === "me") return search.assigned === "me";
+    if (item.search.overdue === "1") return search.overdue === "1" || search.overdue === true;
+    return true;
+  };
+
+  const NavLink = ({ item }: { item: NavItem }) => (
+    <Link
+      to={item.to}
+      search={item.search}
+      onClick={() => setOpen(false)}
+      className={cn(
+        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+        isActive(item) && "bg-brand text-primary-foreground hover:text-primary-foreground",
+      )}
+    >
+      <item.icon className="h-4 w-4 shrink-0" aria-hidden />
+      <span className="truncate">{item.label}</span>
+    </Link>
+  );
 
   return (
     <div className="hero-bg min-h-screen">
@@ -97,46 +145,22 @@ export function AppShell({
           )}
 
           <nav className="mt-6 flex flex-1 flex-col gap-1">
-            <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-              Workspace
-            </p>
-            {visibleNav
-              .filter((item) => item.staffOnly)
-              .map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
-                    pathname === item.to &&
-                      "bg-brand text-primary-foreground hover:text-primary-foreground",
-                  )}
-                >
-                  <item.icon className="h-4 w-4 shrink-0" aria-hidden />
-                  <span className="truncate">{item.label}</span>
-                </Link>
-              ))}
+            {staffNav.length > 0 && (
+              <>
+                <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                  Operations
+                </p>
+                {staffNav.map((item) => (
+                  <NavLink key={`${item.to}-${item.label}`} item={item} />
+                ))}
+              </>
+            )}
             <p className="mt-3 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
               Public
             </p>
-            {visibleNav
-              .filter((item) => !item.staffOnly)
-              .map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
-                    pathname === item.to &&
-                      "bg-brand text-primary-foreground hover:text-primary-foreground",
-                  )}
-                >
-                  <item.icon className="h-4 w-4 shrink-0" aria-hidden />
-                  <span className="truncate">{item.label}</span>
-                </Link>
-              ))}
+            {publicNav.map((item) => (
+              <NavLink key={item.to} item={item} />
+            ))}
           </nav>
 
           {session ? (
@@ -197,10 +221,7 @@ export function AppShell({
               >
                 {dark ? <FiSun className="h-4 w-4" /> : <FiMoon className="h-4 w-4" />}
               </button>
-              <Link
-                to="/report"
-                className="bg-brand hidden rounded-xl px-4 py-2 text-sm font-bold text-primary-foreground sm:block"
-              >
+              <Link to="/report" className="btn-primary hidden px-4 py-2 sm:inline-flex">
                 New report
               </Link>
             </div>

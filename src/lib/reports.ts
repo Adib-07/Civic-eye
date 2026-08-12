@@ -109,9 +109,24 @@ function mapReport(row: DbReport, assigneeName?: string | null): Report {
   };
 }
 
+const MIME_TO_EXT: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+function imageExtension(file: File): string {
+  if (file.type && MIME_TO_EXT[file.type]) return MIME_TO_EXT[file.type];
+  const fromName = file.name.split(".").pop()?.toLowerCase();
+  if (fromName && ["jpg", "jpeg", "png", "webp"].includes(fromName)) {
+    return fromName === "jpeg" ? "jpg" : fromName;
+  }
+  return "jpg";
+}
+
 async function uploadReportImage(organizationId: string, file: File): Promise<string> {
   const sb = requireSupabase();
-  const ext = file.name.split(".").pop() ?? "jpg";
+  const ext = imageExtension(file);
   const path = `${organizationId}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
 
   const { error } = await sb.storage.from("report-images").upload(path, file, {
@@ -123,6 +138,11 @@ async function uploadReportImage(organizationId: string, file: File): Promise<st
   if (error) throw new Error(`Image upload failed: ${error.message}`);
 
   return path;
+}
+
+async function removeReportImage(path: string): Promise<void> {
+  const sb = requireSupabase();
+  await sb.storage.from("report-images").remove([path]);
 }
 
 export async function fetchReports(organizationId?: string): Promise<Report[]> {
@@ -199,7 +219,16 @@ export async function createReport(input: CreateReportInput): Promise<Report> {
     .select("*")
     .single();
 
-  if (error || !data) throw new Error(error?.message ?? "Failed to create report");
+  if (error || !data) {
+    if (imageUrl) {
+      try {
+        await removeReportImage(imageUrl);
+      } catch {
+        /* best-effort cleanup */
+      }
+    }
+    throw new Error(error?.message ?? "Failed to create report");
+  }
   const row = data as DbReport;
   const image = await resolveImageUrl(sb, row.image_url);
   const mapped = mapReport(row);

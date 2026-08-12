@@ -57,7 +57,22 @@ export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
 });
 
-const PALETTE = ["#2aa5b8", "#2fae76", "#e0a325", "#e0603a", "#7c8ce0", "#48c1a5"];
+const PALETTE = [
+  "oklch(0.546 0.215 263)",
+  "oklch(0.6 0.14 155)",
+  "oklch(0.72 0.15 65)",
+  "oklch(0.58 0.21 25)",
+  "oklch(0.65 0.1 240)",
+  "oklch(0.55 0.12 180)",
+];
+
+const STATUS_COLORS = [
+  "oklch(0.72 0.15 65)",
+  "oklch(0.546 0.215 263)",
+  "oklch(0.65 0.1 240)",
+  "oklch(0.6 0.14 155)",
+  "oklch(0.55 0.02 258)",
+];
 
 function DashboardPage() {
   const { reports, loading, error, refetch, orgMissing } = useReports();
@@ -97,8 +112,8 @@ function DashboardPage() {
 
   return (
     <AppShell
-      title="Organization dashboard"
-      subtitle={org?.name ?? "Municipal operations overview"}
+      title="Operations dashboard"
+      subtitle={org?.name ?? "Issue intake, assignment, and resolution"}
       requireAuth
       requireStaff
     >
@@ -129,10 +144,10 @@ function DashboardPage() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard icon={FiFileText} label="Open issues" value={stats.openIssues.length} />
             <StatCard
-              icon={FiClock}
-              label="Pending"
-              value={stats.pending}
-              accent="text-warning"
+              icon={FiUserCheck}
+              label="Assigned"
+              value={stats.assigned}
+              accent="text-primary"
               delay={0.05}
             />
             <StatCard
@@ -143,39 +158,26 @@ function DashboardPage() {
               delay={0.1}
             />
             <StatCard
-              icon={FiSun}
-              label="Reported today"
-              value={stats.today}
-              accent="text-accent"
+              icon={FiCheckCircle}
+              label="Resolved"
+              value={stats.resolved + stats.verified}
+              accent="text-success"
               delay={0.15}
             />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="glass rounded-2xl p-5">
+              <p className="text-xs font-bold text-muted-foreground">Pending intake</p>
+              <p className="mt-1 font-display text-3xl font-extrabold">{stats.pending}</p>
+            </div>
+            <div className="glass rounded-2xl p-5">
               <p className="text-xs font-bold text-muted-foreground">In progress</p>
               <p className="mt-1 font-display text-3xl font-extrabold">{stats.inProgress}</p>
             </div>
             <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">Assigned</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.assigned}</p>
-            </div>
-            <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">Unassigned</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.unassigned}</p>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">Awaiting verification</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">
-                {stats.awaitingVerification.length}
-              </p>
-            </div>
-            <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">Verified closed</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.verified}</p>
+              <p className="text-xs font-bold text-muted-foreground">Reported today</p>
+              <p className="mt-1 font-display text-3xl font-extrabold">{stats.today}</p>
             </div>
           </div>
 
@@ -201,7 +203,11 @@ function DashboardPage() {
                       key={r.id}
                       className="flex flex-wrap items-center justify-between gap-3 p-4"
                     >
-                      <Link to="/reports" className="min-w-0 flex-1 hover:text-primary">
+                      <Link
+                        to="/reports"
+                        search={{ overdue: true }}
+                        className="min-w-0 flex-1 hover:text-primary"
+                      >
                         <p className="truncate font-semibold">{r.title}</p>
                         <p className="text-xs text-muted-foreground">{r.location}</p>
                       </Link>
@@ -263,13 +269,7 @@ function DashboardPage() {
                           {
                             label: "Reports",
                             data: stats.byStatus,
-                            backgroundColor: [
-                              "#e0a325",
-                              "#2aa5b8",
-                              "#7c8ce0",
-                              "#2fae76",
-                              "#94a3b8",
-                            ],
+                            backgroundColor: STATUS_COLORS,
                             borderRadius: 10,
                           },
                         ],

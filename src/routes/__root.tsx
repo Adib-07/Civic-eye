@@ -78,13 +78,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CivicEye — AI City Problem Reporter" },
+      { title: "CivicEye — Civic Issue Reporting for Organizations" },
       {
         name: "description",
         content:
           "Report city problems with a photo, get instant AI classification, and track fixes on a live map.",
       },
-      { property: "og:title", content: "CivicEye — AI City Problem Reporter" },
+      { property: "og:title", content: "CivicEye — Civic Issue Reporting for Organizations" },
       {
         property: "og:description",
         content: "Photo-first civic issue reporting with AI classification and a live city map.",

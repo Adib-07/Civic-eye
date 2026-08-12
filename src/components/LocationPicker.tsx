@@ -1,6 +1,8 @@
 import L from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+
+import { MAP_TILE_ATTRIBUTION, MAP_TILE_URL } from "@/lib/map-config";
 
 const markerIcon = L.divIcon({
   className: "",
@@ -9,16 +11,10 @@ const markerIcon = L.divIcon({
   iconAnchor: [16, 16],
 });
 
-function MapEvents({
-  onPick,
-  draggable,
-}: {
-  onPick: (lat: number, lng: number) => void;
-  draggable: boolean;
-}) {
+function MapEvents({ onPick }: { onPick: (lat: number, lng: number) => void }) {
   useMapEvents({
     click(e) {
-      if (!draggable) onPick(e.latlng.lat, e.latlng.lng);
+      onPick(e.latlng.lat, e.latlng.lng);
     },
   });
   return null;
@@ -38,10 +34,15 @@ function MapResizer() {
   return null;
 }
 
-function MapRecenter({ lat, lng }: { lat: number; lng: number }) {
+/** Centers the map once on mount — avoids fighting user pan/zoom after interaction. */
+function MapInitialCenter({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
+  const initialized = useRef(false);
   useEffect(() => {
-    map.setView([lat, lng], Math.max(map.getZoom(), 15), { animate: true });
+    if (!initialized.current) {
+      map.setView([lat, lng], 15);
+      initialized.current = true;
+    }
   }, [lat, lng, map]);
   return null;
 }
@@ -67,15 +68,14 @@ export default function LocationPicker({
         minZoom={3}
         maxZoom={19}
         scrollWheelZoom={interactive}
+        dragging={interactive}
+        touchZoom={interactive}
+        doubleClickZoom={interactive}
         style={{ height: "100%", width: "100%", background: "#e8eef7" }}
       >
         <MapResizer />
-        <MapRecenter lat={lat} lng={lng} />
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
-        />
+        <MapInitialCenter lat={lat} lng={lng} />
+        <TileLayer attribution={MAP_TILE_ATTRIBUTION} url={MAP_TILE_URL} maxZoom={19} crossOrigin />
         <Marker
           position={[lat, lng]}
           icon={markerIcon}
@@ -91,7 +91,7 @@ export default function LocationPicker({
               : undefined
           }
         />
-        {interactive && onChange && <MapEvents onPick={onChange} draggable={interactive} />}
+        {interactive && onChange && <MapEvents onPick={onChange} />}
       </MapContainer>
     </div>
   );

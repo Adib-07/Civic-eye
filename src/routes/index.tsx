@@ -175,7 +175,7 @@ function Landing() {
                     transition={{ delay: 0.05 }}
                     className="mt-3 max-w-2xl font-display text-[1.75rem] font-extrabold leading-[1.12] text-white sm:text-4xl lg:text-[3.25rem]"
                   >
-                    Report, assign, and resolve civic issues — one organization, one workflow.
+                    Turn citizen complaints into trackable, accountable action.
                   </motion.h1>
 
                   <motion.p
@@ -185,8 +185,8 @@ function Landing() {
                     className="mt-4 max-w-xl text-sm leading-relaxed text-white/85 sm:mt-5 sm:text-base lg:text-lg"
                   >
                     CivicEye connects residents who spot problems with the teams responsible for
-                    fixing them. Collect geo-tagged reports, manage assignments, track SLAs, and
-                    verify resolutions — without spreadsheets or lost WhatsApp messages.
+                    fixing them. Collect geo-tagged reports with photo evidence, assign staff, track
+                    SLAs, and verify resolutions — without spreadsheets or lost messages.
                   </motion.p>
 
                   <motion.div
@@ -294,6 +294,72 @@ function Landing() {
                   </div>
                 </motion.article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Product preview */}
+        <section className="border-y border-border bg-secondary/40 py-14 sm:py-20">
+          <div className="mx-auto w-[min(1200px,94vw)]">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary sm:text-sm">
+                Operations view
+              </p>
+              <h2 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl lg:text-4xl">
+                Your command center for civic issues
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                Staff see open issues, SLA risk, assignments, and verification queues — scoped to
+                their organization only.
+              </p>
+            </div>
+
+            <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
+              <div className="flex items-center gap-2 border-b border-border bg-secondary/60 px-4 py-3">
+                <span className="h-3 w-3 rounded-full bg-destructive/70" />
+                <span className="h-3 w-3 rounded-full bg-warning/70" />
+                <span className="h-3 w-3 rounded-full bg-success/70" />
+                <span className="ml-2 text-xs font-semibold text-muted-foreground">
+                  CivicEye — Operations dashboard
+                </span>
+              </div>
+              <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  { label: "Open issues", value: "—" },
+                  { label: "Assigned", value: "—" },
+                  { label: "SLA overdue", value: "—" },
+                  { label: "Resolved", value: "—" },
+                ].map((kpi) => (
+                  <div
+                    key={kpi.label}
+                    className="rounded-xl border border-border bg-background p-4"
+                  >
+                    <p className="text-xs font-bold text-muted-foreground">{kpi.label}</p>
+                    <p className="mt-1 font-display text-2xl font-extrabold text-muted-foreground/40">
+                      {kpi.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-border px-5 py-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  Recent reports
+                </p>
+                <div className="mt-3 space-y-2">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3"
+                    >
+                      <div className="h-3 w-40 animate-pulse rounded bg-secondary" />
+                      <div className="h-5 w-16 animate-pulse rounded-full bg-secondary" />
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-xs text-muted-foreground">
+                  Sign in to your organization dashboard to view live data.
+                </p>
+              </div>
             </div>
           </div>
         </section>

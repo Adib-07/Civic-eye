@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
+import { z } from "zod";
 import {
   FiSearch,
   FiEdit2,
@@ -13,6 +14,7 @@ import {
   FiCheckCircle,
   FiEye,
   FiCheck,
+  FiClipboard,
 } from "react-icons/fi";
 import { toast } from "sonner";
 
@@ -47,8 +49,24 @@ import {
   type Report,
   type Status,
 } from "@/lib/types";
+import { cn } from "@/lib/utils";
+
+const reportsSearchSchema = z.object({
+  assigned: z.literal("me").optional(),
+  overdue: z.boolean().optional(),
+  submitted: z.string().optional(),
+});
 
 export const Route = createFileRoute("/reports")({
+  validateSearch: (search: Record<string, unknown>) =>
+    reportsSearchSchema.parse({
+      assigned: search.assigned === "me" ? "me" : undefined,
+      overdue: search.overdue === "1" || search.overdue === true ? true : undefined,
+      submitted:
+        typeof search.submitted === "string" && search.submitted.trim()
+          ? search.submitted.trim()
+          : undefined,
+    }),
   head: () => ({
     meta: [
       { title: "Civic Reports — CivicEye" },
@@ -64,6 +82,11 @@ export const Route = createFileRoute("/reports")({
 const PAGE_SIZE = 12;
 
 function ReportsPage() {
+  const {
+    assigned: assignedSearch,
+    overdue: overdueSearch,
+    submitted: submittedId,
+  } = useSearch({ from: "/reports" });
   const { reports, loading, error, refetch, isConfigured, orgMissing } = useReports();
   const { profile, user } = useAuth();
   const orgId = profile?.organizationId ?? getDefaultOrganizationId();
@@ -75,8 +98,10 @@ function ReportsPage() {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<"All" | Category>("All");
   const [status, setStatus] = useState<"All" | Status>("All");
-  const [assignment, setAssignment] = useState<"all" | "assigned" | "unassigned">("all");
-  const [overdueOnly, setOverdueOnly] = useState(false);
+  const [assignment, setAssignment] = useState<"all" | "assigned" | "unassigned" | "me">(
+    assignedSearch === "me" ? "me" : "all",
+  );
+  const [overdueOnly, setOverdueOnly] = useState(Boolean(overdueSearch));
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [toDelete, setToDelete] = useState<Report | null>(null);
   const [editing, setEditing] = useState<Report | null>(null);
@@ -95,7 +120,13 @@ function ReportsPage() {
         r.description.toLowerCase().includes(q) ||
         r.location.toLowerCase().includes(q);
       const matchAssignment =
-        assignment === "all" || (assignment === "assigned" ? Boolean(r.assignedTo) : !r.assignedTo);
+        assignment === "all"
+          ? true
+          : assignment === "me"
+            ? r.assignedTo === user?.id
+            : assignment === "assigned"
+              ? Boolean(r.assignedTo)
+              : !r.assignedTo;
       const matchOverdue =
         !overdueOnly || (isSlaBreached(r) && r.status !== "Verified" && r.status !== "Closed");
       return (
@@ -111,7 +142,12 @@ function ReportsPage() {
       const tb = new Date(b.createdAt).getTime();
       return sort === "newest" ? tb - ta : ta - tb;
     });
-  }, [reports, query, cat, status, assignment, overdueOnly, sort]);
+  }, [reports, query, cat, status, assignment, overdueOnly, sort, user?.id]);
+
+  useEffect(() => {
+    if (assignedSearch === "me") setAssignment("me");
+    if (overdueSearch) setOverdueOnly(true);
+  }, [assignedSearch, overdueSearch]);
 
   const liveDetail = useMemo(
     () => (detail ? (reports.find((r) => r.id === detail.id) ?? detail) : null),
@@ -133,7 +169,13 @@ function ReportsPage() {
 
   return (
     <AppShell
-      title="All reports"
+      title={
+        assignedSearch === "me"
+          ? "Assigned to me"
+          : overdueSearch
+            ? "SLA / attention"
+            : "All reports"
+      }
       subtitle={
         isConfigured
           ? `${reports.length} issues in your organization`
@@ -141,6 +183,14 @@ function ReportsPage() {
       }
     >
       <OnboardingBanner />
+
+      {submittedId && (
+        <SubmissionConfirmation
+          reportId={submittedId}
+          report={reports.find((r) => r.id === submittedId) ?? null}
+          loading={loading}
+        />
+      )}
 
       {orgMissing && (
         <div className="mb-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
@@ -192,7 +242,8 @@ function ReportsPage() {
           className={field}
         >
           <option value="all">All assignments</option>
-          <option value="assigned">Assigned only</option>
+          <option value="me">Assigned to me</option>
+          <option value="assigned">Assigned (anyone)</option>
           <option value="unassigned">Unassigned only</option>
         </select>
         <select
@@ -255,7 +306,10 @@ function ReportsPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96 }}
-                className="glass card-hover overflow-hidden rounded-2xl"
+                className={cn(
+                  "glass card-hover overflow-hidden rounded-2xl",
+                  submittedId === r.id && "ring-2 ring-success ring-offset-2 ring-offset-background",
+                )}
               >
                 {r.image ? (
                   <ReportImage
@@ -570,6 +624,63 @@ function ReportsPage() {
   );
 }
 
+function SubmissionConfirmation({
+  reportId,
+  report,
+  loading,
+}: {
+  reportId: string;
+  report: Report | null;
+  loading: boolean;
+}) {
+  const ref = reportId.slice(0, 8).toUpperCase();
+
+  const copyRef = async () => {
+    try {
+      await navigator.clipboard.writeText(reportId);
+      toast.success("Reference copied");
+    } catch {
+      toast.error("Could not copy reference");
+    }
+  };
+
+  return (
+    <div
+      className="mb-4 rounded-2xl border border-success/30 bg-success/10 p-4 sm:p-5"
+      role="status"
+      aria-live="polite"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="flex items-center gap-2 text-sm font-bold text-success">
+            <FiCheckCircle aria-hidden /> Report submitted successfully
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Your reference is <span className="font-mono font-bold text-foreground">#{ref}</span>
+            {report && !loading && (
+              <span>
+                {" "}
+                — {report.category} · {report.status}
+              </span>
+            )}
+          </p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Save this reference to track status. Your organization will review the report and update
+            its progress.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => void copyRef()}
+          className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-bold hover:bg-secondary"
+        >
+          <FiClipboard aria-hidden /> Copy reference
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function EditDialog({
   report,
   isConfigured,
@@ -751,150 +862,173 @@ function IssueDetailDialog({
             role="dialog"
             aria-modal="true"
             aria-labelledby="issue-detail-title"
-            className="glass my-8 w-full max-w-2xl rounded-2xl p-6 sm:p-8"
+            className="glass my-8 w-full max-w-4xl rounded-2xl p-0 sm:p-0"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                  Issue #{report.id.slice(0, 8)}
-                </p>
-                <h3 id="issue-detail-title" className="mt-1 text-lg font-bold">
-                  {report.title}
-                </h3>
-              </div>
-              <button
-                onClick={onClose}
-                aria-label="Close"
-                className="rounded-lg p-1 hover:bg-secondary"
-              >
-                <FiX />
-              </button>
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <StatusBadge status={report.status} />
-              <SlaBadge report={report} />
-              <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-bold">
-                {report.category}
-              </span>
-            </div>
-
-            <IssueWorkflowBar
-              className="mt-4 rounded-xl border border-border bg-secondary/40 p-3"
-              status={report.status}
-              assigned={Boolean(report.assignedTo)}
-            />
-
-            <dl className="mt-4 space-y-3 text-sm">
-              <div>
-                <dt className="text-xs font-bold text-muted-foreground">Description</dt>
-                <dd className="mt-1">{report.description}</dd>
-              </div>
-              <div>
-                <dt className="text-xs font-bold text-muted-foreground">Location</dt>
-                <dd className="mt-1 flex items-center gap-1.5">
-                  <FiMapPin className="shrink-0" aria-hidden /> {report.location}
-                </dd>
-                <dd className="mt-1 text-xs text-muted-foreground">
-                  {report.lat.toFixed(5)}, {report.lng.toFixed(5)}
-                </dd>
-                <dd className="mt-3">
-                  <ReportMiniMap lat={report.lat} lng={report.lng} className="h-44 w-full" />
-                </dd>
-              </div>
-              {report.assigneeName && (
-                <div>
-                  <dt className="text-xs font-bold text-muted-foreground">Assigned to</dt>
-                  <dd className="mt-1">{report.assigneeName}</dd>
-                </div>
-              )}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <dt className="text-xs font-bold text-muted-foreground">Created</dt>
-                  <dd className="mt-1">{new Date(report.createdAt).toLocaleString()}</dd>
-                </div>
-                {report.resolvedAt && (
-                  <div>
-                    <dt className="text-xs font-bold text-muted-foreground">Resolved</dt>
-                    <dd className="mt-1">{new Date(report.resolvedAt).toLocaleString()}</dd>
+            {/* Header */}
+            <div className="border-b border-border px-6 py-5 sm:px-8">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                    Issue #{report.id.slice(0, 8)}
+                  </p>
+                  <h3 id="issue-detail-title" className="mt-1 text-xl font-bold sm:text-2xl">
+                    {report.title}
+                  </h3>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <StatusBadge status={report.status} />
+                    <SlaBadge report={report} />
+                    <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-bold">
+                      {report.category}
+                    </span>
                   </div>
+                </div>
+                <button
+                  onClick={onClose}
+                  aria-label="Close"
+                  className="rounded-lg p-2 hover:bg-secondary"
+                >
+                  <FiX />
+                </button>
+              </div>
+
+              <IssueWorkflowBar
+                className="mt-4 rounded-xl border border-border bg-secondary/40 p-3"
+                status={report.status}
+                assigned={Boolean(report.assignedTo)}
+              />
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {isStaff && !report.assignedTo && report.status === "Pending" && isConfigured && (
+                  <button onClick={onAssign} className="btn-secondary text-sm">
+                    Assign
+                  </button>
+                )}
+                {isStaff && report.status === "In Progress" && (
+                  <button
+                    onClick={onResolve}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-success/30 px-4 py-2 text-sm font-bold text-success hover:bg-success/5"
+                  >
+                    Mark resolved
+                  </button>
+                )}
+                {canVerify && isAwaitingCitizenVerification(report.status) && (
+                  <button onClick={onVerify} className="btn-primary px-4 py-2 text-sm">
+                    Verify resolution
+                  </button>
+                )}
+                {isStaff && (
+                  <button onClick={onEdit} className="btn-secondary text-sm">
+                    Edit
+                  </button>
                 )}
               </div>
-            </dl>
-
-            {report.image && (
-              <ReportImage
-                src={report.image}
-                alt={report.title}
-                onClick={() => onZoomImage(report.image!)}
-                className="mt-4 h-48 w-full rounded-xl object-cover"
-                placeholderClassName="mt-4 h-48 w-full rounded-xl"
-              />
-            )}
-
-            <div className="mt-5">
-              <h4 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Activity
-              </h4>
-              {historyLoading ? (
-                <p className="mt-2 text-sm text-muted-foreground">Loading history…</p>
-              ) : history.length === 0 ? (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  No status changes recorded yet.
-                </p>
-              ) : (
-                <ul className="mt-3 space-y-2">
-                  {history.map((entry) => (
-                    <li
-                      key={entry.id}
-                      className="rounded-xl border border-border bg-secondary/40 px-3 py-2 text-sm"
-                    >
-                      <p className="font-semibold">
-                        {entry.fromStatus ? `${entry.fromStatus} → ` : ""}
-                        {entry.toStatus}
-                      </p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        {new Date(entry.createdAt).toLocaleString()}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
 
-            <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-border pt-5">
-              {isStaff && !report.assignedTo && report.status === "Pending" && isConfigured && (
-                <button
-                  onClick={onAssign}
-                  className="rounded-xl border border-primary/30 px-4 py-2 text-sm font-bold text-primary hover:bg-primary/5"
-                >
-                  Assign
-                </button>
-              )}
-              {isStaff && report.status === "In Progress" && (
-                <button
-                  onClick={onResolve}
-                  className="rounded-xl border border-success/30 px-4 py-2 text-sm font-bold text-success hover:bg-success/5"
-                >
-                  Mark resolved
-                </button>
-              )}
-              {canVerify && isAwaitingCitizenVerification(report.status) && (
-                <button
-                  onClick={onVerify}
-                  className="bg-brand rounded-xl px-4 py-2 text-sm font-bold text-primary-foreground"
-                >
-                  Verify resolution
-                </button>
-              )}
-              {isStaff && (
-                <button
-                  onClick={onEdit}
-                  className="rounded-xl border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
-                >
-                  Edit
-                </button>
-              )}
+            <div className="grid gap-0 lg:grid-cols-[1fr_280px]">
+              {/* Main content */}
+              <div className="px-6 py-5 sm:px-8">
+                <section>
+                  <h4 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                    Description
+                  </h4>
+                  <p className="mt-2 text-sm leading-relaxed">{report.description}</p>
+                </section>
+
+                <section className="mt-6">
+                  <h4 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                    Evidence
+                  </h4>
+                  <ReportImage
+                    src={report.image}
+                    alt={report.title}
+                    onClick={report.image ? () => onZoomImage(report.image!) : undefined}
+                    className="mt-2 h-52 w-full rounded-xl object-cover sm:h-56"
+                    placeholderClassName="mt-2 h-52 w-full rounded-xl sm:h-56"
+                  />
+                </section>
+
+                <section className="mt-6">
+                  <h4 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                    Location
+                  </h4>
+                  <p className="mt-2 flex items-center gap-1.5 text-sm">
+                    <FiMapPin className="shrink-0" aria-hidden /> {report.location}
+                  </p>
+                  <p className="mt-1 font-mono text-xs text-muted-foreground">
+                    {report.lat.toFixed(5)}, {report.lng.toFixed(5)}
+                  </p>
+                  <ReportMiniMap lat={report.lat} lng={report.lng} className="mt-3 h-48 w-full" />
+                </section>
+
+                <section className="mt-6">
+                  <h4 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                    Activity
+                  </h4>
+                  {historyLoading ? (
+                    <p className="mt-2 text-sm text-muted-foreground">Loading history…</p>
+                  ) : history.length === 0 ? (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      No status changes recorded yet.
+                    </p>
+                  ) : (
+                    <ul className="mt-3 space-y-2">
+                      {history.map((entry) => (
+                        <li
+                          key={entry.id}
+                          className="rounded-xl border border-border bg-secondary/40 px-3 py-2 text-sm"
+                        >
+                          <p className="font-semibold">
+                            {entry.fromStatus ? `${entry.fromStatus} → ` : ""}
+                            {entry.toStatus}
+                          </p>
+                          <p className="mt-0.5 text-xs text-muted-foreground">
+                            {new Date(entry.createdAt).toLocaleString()}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              </div>
+
+              {/* Sidebar */}
+              <aside className="border-t border-border bg-secondary/30 px-6 py-5 lg:border-l lg:border-t-0 sm:px-6">
+                <h4 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  Details
+                </h4>
+                <dl className="mt-4 space-y-4 text-sm">
+                  <div>
+                    <dt className="text-xs font-bold text-muted-foreground">Category</dt>
+                    <dd className="mt-1 font-semibold">{report.category}</dd>
+                  </div>
+                  {report.assigneeName && (
+                    <div>
+                      <dt className="text-xs font-bold text-muted-foreground">Assigned to</dt>
+                      <dd className="mt-1">{report.assigneeName}</dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt className="text-xs font-bold text-muted-foreground">SLA</dt>
+                    <dd className="mt-1">
+                      <SlaBadge report={report} />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-bold text-muted-foreground">Created</dt>
+                    <dd className="mt-1">{new Date(report.createdAt).toLocaleString()}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-bold text-muted-foreground">Updated</dt>
+                    <dd className="mt-1">{new Date(report.updatedAt).toLocaleString()}</dd>
+                  </div>
+                  {report.resolvedAt && (
+                    <div>
+                      <dt className="text-xs font-bold text-muted-foreground">Resolved</dt>
+                      <dd className="mt-1">{new Date(report.resolvedAt).toLocaleString()}</dd>
+                    </div>
+                  )}
+                </dl>
+              </aside>
             </div>
           </motion.div>
         </motion.div>
