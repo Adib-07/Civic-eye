@@ -77,14 +77,11 @@
 
   --surface: oklch(1 0 0);
   --surface-border: oklch(0.92 0.008 258);
-  --gradient-hero: linear-gradient(
-    180deg,
-    oklch(0.975 0.012 258),
-    oklch(0.99 0.002 250) 60%
-  );
+  --gradient-hero: linear-gradient(180deg, oklch(0.975 0.012 258), oklch(0.99 0.002 250) 60%);
   --gradient-brand: linear-gradient(120deg, oklch(0.546 0.215 263), oklch(0.5 0.2 268));
   --shadow-card: 0 1px 2px oklch(0.21 0.02 260 / 6%), 0 8px 24px -12px oklch(0.21 0.02 260 / 14%);
-  --shadow-card-hover: 0 2px 4px oklch(0.21 0.02 260 / 6%), 0 18px 40px -16px oklch(0.21 0.02 260 / 22%);
+  --shadow-card-hover:
+    0 2px 4px oklch(0.21 0.02 260 / 6%), 0 18px 40px -16px oklch(0.21 0.02 260 / 22%);
   --shadow-glass: var(--shadow-card);
 }
 
@@ -178,6 +175,75 @@
   }
 }
 
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius);
+  background: var(--primary);
+  padding: 0.875rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--primary-foreground);
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease;
+  &:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--primary) 92%, black);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@utility btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 0.375rem 0.75rem;
+  font-weight: 700;
+  transition: background-color 0.15s ease;
+  &:hover:not(:disabled) {
+    background: var(--secondary);
+  }
+}
+
+@utility btn-destructive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius);
+  background: var(--destructive);
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--destructive-foreground);
+  &:hover:not(:disabled) {
+    opacity: 0.92;
+  }
+}
+
+@utility input-field {
+  margin-top: 0.375rem;
+  width: 100%;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 60%, transparent);
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+  &:focus {
+    border-color: var(--primary);
+  }
+}
+
 @utility section-title {
   font-family: var(--font-display);
   font-weight: 800;
@@ -199,3 +265,9 @@
   margin: 0.75rem;
 }
 
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}

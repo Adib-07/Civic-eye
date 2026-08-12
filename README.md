@@ -6,155 +6,155 @@ This is a frontend-first MVP that should work immediately after npm install and 
 
 Requirements:
 
-* Create a premium startup-quality UI using glassmorphism, gradients, smooth animations, Framer Motion, and responsive design.
+- Create a premium startup-quality UI using glassmorphism, gradients, smooth animations, Framer Motion, and responsive design.
 
-* Use React Router.
+- Use React Router.
 
-* Create reusable components and a clean folder structure.
+- Create reusable components and a clean folder structure.
 
-* No placeholder pages. Every page must be functional.
+- No placeholder pages. Every page must be functional.
 
 Pages:
 
 1. Landing Page
 
-* Hero section
+- Hero section
 
-* Feature cards
+- Feature cards
 
-* Statistics cards
+- Statistics cards
 
-* “How It Works”
+- “How It Works”
 
-* Professional navigation bar
+- Professional navigation bar
 
-* Footer
+- Footer
 
 2. Login Page
 
-* Demo login (admin/admin123)
+- Demo login (admin/admin123)
 
-* Save session in localStorage
+- Save session in localStorage
 
-* Protected Dashboard route
+- Protected Dashboard route
 
 3. Report Issue
 
-* Upload image
+- Upload image
 
-* Enter title
+- Enter title
 
-* Description
+- Description
 
-* Select category
+- Select category
 
-* Location name
+- Location name
 
-* Latitude and Longitude
+- Latitude and Longitude
 
-* Show uploaded image preview
+- Show uploaded image preview
 
-* AI Result card that automatically predicts category using filename keywords:
+- AI Result card that automatically predicts category using filename keywords:
 
-    * pothole → Pothole (96%)
+  - pothole → Pothole (96%)
 
-    * garbage → Garbage (95%)
+  - garbage → Garbage (95%)
 
-    * tree → Fallen Tree (94%)
+  - tree → Fallen Tree (94%)
 
-    * water → Water Leakage (93%)
+  - water → Water Leakage (93%)
 
-    * light → Broken Street Light (97%)
+  - light → Broken Street Light (97%)
 
-    * otherwise → Road Damage (90%)
+  - otherwise → Road Damage (90%)
 
 4. Reports Page
 
-* Display all submitted reports
+- Display all submitted reports
 
-* Search
+- Search
 
-* Filter by category
+- Filter by category
 
-* Filter by status
+- Filter by status
 
-* Edit
+- Edit
 
-* Delete
+- Delete
 
-* Status badges
+- Status badges
 
-* Store everything in localStorage
+- Store everything in localStorage
 
 5. Interactive Map
 
-* Use React Leaflet and OpenStreetMap
+- Use React Leaflet and OpenStreetMap
 
-* Display all reports as markers
+- Display all reports as markers
 
-* Clicking a marker opens a popup with image, category, title, location, and status
+- Clicking a marker opens a popup with image, category, title, location, and status
 
 6. Dashboard
 
-* Total Reports
+- Total Reports
 
-* Pending
+- Pending
 
-* Resolved
+- Resolved
 
-* Today’s Reports
+- Today’s Reports
 
-* Pie chart by category
+- Pie chart by category
 
-* Bar chart for status
+- Bar chart for status
 
-* Recent reports table
+- Recent reports table
 
-* Mark report as resolved
+- Mark report as resolved
 
-* Animated counters
+- Animated counters
 
 Extra Features:
 
-* Dark mode
+- Dark mode
 
-* Toast notifications
+- Toast notifications
 
-* Loading animations
+- Loading animations
 
-* Responsive sidebar
+- Responsive sidebar
 
-* Confirmation dialog before delete
+- Confirmation dialog before delete
 
-* Image modal
+- Image modal
 
-* Professional icons
+- Professional icons
 
-* Empty states
+- Empty states
 
-* Beautiful cards
+- Beautiful cards
 
-* Mobile responsive
+- Mobile responsive
 
-* Clean code using reusable components
+- Clean code using reusable components
 
 Use only:
 
-* React
+- React
 
-* Vite
+- Vite
 
-* Tailwind CSS
+- Tailwind CSS
 
-* React Router
+- React Router
 
-* React Leaflet
+- React Leaflet
 
-* Framer Motion
+- Framer Motion
 
-* Chart.js
+- Chart.js
 
-* React Icons
+- React Icons
 
 Generate the complete project with every file. Do not omit code or leave TODOs. Finish with the exact commands to install dependencies and run the application.
 

@@ -20,7 +20,6 @@ export function Footer() {
           </p>
         </div>
 
-
         <div>
           <h4 className="text-sm font-bold">Product</h4>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
@@ -32,6 +31,11 @@ export function Footer() {
             <li>
               <Link to="/reports" className="hover:text-foreground">
                 Browse reports
+              </Link>
+            </li>
+            <li>
+              <Link to="/pricing" className="hover:text-foreground">
+                Pricing
               </Link>
             </li>
             <li>
@@ -84,6 +88,5 @@ export function Footer() {
         © {new Date().getFullYear()} CivicEye. Built for cleaner, safer streets in every ward.
       </div>
     </footer>
-
   );
 }

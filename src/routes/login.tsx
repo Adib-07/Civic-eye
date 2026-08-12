@@ -1,9 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { FiEye, FiLock, FiUser, FiArrowLeft } from "react-icons/fi";
+import { FiEye, FiLock, FiMail, FiArrowLeft } from "react-icons/fi";
 import { toast } from "sonner";
-import { getSession, login } from "@/lib/auth";
+
+import { signIn } from "@/lib/auth";
+import { isSupabaseConfigured } from "@/lib/env";
+import { useAuth } from "@/lib/hooks";
+import { isStaffRole } from "@/lib/types";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -13,39 +17,46 @@ export const Route = createFileRoute("/login")({
         name: "description",
         content: "Sign in to the CivicEye admin console to triage and resolve city issue reports.",
       },
-      { property: "og:title", content: "Sign in — CivicEye Admin" },
-      { property: "og:description", content: "Access the CivicEye admin dashboard." },
     ],
   }),
   component: LoginPage,
 });
 
 function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  const { session, profile, loading, isConfigured } = useAuth();
 
   useEffect(() => {
-    if (getSession()) navigate({ to: "/dashboard" });
-  }, [navigate]);
+    if (!loading && session) {
+      navigate({ to: isStaffRole(profile?.role) ? "/dashboard" : "/reports" });
+    }
+  }, [loading, session, profile, navigate]);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isConfigured) {
+      toast.error("Supabase is not configured. Add credentials to your .env file.");
+      return;
+    }
+
     setBusy(true);
-    setTimeout(() => {
-      if (login(username, password)) {
-        toast.success("Welcome back, admin");
-        navigate({ to: "/dashboard" });
-      } else {
-        toast.error("Invalid credentials. Try admin / admin123");
-        setBusy(false);
-      }
-    }, 600);
+    try {
+      const result = await signIn(email.trim(), password);
+      toast.success("Signed in successfully");
+      navigate({ to: isStaffRole(result.profile?.role) ? "/dashboard" : "/reports" });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Sign in failed";
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <div className="hero-bg grid min-h-screen place-items-center p-4">
+    <main className="hero-bg grid min-h-screen place-items-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -63,22 +74,32 @@ function LoginPage() {
             <FiEye className="h-5 w-5" />
           </span>
           <div>
-            <h1 className="font-display text-2xl font-extrabold">Admin sign in</h1>
-            <p className="text-sm text-muted-foreground">Manage every civic report</p>
+            <h1 className="font-display text-2xl font-extrabold">Staff sign in</h1>
+            <p className="text-sm text-muted-foreground">Organization dashboard access</p>
           </div>
         </div>
 
+        {!isConfigured && (
+          <div className="mt-6 rounded-xl border border-warning/40 bg-warning/10 p-4 text-sm text-warning">
+            Supabase is not configured. Copy <code className="font-mono">.env.example</code> to{" "}
+            <code className="font-mono">.env</code> and run the migration in{" "}
+            <code className="font-mono">supabase/migrations/</code>.
+          </div>
+        )}
+
         <form onSubmit={submit} className="mt-8 space-y-4">
           <label className="block">
-            <span className="text-xs font-bold text-muted-foreground">Username</span>
+            <span className="text-xs font-bold text-muted-foreground">Email</span>
             <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-border bg-card/60 px-3">
-              <FiUser className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <FiMail className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="officer@municipality.gov.in"
                 className="w-full bg-transparent py-3 text-sm outline-none"
                 required
+                autoComplete="email"
               />
             </div>
           </label>
@@ -91,16 +112,16 @@ function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="admin123"
                 className="w-full bg-transparent py-3 text-sm outline-none"
                 required
+                autoComplete="current-password"
               />
             </div>
           </label>
 
           <button
             type="submit"
-            disabled={busy}
+            disabled={busy || !isConfigured}
             className="bg-brand flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-primary-foreground disabled:opacity-70"
           >
             {busy && (
@@ -110,11 +131,11 @@ function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 rounded-xl border border-dashed border-border p-3 text-center text-xs text-muted-foreground">
-          Demo credentials — <span className="font-bold text-foreground">admin</span> /{" "}
-          <span className="font-bold text-foreground">admin123</span>
-        </div>
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          Ward officers and admins are provisioned by your organization administrator in Supabase
+          Auth.
+        </p>
       </motion.div>
-    </div>
+    </main>
   );
 }

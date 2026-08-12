@@ -1,8 +1,23 @@
 import garbageImg from "@/assets/garbage.jpg.asset.json";
 import potholeImg from "@/assets/pothole.jpg.asset.json";
 import streetlightImg from "@/assets/streetlight.jpg.asset.json";
-import type { Category, Report, Status } from "./types";
+import type { Category, Status } from "./types";
 
+/** Slim local-only report shape (offline fallback when Supabase is not configured). */
+export interface LocalReport {
+  id: string;
+  title: string;
+  description: string;
+  category: Category;
+  location: string;
+  lat: number;
+  lng: number;
+  image: string | null;
+  status: Status;
+  aiCategory: Category | null;
+  aiConfidence: number | null;
+  createdAt: string;
+}
 
 const KEY = "civiceye_reports_v2";
 
@@ -10,7 +25,7 @@ function isBrowser() {
   return typeof window !== "undefined";
 }
 
-const SEED: Report[] = [
+const SEED: LocalReport[] = [
   {
     id: "seed-1",
     title: "Deep pothole near the sabzi mandi crossing",
@@ -58,7 +73,7 @@ const SEED: Report[] = [
   },
 ];
 
-export function getReports(): Report[] {
+export function getReports(): LocalReport[] {
   if (!isBrowser()) return [];
   try {
     const raw = localStorage.getItem(KEY);
@@ -66,20 +81,24 @@ export function getReports(): Report[] {
       localStorage.setItem(KEY, JSON.stringify(SEED));
       return SEED;
     }
-    return JSON.parse(raw) as Report[];
+    return JSON.parse(raw) as LocalReport[];
   } catch {
     return [];
   }
 }
 
-function persist(reports: Report[]) {
+function persist(reports: LocalReport[]) {
   if (!isBrowser()) return;
-  localStorage.setItem(KEY, JSON.stringify(reports));
-  window.dispatchEvent(new Event("civiceye:reports"));
+  try {
+    localStorage.setItem(KEY, JSON.stringify(reports));
+    window.dispatchEvent(new Event("civiceye:reports"));
+  } catch {
+    throw new Error("Local storage is full. Configure Supabase for cloud storage.");
+  }
 }
 
-export function addReport(data: Omit<Report, "id" | "createdAt" | "status">): Report {
-  const report: Report = {
+export function addReport(data: Omit<LocalReport, "id" | "createdAt" | "status">): LocalReport {
+  const report: LocalReport = {
     ...data,
     id: `r-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     status: "Pending",
@@ -89,7 +108,7 @@ export function addReport(data: Omit<Report, "id" | "createdAt" | "status">): Re
   return report;
 }
 
-export function updateReport(id: string, patch: Partial<Report>) {
+export function updateReport(id: string, patch: Partial<LocalReport>) {
   persist(getReports().map((r) => (r.id === id ? { ...r, ...patch } : r)));
 }
 
@@ -101,22 +120,7 @@ export function setStatus(id: string, status: Status) {
   updateReport(id, { status });
 }
 
-export function countByCategory(reports: Report[]): Record<Category, number> {
-  return reports.reduce(
-    (acc, r) => {
-      acc[r.category] = (acc[r.category] ?? 0) + 1;
-      return acc;
-    },
-    {} as Record<Category, number>,
-  );
-}
-
-export function isToday(iso: string) {
-  const d = new Date(iso);
-  const now = new Date();
-  return (
-    d.getDate() === now.getDate() &&
-    d.getMonth() === now.getMonth() &&
-    d.getFullYear() === now.getFullYear()
-  );
+/** Offline verification: approve → Verified, reject → In Progress (reopened). */
+export function verifyReportLocal(id: string, approved: boolean) {
+  updateReport(id, { status: approved ? "Verified" : "In Progress" });
 }

@@ -31,9 +31,38 @@ export function EmptyState({
 
 export function Loader({ label = "Loading" }: { label?: string }) {
   return (
-    <div className="grid place-items-center gap-3 py-20">
-      <span className="h-10 w-10 animate-spin rounded-full border-2 border-border border-t-primary" />
+    <div className="grid place-items-center gap-3 py-20" role="status" aria-live="polite">
+      <span
+        className="h-10 w-10 animate-spin rounded-full border-2 border-border border-t-primary"
+        aria-hidden
+      />
       <p className="text-sm font-semibold text-muted-foreground">{label}…</p>
+    </div>
+  );
+}
+
+export function QueryError({
+  title = "Could not load data",
+  message,
+  onRetry,
+}: {
+  title?: string;
+  message: string;
+  onRetry?: () => void;
+}) {
+  return (
+    <div className="glass rounded-2xl border border-destructive/30 bg-destructive/10 p-6 text-center">
+      <h3 className="text-lg font-bold text-destructive">{title}</h3>
+      <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-4 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
+        >
+          Try again
+        </button>
+      )}
     </div>
   );
 }

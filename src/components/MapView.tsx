@@ -1,6 +1,8 @@
 import L from "leaflet";
 import { useEffect } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { ReportImage } from "@/components/ReportImage";
+import { MAP_TILE_ATTRIBUTION, MAP_TILE_URL, DEFAULT_MAP_CENTER } from "@/lib/map-config";
 import type { Report } from "@/lib/types";
 
 const icon = (color: string) =>
@@ -16,6 +18,8 @@ const colors: Record<string, string> = {
   Pending: "#e0a325",
   "In Progress": "#2aa5b8",
   Resolved: "#2fae76",
+  Verified: "#22c55e",
+  Closed: "#94a3b8",
 };
 
 /** Keeps Leaflet's canvas in sync with its container and frames every marker. */
@@ -24,7 +28,6 @@ function MapFitter({ reports }: { reports: Report[] }) {
 
   useEffect(() => {
     const resize = () => map.invalidateSize();
-    // Container is often still animating/laying out on first paint.
     const t1 = window.setTimeout(resize, 0);
     const t2 = window.setTimeout(resize, 300);
 
@@ -57,10 +60,9 @@ function MapFitter({ reports }: { reports: Report[] }) {
 }
 
 export default function MapView({ reports }: { reports: Report[] }) {
-  // Fallback: New Delhi.
   const center: [number, number] = reports.length
     ? [reports[0].lat, reports[0].lng]
-    : [28.6139, 77.209];
+    : [DEFAULT_MAP_CENTER.lat, DEFAULT_MAP_CENTER.lng];
 
   return (
     <MapContainer
@@ -72,28 +74,17 @@ export default function MapView({ reports }: { reports: Report[] }) {
       style={{ height: "100%", width: "100%", background: "#e8eef7" }}
     >
       <MapFitter reports={reports} />
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={19}
-        crossOrigin
-      />
+      <TileLayer attribution={MAP_TILE_ATTRIBUTION} url={MAP_TILE_URL} maxZoom={19} crossOrigin />
       {reports.map((r) => (
         <Marker key={r.id} position={[r.lat, r.lng]} icon={icon(colors[r.status] ?? "#2aa5b8")}>
           <Popup>
             <div style={{ width: 200, maxWidth: "60vw" }}>
               {r.image && (
-                <img
+                <ReportImage
                   src={r.image}
                   alt={r.title}
-                  loading="lazy"
-                  style={{
-                    width: "100%",
-                    height: 100,
-                    objectFit: "cover",
-                    borderRadius: 10,
-                    marginBottom: 8,
-                  }}
+                  className="mb-2 h-[100px] w-full rounded-[10px] object-cover"
+                  placeholderClassName="mb-2 h-[100px] w-full rounded-[10px]"
                 />
               )}
               <div style={{ fontSize: 11, fontWeight: 800, color: colors[r.status] }}>
