@@ -165,7 +165,7 @@ function ReportsPage() {
   }, [query, cat, status, assignment, overdueOnly, sort]);
 
   const field =
-    "rounded-xl border border-border bg-card/60 px-3 py-2.5 text-sm outline-none focus:border-primary";
+    "cursor-pointer rounded-xl border border-border bg-card/60 px-3 py-2.5 text-sm outline-none transition-colors hover:border-primary/40 focus:border-primary focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_16%,transparent)]";
 
   return (
     <AppShell
@@ -203,7 +203,7 @@ function ReportsPage() {
       )}
 
       <div className="glass grid gap-3 rounded-2xl p-4 md:grid-cols-2 xl:grid-cols-3">
-        <div className="flex items-center gap-2 rounded-xl border border-border bg-card/60 px-3 md:col-span-2 xl:col-span-3">
+        <div className="flex items-center gap-2 rounded-xl border border-border bg-card/60 px-3 transition-shadow focus-within:border-primary focus-within:shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_16%,transparent)] md:col-span-2 xl:col-span-3">
           <FiSearch className="h-4 w-4 shrink-0 text-muted-foreground" />
           <input
             value={query}
@@ -211,6 +211,16 @@ function ReportsPage() {
             placeholder="Search title, description or location"
             className="w-full bg-transparent py-2.5 text-sm outline-none"
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <FiX className="h-4 w-4" />
+            </button>
+          )}
         </div>
         <select
           value={cat}

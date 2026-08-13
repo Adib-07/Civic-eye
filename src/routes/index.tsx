@@ -161,13 +161,17 @@ function Landing() {
               <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.21_0.05_262_/_82%)] via-[oklch(0.21_0.05_262_/_74%)] to-[oklch(0.21_0.05_262_/_55%)] sm:bg-gradient-to-r sm:from-[oklch(0.21_0.05_262_/_90%)] sm:via-[oklch(0.21_0.05_262_/_70%)] sm:to-transparent" />
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full px-5 py-8 sm:px-10 lg:px-12">
-                  <motion.p
+                  <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-xs font-semibold uppercase tracking-wider text-white/80 sm:text-sm"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 backdrop-blur-sm"
                   >
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    </span>
                     B2B civic operations platform
-                  </motion.p>
+                  </motion.div>
 
                   <motion.h1
                     initial={{ opacity: 0, y: 16 }}
@@ -222,6 +226,28 @@ function Landing() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Capability strip */}
+        <section className="mx-auto mt-8 w-[min(1200px,94vw)]">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)] sm:grid-cols-4 sm:p-6">
+            {[
+              { icon: FiCamera, label: "Photo evidence", sub: "Attach proof on every report" },
+              { icon: FiMapPin, label: "Geo-tagged", sub: "Precise coordinates on a map" },
+              { icon: FiActivity, label: "SLA tracking", sub: "Deadlines and status history" },
+              { icon: FiShield, label: "Org isolation", sub: "Row-level data separation" },
+            ].map((c) => (
+              <div key={c.label} className="flex items-start gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-accent text-primary">
+                  <c.icon className="h-4 w-4" aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold leading-tight">{c.label}</p>
+                  <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{c.sub}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 

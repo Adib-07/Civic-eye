@@ -39,6 +39,7 @@ import {
 } from "@/lib/hooks";
 import { countByCategory, isToday } from "@/lib/reports";
 import { canVerifyResolution, type Report, STATUSES } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
@@ -167,18 +168,29 @@ function DashboardPage() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">Pending intake</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.pending}</p>
-            </div>
-            <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">In progress</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.inProgress}</p>
-            </div>
-            <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">Reported today</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.today}</p>
-            </div>
+            {[
+              { label: "Pending intake", value: stats.pending, icon: FiClock, dot: "bg-warning" },
+              {
+                label: "In progress",
+                value: stats.inProgress,
+                icon: FiCheck,
+                dot: "bg-primary",
+              },
+              { label: "Reported today", value: stats.today, icon: FiPlusCircle, dot: "bg-chart-5" },
+            ].map((tile) => (
+              <div key={tile.label} className="glass rounded-2xl p-5">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+                    <span className={cn("h-2 w-2 rounded-full", tile.dot)} aria-hidden />
+                    {tile.label}
+                  </p>
+                  <tile.icon className="h-4 w-4 text-muted-foreground/60" aria-hidden />
+                </div>
+                <p className="mt-2 font-display text-3xl font-extrabold tracking-tight">
+                  {tile.value}
+                </p>
+              </div>
+            ))}
           </div>
 
           {(stats.slaOverdue.length > 0 || stats.unassigned > 0) && (

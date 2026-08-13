@@ -27,10 +27,13 @@ export function Navbar() {
     );
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex w-[min(1200px,94vw)] items-center justify-between py-3">
-        <Link to="/" className="flex min-w-0 items-center gap-2">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
+        <Link to="/" className="flex min-w-0 items-center gap-2.5">
+          <span
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-primary-foreground shadow-[var(--shadow-xs)] ring-1 ring-inset ring-white/15"
+            style={{ background: "var(--gradient-brand)" }}
+          >
             <FiEye className="h-5 w-5" aria-hidden />
           </span>
           <span className="truncate font-display text-lg font-extrabold tracking-tight">

@@ -60,7 +60,10 @@ function MapPage() {
             <h2 className="text-sm font-bold">Pinned reports ({reports.length})</h2>
             <ul className="mt-4 space-y-3">
               {reports.map((r) => (
-                <li key={r.id} className="rounded-xl border border-border bg-card/50 p-3">
+                <li
+                  key={r.id}
+                  className="rounded-xl border border-border bg-card/50 p-3 transition-colors hover:border-primary/30 hover:bg-secondary/60"
+                >
                   <div className="flex items-center justify-between gap-2">
                     <span className="truncate text-sm font-bold">{r.title}</span>
                     <StatusBadge status={r.status} />
@@ -68,7 +71,8 @@ function MapPage() {
                   <p className="mt-1 truncate text-xs text-muted-foreground">
                     {r.category} · {r.location}
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="mt-1 flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
+                    <FiMapPin className="h-3 w-3 shrink-0" aria-hidden />
                     {r.lat.toFixed(4)}, {r.lng.toFixed(4)}
                   </p>
                 </li>

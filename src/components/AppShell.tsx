@@ -129,8 +129,11 @@ export function AppShell({
             open ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          <Link to="/" className="flex items-center gap-2 px-2 py-1">
-            <span className="bg-brand grid h-9 w-9 shrink-0 place-items-center rounded-xl text-primary-foreground">
+          <Link to="/" className="flex items-center gap-2.5 px-2 py-1">
+            <span
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-primary-foreground shadow-[var(--shadow-xs)] ring-1 ring-inset ring-white/15"
+              style={{ background: "var(--gradient-brand)" }}
+            >
               <FiEye className="h-5 w-5" />
             </span>
             <span className="font-display text-lg font-extrabold">

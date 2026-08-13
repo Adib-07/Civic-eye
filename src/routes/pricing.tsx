@@ -37,38 +37,51 @@ function PricingPage() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-10 grid items-start gap-5 lg:grid-cols-2 xl:grid-cols-4">
           {PLANS.map((plan, i) => (
             <motion.article
               key={plan.tier}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
-              className={`flex flex-col rounded-2xl border p-6 ${
+              className={`relative flex flex-col rounded-2xl border p-6 transition-shadow ${
                 plan.highlighted
-                  ? "border-primary bg-primary/5 shadow-[var(--shadow-card)]"
-                  : "border-border bg-card"
+                  ? "border-primary/60 bg-card shadow-[var(--shadow-card-hover)] ring-1 ring-primary/20 xl:-mt-3 xl:pb-8"
+                  : "border-border bg-card shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)]"
               }`}
             >
+              {plan.highlighted && (
+                <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-primary-foreground shadow-[var(--shadow-xs)]">
+                  Most popular
+                </span>
+              )}
               <h2 className="text-lg font-bold">{plan.name}</h2>
-              <p className="mt-2 min-h-[2.5rem] text-sm text-muted-foreground">{plan.tagline}</p>
-              <p className="mt-4 font-display text-3xl font-extrabold">
+              <p className="mt-2 min-h-[2.5rem] text-sm leading-snug text-muted-foreground">
+                {plan.tagline}
+              </p>
+              <p className="mt-4 font-display text-3xl font-extrabold tracking-tight">
                 {formatInr(plan.monthlyPriceInr)}
                 {plan.monthlyPriceInr !== null && (
-                  <span className="text-sm font-semibold text-muted-foreground">/month</span>
+                  <span className="text-sm font-semibold text-muted-foreground">
+                    {plan.monthlyPriceInr === 0 ? " / pilot" : " / month"}
+                  </span>
                 )}
               </p>
-              {plan.annualPriceInr !== null && plan.annualPriceInr > 0 && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  or {formatInr(plan.annualPriceInr)}/year (annual billing coming soon)
-                </p>
-              )}
+              <p className="mt-1 text-xs text-muted-foreground">
+                {plan.annualPriceInr !== null && plan.annualPriceInr > 0
+                  ? `or ${formatInr(plan.annualPriceInr)}/year · billed per organization`
+                  : "Per organization · citizens report free"}
+              </p>
 
-              <ul className="mt-6 flex-1 space-y-2.5 text-sm">
+              <div className="my-5 h-px bg-border" />
+
+              <ul className="flex-1 space-y-2.5 text-sm">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-                    <span>{f}</span>
+                  <li key={f} className="flex items-start gap-2.5">
+                    <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-success/15 text-success">
+                      <FiCheck className="h-3 w-3" aria-hidden />
+                    </span>
+                    <span className="text-foreground/90">{f}</span>
                   </li>
                 ))}
               </ul>

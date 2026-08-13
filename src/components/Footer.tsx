@@ -6,8 +6,11 @@ export function Footer() {
     <footer className="mt-16 border-t border-border bg-secondary/50 sm:mt-24">
       <div className="mx-auto grid w-[min(1200px,94vw)] gap-8 py-12 sm:grid-cols-2 sm:gap-10 sm:py-14 lg:grid-cols-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground">
+          <div className="flex items-center gap-2.5">
+            <span
+              className="grid h-9 w-9 place-items-center rounded-xl text-primary-foreground shadow-[var(--shadow-xs)] ring-1 ring-inset ring-white/15"
+              style={{ background: "var(--gradient-brand)" }}
+            >
               <FiEye className="h-5 w-5" />
             </span>
             <span className="font-display text-lg font-extrabold">
