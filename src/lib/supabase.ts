@@ -18,7 +18,6 @@ function assertValidSupabaseUrl(url: string): void {
 
 /**
  * Returns a singleton Supabase browser client, or null when env vars are missing.
- * Callers must handle the null case (offline/localStorage fallback).
  */
 export function getSupabase(): SupabaseClient<Database> | null {
   if (!isSupabaseConfigured()) return null;
@@ -45,7 +44,7 @@ export function requireSupabase(): SupabaseClient<Database> {
   const sb = getSupabase();
   if (!sb) {
     throw new Error(
-      "Supabase is not configured. Copy .env.example to .env and set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.",
+      "Supabase is not configured. Copy .env.example to .env and set VITE_SUPABASE_URL plus VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).",
     );
   }
   return sb;

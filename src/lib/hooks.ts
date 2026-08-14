@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import type { AuthSession } from "./auth";
 import { getCurrentSession, onAuthStateChange } from "./auth";
-import { isSupabaseConfigured } from "./env";
+import { getSupabaseConfigError, isSupabaseConfigured, resolveOrganizationId } from "./env";
 import {
   assignReport,
   createReport,
@@ -16,9 +16,8 @@ import {
   verifyResolution,
 } from "./reports";
 import { fetchOrganizationSubscription } from "./subscription";
-import { getReports as getLocalReports } from "./storage";
 import type { CreateReportInput, Profile, Report, StaffMember } from "./types";
-import { getDefaultOrganizationId } from "./env";
+import { isStaffRole } from "./types";
 
 const REPORTS_KEY = ["reports"] as const;
 const AUTH_KEY = ["auth"] as const;
@@ -29,16 +28,17 @@ const HISTORY_KEY = ["issue-history"] as const;
 
 export function useAuth() {
   const qc = useQueryClient();
+  const configured = isSupabaseConfigured();
 
   const { data, isLoading } = useQuery({
     queryKey: AUTH_KEY,
     queryFn: getCurrentSession,
     staleTime: 30_000,
-    enabled: isSupabaseConfigured(),
+    enabled: configured,
   });
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) return;
+    if (!configured) return;
     const unsub = onAuthStateChange(() => {
       void qc.invalidateQueries({ queryKey: AUTH_KEY });
       void qc.invalidateQueries({ queryKey: REPORTS_KEY });
@@ -46,22 +46,26 @@ export function useAuth() {
       void qc.invalidateQueries({ queryKey: SUBSCRIPTION_KEY });
     });
     return unsub;
-  }, [qc]);
+  }, [qc, configured]);
 
   return {
     session: data ?? null,
     user: data?.user ?? null,
     profile: data?.profile ?? null,
-    loading: isSupabaseConfigured() ? isLoading : false,
-    isConfigured: isSupabaseConfigured(),
+    loading: configured ? isLoading : false,
+    isConfigured: configured,
+    configError: getSupabaseConfigError(),
   };
 }
 
 export function useReports() {
   const configured = isSupabaseConfigured();
+  const configError = getSupabaseConfigError();
   const { profile } = useAuth();
-  const orgId = profile?.organizationId ?? getDefaultOrganizationId();
+  const orgId = resolveOrganizationId(profile);
   const orgConfigured = Boolean(orgId);
+  const staffOrgMissing = configured && isStaffRole(profile?.role) && !orgId;
+  const citizenOrgMissing = configured && !isStaffRole(profile?.role) && !orgId;
 
   const query = useQuery({
     queryKey: [...REPORTS_KEY, orgId],
@@ -77,59 +81,18 @@ export function useReports() {
     refetchInterval: 30_000,
   });
 
-  const [localReports, setLocalReports] = useState<Report[]>([]);
-  const [localLoading, setLocalLoading] = useState(!configured);
-
-  useEffect(() => {
-    if (configured) return;
-    const sync = () => {
-      const raw = getLocalReports();
-      setLocalReports(
-        raw.map((r) => ({
-          id: r.id,
-          organizationId: orgId ?? "local",
-          wardId: null,
-          title: r.title,
-          description: r.description,
-          category: r.category,
-          location: r.location,
-          lat: r.lat,
-          lng: r.lng,
-          image: r.image,
-          status: r.status as Report["status"],
-          aiCategory: r.aiCategory,
-          aiConfidence: r.aiConfidence,
-          createdBy: null,
-          assignedTo: null,
-          assignedAt: null,
-          assignedBy: null,
-          assigneeName: null,
-          slaDueAt: null,
-          slaBreached: false,
-          resolvedAt: null,
-          createdAt: r.createdAt,
-          updatedAt: r.createdAt,
-        })),
-      );
-      setLocalLoading(false);
-    };
-    sync();
-    window.addEventListener("civiceye:reports", sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener("civiceye:reports", sync);
-      window.removeEventListener("storage", sync);
-    };
-  }, [configured, orgId]);
+  const configErrorInstance = configError ? new Error(configError) : null;
 
   return {
-    reports: configured ? (query.data ?? []) : localReports,
-    loading: configured ? query.isLoading : localLoading,
-    error: query.error,
+    reports: configured ? (query.data ?? []) : [],
+    loading: configured && orgConfigured ? query.isLoading : false,
+    error: configErrorInstance ?? query.error,
     refetch: query.refetch,
     isConfigured: configured,
+    configError,
     orgId: orgId ?? null,
-    orgMissing: configured && !orgConfigured,
+    orgMissing: citizenOrgMissing,
+    staffOrgMissing,
   };
 }
 
