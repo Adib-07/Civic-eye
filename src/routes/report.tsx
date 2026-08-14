@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -10,6 +10,11 @@ import {
   FiChevronDown,
   FiCamera,
   FiX,
+  FiCheckCircle,
+  FiClipboard,
+  FiArrowRight,
+  FiRefreshCw,
+  FiInfo,
 } from "react-icons/fi";
 import { toast } from "sonner";
 
@@ -32,23 +37,23 @@ import { cn } from "@/lib/utils";
 
 const LocationPicker = lazy(() => import("@/components/LocationPicker"));
 
-const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024; // 8MB
 
 export const Route = createFileRoute("/report")({
   head: () => ({
     meta: [
-      { title: "Report an Issue — CivicEye" },
+      { title: "Report a Civic Issue — CivicEye" },
       {
         name: "description",
         content:
-          "Snap a photo, confirm the issue type, and submit a geo-tagged report in under 30 seconds.",
+          "Report a city issue with photo evidence, GPS pin location, and instant AI category suggestion.",
       },
     ],
   }),
   component: ReportPage,
 });
 
-function ReportPage() {
+export function ReportPage() {
   const navigate = useNavigate();
   const { create } = useReportMutations();
   const configured = isSupabaseConfigured();
@@ -74,7 +79,8 @@ function ReportPage() {
   const [lng, setLng] = useState<number | null>(null);
   const [geoStatus, setGeoStatus] = useState<GeoStatus>("idle");
   const [usingFallbackLocation, setUsingFallbackLocation] = useState(false);
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const [submittedReportId, setSubmittedReportId] = useState<string | null>(null);
 
   const captureLocation = useCallback(async (silent = false) => {
     setGeoStatus("loading");
@@ -84,18 +90,18 @@ function ReportPage() {
       setLat(coords.lat);
       setLng(coords.lng);
       setGeoStatus("ready");
-      if (!silent) toast.success("Location captured");
+      if (!silent) toast.success("GPS Location captured successfully");
     } catch (err) {
       const code = err instanceof GeolocationPositionError ? err.code : null;
       if (code === 1) {
         setGeoStatus("denied");
-        if (!silent) toast.error("Location permission denied — pick a spot on the map");
+        if (!silent) toast.error("GPS permission denied — pick a spot on the interactive map");
       } else if (String(err).includes("unsupported")) {
         setGeoStatus("unsupported");
-        if (!silent) toast.error("Geolocation not supported — pick a spot on the map");
+        if (!silent) toast.error("Geolocation not supported on this browser — pick map pin");
       } else {
         setGeoStatus("denied");
-        if (!silent) toast.error("Could not get your location — pick a spot on the map");
+        if (!silent) toast.error("Could not capture GPS — pick location on map below");
       }
       setLat(DEFAULT_MAP_CENTER.lat);
       setLng(DEFAULT_MAP_CENTER.lng);
@@ -118,13 +124,13 @@ function ReportPage() {
     setError(null);
 
     if (!file.type.startsWith("image/")) {
-      setError("Please select a JPEG, PNG, or WebP image.");
+      setError("Please select a valid image file (JPEG, PNG, or WebP).");
       toast.error("Invalid file type");
       return;
     }
 
     if (file.size > MAX_IMAGE_BYTES) {
-      setError(`Image must be under ${MAX_IMAGE_BYTES / (1024 * 1024)} MB.`);
+      setError(`Image size must be under ${MAX_IMAGE_BYTES / (1024 * 1024)} MB.`);
       toast.error("Image too large");
       return;
     }
@@ -132,7 +138,7 @@ function ReportPage() {
     setImageFile(file);
     const reader = new FileReader();
     reader.onerror = () => {
-      setError("Could not read the selected image.");
+      setError("Could not read the selected photo.");
       toast.error("Failed to read image");
     };
     reader.onload = () => {
@@ -140,6 +146,7 @@ function ReportPage() {
       const result = predictCategory(file.name);
       setAi(result);
       applyCategory(result.category, true);
+      toast.success(`Photo attached — AI suggested "${result.category}"`);
     };
     reader.readAsDataURL(file);
   };
@@ -154,7 +161,7 @@ function ReportPage() {
 
   const handleLocationPick = (nextLat: number, nextLng: number) => {
     if (!isValidCoordinate(nextLat, nextLng)) {
-      toast.error("Invalid coordinates — please pick another spot");
+      toast.error("Invalid coordinates — please select a valid location on map");
       return;
     }
     setLat(nextLat);
@@ -175,7 +182,7 @@ function ReportPage() {
     setError(null);
 
     if (lat === null || lng === null) {
-      toast.error("Waiting for location — tap Retry or add coordinates in details");
+      toast.error("Location required — select location on map or request GPS");
       return;
     }
 
@@ -203,13 +210,10 @@ function ReportPage() {
         aiCategory: ai?.category ?? null,
         aiConfidence: ai?.confidence ?? null,
       });
-      const reportId = created.id;
 
-      toast.success("Report submitted successfully");
-      navigate({
-        to: "/reports",
-        search: { submitted: reportId },
-      });
+      setSubmittedReportId(created.id);
+      setStep(5); // Confirmation Step
+      toast.success("Report submitted successfully to operations queue");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Submission failed";
       setError(message);
@@ -220,416 +224,530 @@ function ReportPage() {
     }
   };
 
+  const copyRef = async () => {
+    if (!submittedReportId) return;
+    try {
+      await navigator.clipboard.writeText(submittedReportId);
+      toast.success("Reference ID copied to clipboard");
+    } catch {
+      toast.error("Could not copy reference ID");
+    }
+  };
+
   const submitLabel =
     uploadPhase === "uploading"
-      ? "Uploading photo…"
+      ? "Uploading photo evidence…"
       : uploadPhase === "saving"
-        ? "Submitting…"
-        : "Submit report";
+        ? "Submitting report…"
+        : "Submit report to operations";
 
-  const field =
-    "mt-1.5 w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm outline-none transition-colors focus:border-primary";
+  const fieldClass =
+    "mt-1.5 w-full rounded-lg border border-border bg-card px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary";
 
   return (
-    <AppShell title="Report an issue" subtitle="Photo → location → category → submit">
-      <div className="surface-panel mb-4 p-4 text-sm leading-relaxed text-muted-foreground">
-        <p>
-          <span className="font-medium text-foreground">Required:</span> issue category and location
-          (GPS or map pin).
-        </p>
-        <p className="mt-1">
-          <span className="font-medium text-foreground">Optional:</span> photo evidence, title,
-          description, and place name.
-        </p>
-        <p className="mt-1">
-          <span className="font-medium text-foreground">After submit:</span> you&apos;ll receive a
-          reference ID and your organization will review the report in their operations queue.
-        </p>
-      </div>
-
-      {!configured && configError && (
-        <div className="mb-4 flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm">
-          <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-          <p>{configError}</p>
-        </div>
-      )}
-
-      {orgMissing && (
-        <div className="mb-4 flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm">
-          <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-          <p>
-            <span className="font-bold">Organization not configured.</span> Set{" "}
-            <code className="font-mono text-xs">VITE_DEFAULT_ORGANIZATION_ID</code> in your{" "}
-            <code className="font-mono text-xs">.env</code> file before submitting reports to
-            production.
-          </p>
-        </div>
-      )}
-
-      {error && (
-        <div className="mb-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={submit} className="pb-24 lg:pb-0">
-        {/* Progress indicator */}
-        <nav aria-label="Report progress" className="mb-5 grid grid-cols-4 gap-2">
-          {(
-            [
-              { n: 1, label: "Evidence" },
-              { n: 2, label: "Category" },
-              { n: 3, label: "Location" },
-              { n: 4, label: "Review" },
-            ] as const
-          ).map(({ n, label }) => (
-            <button
-              key={n}
-              type="button"
-              onClick={() => setStep(n)}
-              className={cn(
-                "flex flex-col items-center gap-1.5 rounded-md border px-2 py-2.5 text-center transition-colors",
-                step === n
-                  ? "border-primary bg-primary/5 text-foreground"
-                  : "border-border bg-card text-muted-foreground hover:bg-secondary",
-              )}
-            >
-              <span
-                className={cn(
-                  "grid h-6 w-6 place-items-center rounded-full text-xs font-semibold",
-                  step >= n ? "bg-primary text-primary-foreground" : "bg-secondary",
-                )}
-              >
-                {n}
-              </span>
-              <span className="text-[10px] font-medium uppercase tracking-wide">{label}</span>
-            </button>
-          ))}
-        </nav>
-
-        {/* 1 — Photo (primary action) */}
-        <section className={cn("surface-panel p-4 sm:p-5", step !== 1 && "hidden lg:block")}>
-          <p className="section-label">Step 1 · Photo evidence</p>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            capture="environment"
-            className="hidden"
-            onChange={(e) => onFile(e.target.files?.[0])}
-          />
-
-          {imagePreview ? (
-            <button
-              type="button"
-              onClick={() => setZoom(imagePreview)}
-              className="mt-3 block w-full overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              <img
-                src={imagePreview}
-                alt="Your report photo"
-                className="h-48 w-full object-cover sm:h-56"
-              />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="mt-3 flex w-full flex-col items-center justify-center gap-3 rounded-md border-2 border-dashed border-border bg-secondary/50 px-4 py-10 transition-colors hover:border-primary/40 hover:bg-secondary"
-            >
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground">
-                <FiCamera className="h-6 w-6" />
-              </span>
-              <span className="text-sm font-semibold">Take or upload a photo</span>
-              <span className="text-xs text-muted-foreground">Camera works best on your phone</span>
-            </button>
-          )}
-
-          {imagePreview && (
-            <div className="mt-2 flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="text-xs font-semibold text-primary hover:underline"
-              >
-                Change photo
-              </button>
-              <button
-                type="button"
-                onClick={clearImage}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-destructive"
-              >
-                <FiX className="h-3 w-3" /> Remove
-              </button>
+    <AppShell
+      title="Report a Civic Issue"
+      subtitle="Photo → Category → Location → Accountable Action"
+    >
+      <div className="mx-auto max-w-3xl">
+        {/* Supabase / Env Config Warnings */}
+        {!configured && configError && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
+            <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+            <div>
+              <p className="font-bold text-destructive">Database Connection Issue</p>
+              <p className="mt-1 text-muted-foreground">{configError}</p>
             </div>
-          )}
-
-          {step === 1 && (
-            <button
-              type="button"
-              onClick={() => setStep(2)}
-              className="btn-primary mt-4 w-full lg:hidden"
-            >
-              Continue to location
-            </button>
-          )}
-        </section>
-
-        {/* 2 — Category chips */}
-        <section
-          className={cn(
-            "surface-panel mt-4 p-4 sm:p-5",
-            step !== 2 && step !== 1 && "hidden lg:block",
-          )}
-        >
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs font-bold uppercase tracking-wide text-primary">
-              Step 2 · Issue type
-            </p>
-            {ai && (
-              <span className="text-[11px] font-semibold text-success">
-                Suggested · {ai.confidence}%
-              </span>
-            )}
           </div>
-          <div className="mt-3 -mx-1 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => applyCategory(c)}
-                className={cn(
-                  "shrink-0 rounded-full border px-3.5 py-2 text-xs font-bold transition-colors",
-                  category === c
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card hover:bg-secondary",
-                )}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-          {step === 2 && (
-            <button
-              type="button"
-              onClick={() => setStep(3)}
-              className="btn-primary mt-4 w-full lg:hidden"
-            >
-              Continue to location
-            </button>
-          )}
-        </section>
-
-        {/* 3 — Location status */}
-        <section
-          className={cn(
-            "surface-panel mt-4 p-4 sm:p-5",
-            step !== 3 && step < 3 && "hidden lg:block",
-          )}
-        >
-          <p className="text-xs font-bold uppercase tracking-wide text-primary">
-            Step 3 · Where is it?
-          </p>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-sm">
-              {geoStatus === "loading" && (
-                <>
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
-                  <span className="text-muted-foreground">Getting GPS…</span>
-                </>
-              )}
-              {geoStatus === "ready" && (
-                <>
-                  <FiCheck className="h-4 w-4 text-success" />
-                  <span className="font-semibold text-success">Location ready</span>
-                  {lat !== null && lng !== null && (
-                    <span className="text-xs text-muted-foreground">
-                      {lat.toFixed(4)}, {lng.toFixed(4)}
-                    </span>
-                  )}
-                </>
-              )}
-              {(geoStatus === "denied" || geoStatus === "unsupported") && (
-                <>
-                  <FiAlertCircle className="h-4 w-4 text-warning" />
-                  <span className="text-sm text-muted-foreground">
-                    GPS unavailable — tap the map to set location
-                  </span>
-                </>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => void captureLocation(false)}
-              className="btn-secondary text-xs"
-            >
-              <FiMapPin className="h-3.5 w-3.5" /> Use my location
-            </button>
-          </div>
-
-          {usingFallbackLocation && (
-            <div className="mt-3 rounded-xl border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-muted-foreground">
-              <strong className="text-warning-foreground">Approximate location.</strong> GPS was
-              unavailable — please tap the map or drag the pin to mark where the issue is.
-            </div>
-          )}
-
-          {lat !== null && lng !== null && hydrated && (
-            <div className="mt-4">
-              <p className="mb-2 text-xs text-muted-foreground">
-                Tap the map or drag the pin to adjust the issue location.
-              </p>
-              <Suspense fallback={<Loader label="Loading map" />}>
-                <LocationPicker
-                  lat={lat}
-                  lng={lng}
-                  onChange={handleLocationPick}
-                  className="h-52 w-full overflow-hidden rounded-xl border border-border sm:h-56"
-                />
-              </Suspense>
-            </div>
-          )}
-
-          {step === 3 && (
-            <button
-              type="button"
-              onClick={() => setStep(4)}
-              className="btn-primary mt-4 w-full lg:hidden"
-            >
-              Review & submit
-            </button>
-          )}
-        </section>
-
-        {/* Step 4 — Review summary (mobile) */}
-        {(step === 4 || step === 3) && (
-          <section className={cn("surface-panel mt-4 p-4 sm:p-5", step !== 4 && "hidden lg:block")}>
-            <p className="text-xs font-bold uppercase tracking-wide text-primary">
-              Step 4 · Review
-            </p>
-            <dl className="mt-3 space-y-2 text-sm">
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Category</dt>
-                <dd className="font-semibold">{category}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Location</dt>
-                <dd className="font-mono text-xs">
-                  {lat?.toFixed(4)}, {lng?.toFixed(4)}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Photo</dt>
-                <dd className="font-semibold">{imagePreview ? "Attached" : "None"}</dd>
-              </div>
-            </dl>
-          </section>
         )}
 
-        {/* Optional details (collapsed by default) */}
-        <section className="surface-panel mt-4 overflow-hidden">
-          <button
-            type="button"
-            onClick={() => setShowDetails((v) => !v)}
-            className="flex w-full items-center justify-between px-4 py-4 text-left sm:px-5"
-          >
-            <span className="text-sm font-bold">Add more details (optional)</span>
-            <FiChevronDown
-              className={cn("h-4 w-4 transition-transform", showDetails && "rotate-180")}
-            />
-          </button>
-          <AnimatePresence initial={false}>
-            {showDetails && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden border-t border-border"
+        {orgMissing && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
+            <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+            <div>
+              <p className="font-bold text-amber-500">Organization ID Required</p>
+              <p className="mt-1 text-muted-foreground">
+                Set <code className="font-mono text-xs">VITE_DEFAULT_ORGANIZATION_ID</code> in your
+                env before submitting production reports.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="mb-6 flex items-center justify-between rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+            <div className="flex items-center gap-2">
+              <FiAlertCircle className="h-4 w-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-xs font-semibold hover:underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Step 5 Confirmation Screen */}
+        {step === 5 && submittedReportId ? (
+          <div className="surface-panel p-6 sm:p-8 text-center space-y-6 cinematic-reveal">
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-500">
+              <FiCheckCircle className="h-8 w-8" />
+            </div>
+
+            <div>
+              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-emerald-500">
+                Intake Confirmed
+              </span>
+              <h2 className="mt-2 text-2xl font-bold">Report Submitted Successfully</h2>
+              <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
+                Your report has been received and routed to your organization's operations dashboard
+                for staff assignment and SLA tracking.
+              </p>
+            </div>
+
+            {/* Reference Card */}
+            <div className="mx-auto max-w-md rounded-xl border border-border bg-secondary/50 p-4 text-left space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground font-medium">Reference ID</span>
+                <button
+                  type="button"
+                  onClick={() => void copyRef()}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                >
+                  <FiClipboard /> Copy ID
+                </button>
+              </div>
+              <p className="font-mono text-lg font-bold text-foreground tracking-wide">
+                #{submittedReportId.slice(0, 8).toUpperCase()}
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-border">
+                <div>
+                  <span className="text-muted-foreground block">Category</span>
+                  <span className="font-semibold">{category}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block">Status</span>
+                  <span className="font-semibold text-amber-500">Pending Intake</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action CTAs */}
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep(1);
+                  setImagePreview(null);
+                  setImageFile(null);
+                  setTitle("");
+                  setDescription("");
+                  setSubmittedReportId(null);
+                }}
+                className="btn-secondary px-5 py-2.5"
               >
-                <div className="space-y-3 px-4 pb-5 pt-3 sm:px-5">
-                  <label className="block">
-                    <span className="text-xs font-bold text-muted-foreground">Title</span>
-                    <input
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder={suggestTitle(category)}
-                      className={field}
+                <FiRefreshCw /> Submit another report
+              </button>
+              <Link
+                to="/reports"
+                search={{ submitted: submittedReportId }}
+                className="btn-primary px-6 py-2.5"
+              >
+                View in reports queue <FiArrowRight />
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={submit} className="pb-24 lg:pb-0">
+            {/* Step Wizard Navigation Header */}
+            <nav aria-label="Report wizard steps" className="mb-6 grid grid-cols-4 gap-2">
+              {(
+                [
+                  { n: 1, label: "Evidence", desc: "Photo" },
+                  { n: 2, label: "Category", desc: "Type" },
+                  { n: 3, label: "Location", desc: "Map/GPS" },
+                  { n: 4, label: "Review", desc: "Submit" },
+                ] as const
+              ).map(({ n, label, desc }) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setStep(n)}
+                  className={cn(
+                    "flex flex-col items-center gap-1 rounded-xl border p-3 text-center transition-all duration-150",
+                    step === n
+                      ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary/30"
+                      : step > n
+                        ? "border-emerald-500/30 bg-emerald-500/5 text-foreground"
+                        : "border-border bg-card text-muted-foreground hover:bg-secondary",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "grid h-6 w-6 place-items-center rounded-full text-xs font-semibold transition-colors",
+                      step === n
+                        ? "bg-primary text-primary-foreground"
+                        : step > n
+                          ? "bg-emerald-500 text-white"
+                          : "bg-secondary text-muted-foreground",
+                    )}
+                  >
+                    {step > n ? <FiCheck className="h-3.5 w-3.5" /> : n}
+                  </span>
+                  <span className="text-xs font-semibold">{label}</span>
+                  <span className="hidden text-[10px] text-muted-foreground sm:inline">{desc}</span>
+                </button>
+              ))}
+            </nav>
+
+            {/* STEP 1: Photo Evidence */}
+            <section className={cn("surface-panel p-5 sm:p-6", step !== 1 && "hidden lg:block")}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
+                    Step 1 of 4
+                  </p>
+                  <h2 className="text-lg font-bold">Photo Evidence</h2>
+                </div>
+                {imagePreview && (
+                  <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-500 border border-emerald-500/20">
+                    Photo Attached
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Attach a clear photo of the issue. Camera capture recommended on mobile devices.
+              </p>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => onFile(e.target.files?.[0])}
+              />
+
+              {imagePreview ? (
+                <div className="mt-4 space-y-3">
+                  <div className="relative overflow-hidden rounded-xl border border-border group">
+                    <img
+                      src={imagePreview}
+                      alt="Selected report photo preview"
+                      className="h-56 w-full object-cover sm:h-64 cursor-pointer"
+                      onClick={() => setZoom(imagePreview)}
                     />
-                  </label>
-                  <label className="block">
-                    <span className="text-xs font-bold text-muted-foreground">Description</span>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={2}
-                      placeholder={suggestDescription(category)}
-                      className={field}
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-xs font-bold text-muted-foreground">Place name</span>
-                    <input
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="e.g. MG Road junction"
-                      className={field}
-                    />
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="block">
-                      <span className="text-xs font-bold text-muted-foreground">Latitude</span>
-                      <input
-                        value={lat ?? ""}
-                        onChange={(e) => setLat(Number(e.target.value) || null)}
-                        className={field}
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="text-xs font-bold text-muted-foreground">Longitude</span>
-                      <input
-                        value={lng ?? ""}
-                        onChange={(e) => setLng(Number(e.target.value) || null)}
-                        className={field}
-                      />
-                    </label>
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setZoom(imagePreview)}
+                        className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md hover:bg-white/30"
+                      >
+                        View Fullscreen
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                    >
+                      <FiRefreshCw className="h-3 w-3" /> Change Photo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearImage}
+                      className="text-xs font-semibold text-destructive hover:underline flex items-center gap-1"
+                    >
+                      <FiX className="h-3.5 w-3.5" /> Remove Photo
+                    </button>
                   </div>
                 </div>
-              </motion.div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="mt-4 flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-secondary/40 px-4 py-12 transition-all hover:border-primary/50 hover:bg-secondary"
+                >
+                  <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-md">
+                    <FiCamera className="h-7 w-7" />
+                  </span>
+                  <div className="text-center">
+                    <span className="text-sm font-bold">Snap or Upload Photo Evidence</span>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      JPG, PNG, or WebP up to 8MB
+                    </p>
+                  </div>
+                </button>
+              )}
+
+              {step === 1 && (
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="btn-primary mt-6 w-full lg:hidden"
+                >
+                  Continue to Category <FiArrowRight />
+                </button>
+              )}
+            </section>
+
+            {/* STEP 2: Issue Category */}
+            <section
+              className={cn(
+                "surface-panel mt-5 p-5 sm:p-6",
+                step !== 2 && step !== 1 && "hidden lg:block",
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
+                    Step 2 of 4
+                  </p>
+                  <h2 className="text-lg font-bold">Select Category</h2>
+                </div>
+                {ai && (
+                  <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-500/20">
+                    AI Suggested: {ai.category} ({ai.confidence}%)
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {CATEGORIES.map((c) => {
+                  const isSelected = category === c;
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => applyCategory(c)}
+                      className={cn(
+                        "flex items-center justify-between rounded-xl border p-3 text-left transition-all text-xs font-bold",
+                        isSelected
+                          ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                          : "border-border bg-card hover:bg-secondary text-foreground",
+                      )}
+                    >
+                      <span>{c}</span>
+                      {isSelected && <FiCheck className="h-4 w-4 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {step === 2 && (
+                <button
+                  type="button"
+                  onClick={() => setStep(3)}
+                  className="btn-primary mt-6 w-full lg:hidden"
+                >
+                  Continue to Location <FiArrowRight />
+                </button>
+              )}
+            </section>
+
+            {/* STEP 3: Location Pin & GPS */}
+            <section
+              className={cn(
+                "surface-panel mt-5 p-5 sm:p-6",
+                step !== 3 && step < 3 && "hidden lg:block",
+              )}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
+                    Step 3 of 4
+                  </p>
+                  <h2 className="text-lg font-bold">Issue Location</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void captureLocation(false)}
+                  className="btn-secondary text-xs"
+                >
+                  <FiMapPin className="h-3.5 w-3.5" /> Re-detect GPS
+                </button>
+              </div>
+
+              {/* Status Banner */}
+              <div className="mt-3 flex items-center gap-2 text-xs">
+                {geoStatus === "loading" && (
+                  <span className="text-muted-foreground flex items-center gap-1.5">
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    Fetching GPS location…
+                  </span>
+                )}
+                {geoStatus === "ready" && lat !== null && lng !== null && (
+                  <span className="text-emerald-500 font-semibold flex items-center gap-1.5">
+                    <FiCheck className="h-4 w-4" /> Location Locked: {lat.toFixed(4)},{" "}
+                    {lng.toFixed(4)}
+                  </span>
+                )}
+                {usingFallbackLocation && (
+                  <span className="text-amber-500 flex items-center gap-1.5">
+                    <FiInfo className="h-4 w-4" /> Approximate location — drag pin on map below
+                  </span>
+                )}
+              </div>
+
+              {/* Leaflet Location Picker */}
+              {lat !== null && lng !== null && hydrated && (
+                <div className="mt-4 space-y-2">
+                  <Suspense fallback={<Loader label="Loading interactive map" />}>
+                    <LocationPicker
+                      lat={lat}
+                      lng={lng}
+                      onChange={handleLocationPick}
+                      className="h-56 w-full overflow-hidden rounded-xl border border-border sm:h-64"
+                    />
+                  </Suspense>
+                  <p className="text-[11px] text-muted-foreground">
+                    Tap anywhere on the map or drag the pin to set exact coordinates.
+                  </p>
+                </div>
+              )}
+
+              {step === 3 && (
+                <button
+                  type="button"
+                  onClick={() => setStep(4)}
+                  className="btn-primary mt-6 w-full lg:hidden"
+                >
+                  Review &amp; Submit <FiArrowRight />
+                </button>
+              )}
+            </section>
+
+            {/* STEP 4: Review & Additional Details */}
+            {(step === 4 || step === 3) && (
+              <section
+                className={cn("surface-panel mt-5 p-5 sm:p-6", step !== 4 && "hidden lg:block")}
+              >
+                <p className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
+                  Step 4 of 4
+                </p>
+                <h2 className="text-lg font-bold">Review Report</h2>
+
+                <div className="mt-4 rounded-xl border border-border bg-secondary/40 p-4 space-y-3 text-xs sm:text-sm">
+                  <div className="flex justify-between border-b border-border pb-2">
+                    <span className="text-muted-foreground">Category</span>
+                    <span className="font-semibold">{category}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-border pb-2">
+                    <span className="text-muted-foreground">Coordinates</span>
+                    <span className="font-mono font-semibold">
+                      {lat?.toFixed(5)}, {lng?.toFixed(5)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Photo Attached</span>
+                    <span className="font-semibold text-emerald-500">
+                      {imagePreview ? "Yes" : "None"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Collapsible Details */}
+                <div className="mt-5 border-t border-border pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowDetails((v) => !v)}
+                    className="flex w-full items-center justify-between text-left text-xs font-bold text-muted-foreground hover:text-foreground"
+                  >
+                    <span>Add title, description, or landmark (Optional)</span>
+                    <FiChevronDown
+                      className={cn("h-4 w-4 transition-transform", showDetails && "rotate-180")}
+                    />
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {showDetails && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden space-y-3 pt-3"
+                      >
+                        <label className="block">
+                          <span className="text-xs font-semibold text-muted-foreground">
+                            Report Title
+                          </span>
+                          <input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder={suggestTitle(category)}
+                            className={fieldClass}
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-xs font-semibold text-muted-foreground">
+                            Detailed Description
+                          </span>
+                          <textarea
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            rows={3}
+                            placeholder={suggestDescription(category)}
+                            className={fieldClass}
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-xs font-semibold text-muted-foreground">
+                            Landmark / Place Name
+                          </span>
+                          <input
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="e.g. Near Main Gate entrance"
+                            className={fieldClass}
+                          />
+                        </label>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </section>
             )}
-          </AnimatePresence>
-        </section>
 
-        {/* Desktop submit */}
-        <button
-          type="submit"
-          disabled={!readyToSubmit}
-          className="btn-primary mt-5 hidden w-full lg:flex"
-        >
-          {submitting ? (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
-          ) : (
-            <FiSend />
-          )}
-          {submitLabel}
-        </button>
-      </form>
-
-      {/* Mobile sticky submit */}
-      <div className="fixed inset-x-0 bottom-0 z-[850] border-t border-border bg-background/95 p-4 backdrop-blur-lg lg:hidden">
-        <button
-          type="button"
-          disabled={!readyToSubmit}
-          onClick={() => void submit()}
-          className="btn-primary w-full shadow-lg"
-        >
-          {submitting ? (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
-          ) : (
-            <FiSend />
-          )}
-          {submitLabel}
-        </button>
+            {/* Desktop Submit Button */}
+            <button
+              type="submit"
+              disabled={!readyToSubmit}
+              className="btn-primary mt-6 hidden w-full lg:flex justify-center py-3 text-base shadow-md"
+            >
+              {submitting ? (
+                <span className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+              ) : (
+                <FiSend className="h-5 w-5" />
+              )}
+              {submitLabel}
+            </button>
+          </form>
+        )}
       </div>
+
+      {/* Mobile Sticky Submit Footer */}
+      {step !== 5 && (
+        <div className="fixed inset-x-0 bottom-0 z-[850] border-t border-border bg-background/95 p-4 backdrop-blur-lg lg:hidden">
+          <button
+            type="button"
+            disabled={!readyToSubmit}
+            onClick={() => void submit()}
+            className="btn-primary w-full shadow-lg py-3 text-sm"
+          >
+            {submitting ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+            ) : (
+              <FiSend />
+            )}
+            {submitLabel}
+          </button>
+        </div>
+      )}
 
       <ImageModal src={zoom} onClose={() => setZoom(null)} />
     </AppShell>
