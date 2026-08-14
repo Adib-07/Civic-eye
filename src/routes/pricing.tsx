@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { FiArrowRight, FiCheck } from "react-icons/fi";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { formatInr, PLANS, SALES_EMAIL, type PlanTier } from "@/lib/plans";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -25,37 +25,42 @@ function PricingPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="mx-auto w-[min(1200px,94vw)] py-12 sm:py-16">
+      <main className="page-container py-14 sm:py-18">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary">Pricing</p>
-          <h1 className="mt-2 font-display text-3xl font-extrabold sm:text-4xl">
+          <p className="section-label">Pricing</p>
+          <h1 className="mt-2 section-title text-3xl sm:text-4xl">
             Plans for organizations, not citizens
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
             Your municipality, campus, or society subscribes. Staff operate the platform. Residents
-            report issues for free. Prices below are business testing rates and can change.
+            report issues for free. All plans include organization-scoped data isolation and
+            role-based staff access.
+          </p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Prices shown are business testing rates and may change before general availability.
           </p>
         </div>
 
-        <div className="mt-10 grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
-          {PLANS.map((plan, i) => (
-            <motion.article
+        <div className="mt-10 grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+          {PLANS.map((plan) => (
+            <article
               key={plan.tier}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-              className={`flex flex-col rounded-2xl border p-6 ${
-                plan.highlighted
-                  ? "border-primary bg-primary/5 shadow-[var(--shadow-card)]"
-                  : "border-border bg-card"
-              }`}
+              className={cn(
+                "surface-panel flex flex-col p-6",
+                plan.highlighted && "ring-1 ring-primary/30",
+              )}
             >
-              <h2 className="text-lg font-bold">{plan.name}</h2>
+              {plan.highlighted && (
+                <span className="mb-3 inline-flex w-fit rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary">
+                  Recommended
+                </span>
+              )}
+              <h2 className="text-lg font-semibold">{plan.name}</h2>
               <p className="mt-2 min-h-[2.5rem] text-sm text-muted-foreground">{plan.tagline}</p>
-              <p className="mt-4 font-display text-3xl font-extrabold">
+              <p className="mt-5 font-display text-3xl font-semibold tabular-nums">
                 {formatInr(plan.monthlyPriceInr)}
                 {plan.monthlyPriceInr !== null && (
-                  <span className="text-sm font-semibold text-muted-foreground">/month</span>
+                  <span className="text-sm font-medium text-muted-foreground">/month</span>
                 )}
               </p>
               {plan.annualPriceInr !== null && plan.annualPriceInr > 0 && (
@@ -74,27 +79,23 @@ function PricingPage() {
               </ul>
 
               <PlanCta tier={plan.tier} label={plan.cta} highlighted={plan.highlighted} />
-            </motion.article>
+            </article>
           ))}
         </div>
 
-        <section className="mt-14 rounded-2xl border border-border bg-secondary/40 p-6 sm:p-8">
-          <h2 className="font-display text-xl font-extrabold">How billing works</h2>
+        <section className="surface-panel mt-14 p-6 sm:p-8">
+          <h2 className="section-title text-xl">How billing works</h2>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <li>· Organizations subscribe; citizens never pay to report an issue.</li>
-            <li>· Pilot workspaces are free for 30 days with plan limits enforced.</li>
-            <li>· Paid plans are activated manually until online checkout is connected.</li>
+            <li>Organizations subscribe; citizens never pay to report an issue.</li>
+            <li>Pilot workspaces are free for 30 days with plan limits enforced.</li>
+            <li>Paid plans are activated manually until online checkout is connected.</li>
             <li>
-              · No payment secrets are stored in the browser — billing runs server-side when
-              enabled.
+              No payment secrets are stored in the browser — billing runs server-side when enabled.
             </li>
           </ul>
           <p className="mt-4 text-sm">
             Questions?{" "}
-            <a
-              href={`mailto:${SALES_EMAIL}`}
-              className="font-semibold text-primary hover:underline"
-            >
+            <a href={`mailto:${SALES_EMAIL}`} className="font-medium text-primary hover:underline">
               {SALES_EMAIL}
             </a>
           </p>
@@ -115,15 +116,18 @@ function PlanCta({
   label: string;
   highlighted?: boolean;
 }) {
+  const className = cn(
+    "mt-6 inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-colors",
+    highlighted || tier === "pilot"
+      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+      : "border border-border bg-background hover:bg-secondary",
+  );
+
   if (tier === "enterprise") {
     return (
       <a
         href={`mailto:${SALES_EMAIL}?subject=CivicEye%20Enterprise%20inquiry`}
-        className={`mt-6 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold ${
-          highlighted
-            ? "bg-primary text-primary-foreground"
-            : "border border-border bg-background hover:bg-secondary"
-        }`}
+        className={className}
       >
         {label} <FiArrowRight className="h-4 w-4" aria-hidden />
       </a>
@@ -131,15 +135,7 @@ function PlanCta({
   }
 
   return (
-    <Link
-      to="/start"
-      search={{ plan: tier }}
-      className={`mt-6 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold ${
-        highlighted || tier === "pilot"
-          ? "bg-primary text-primary-foreground"
-          : "border border-border bg-background hover:bg-secondary"
-      }`}
-    >
+    <Link to="/start" search={{ plan: tier }} className={className}>
       {label} <FiArrowRight className="h-4 w-4" aria-hidden />
     </Link>
   );

@@ -29,7 +29,7 @@ import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { SubscriptionBanner } from "@/components/SubscriptionBanner";
 import { VerifyDialog } from "@/components/VerifyDialog";
-import { getDefaultOrganizationId, isSlaBreached } from "@/lib/sla";
+import { getDefaultOrganizationId, resolveOrganizationId } from "@/lib/env";
 import {
   useAuth,
   useOrganization,
@@ -38,6 +38,7 @@ import {
   useReports,
 } from "@/lib/hooks";
 import { countByCategory, isToday } from "@/lib/reports";
+import { isSlaBreached } from "@/lib/sla";
 import { canVerifyResolution, type Report, STATUSES } from "@/lib/types";
 import { useState } from "react";
 
@@ -75,9 +76,9 @@ const STATUS_COLORS = [
 ];
 
 function DashboardPage() {
-  const { reports, loading, error, refetch, orgMissing } = useReports();
+  const { reports, loading, error, refetch, orgMissing, staffOrgMissing } = useReports();
   const { profile } = useAuth();
-  const orgId = profile?.organizationId ?? getDefaultOrganizationId();
+  const orgId = resolveOrganizationId(profile) ?? getDefaultOrganizationId();
   const { data: org } = useOrganization(orgId);
   const { data: subscription } = useOrganizationSubscription(orgId);
   const { update, verify } = useReportMutations();
@@ -119,6 +120,11 @@ function DashboardPage() {
     >
       {loading ? (
         <Loader label="Loading organization data" />
+      ) : staffOrgMissing ? (
+        <QueryError
+          title="Staff profile not linked"
+          message="Your Supabase profile must have organization_id set to your municipality UUID before you can access the dashboard."
+        />
       ) : orgMissing ? (
         <QueryError
           title="Organization not configured"
@@ -166,26 +172,38 @@ function DashboardPage() {
             />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">Pending intake</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.pending}</p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="surface-panel p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Pending intake
+              </p>
+              <p className="mt-1 font-display text-3xl font-semibold tabular-nums">
+                {stats.pending}
+              </p>
             </div>
-            <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">In progress</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.inProgress}</p>
+            <div className="surface-panel p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                In progress
+              </p>
+              <p className="mt-1 font-display text-3xl font-semibold tabular-nums">
+                {stats.inProgress}
+              </p>
             </div>
-            <div className="glass rounded-2xl p-5">
-              <p className="text-xs font-bold text-muted-foreground">Reported today</p>
-              <p className="mt-1 font-display text-3xl font-extrabold">{stats.today}</p>
+            <div className="surface-panel p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Reported today
+              </p>
+              <p className="mt-1 font-display text-3xl font-semibold tabular-nums">{stats.today}</p>
             </div>
           </div>
 
           {(stats.slaOverdue.length > 0 || stats.unassigned > 0) && (
-            <div className="glass overflow-hidden rounded-2xl">
-              <div className="border-b border-border p-5">
-                <h2 className="flex items-center gap-2 text-sm font-bold">
-                  <FiAlertTriangle className="text-destructive" /> Needs attention
+            <div className="surface-panel overflow-hidden">
+              <div className="border-b border-border px-5 py-4">
+                <p className="section-label">Attention required</p>
+                <h2 className="mt-1 flex items-center gap-2 text-sm font-semibold">
+                  <FiAlertTriangle className="text-destructive" aria-hidden />
+                  Unassigned or SLA overdue
                 </h2>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Unassigned or past SLA — assign and update status to keep resolutions on track.
@@ -237,8 +255,8 @@ function DashboardPage() {
           ) : (
             <>
               <div className="grid gap-5 lg:grid-cols-2">
-                <div className="glass rounded-2xl p-6">
-                  <h2 className="text-sm font-bold">Reports by category</h2>
+                <div className="surface-panel p-6">
+                  <h2 className="text-sm font-semibold">Reports by category</h2>
                   <div className="mt-4 h-72">
                     <Pie
                       data={{
@@ -259,8 +277,8 @@ function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="glass rounded-2xl p-6">
-                  <h2 className="text-sm font-bold">Reports by status</h2>
+                <div className="surface-panel p-6">
+                  <h2 className="text-sm font-semibold">Reports by status</h2>
                   <div className="mt-4 h-72">
                     <Bar
                       data={{
@@ -285,9 +303,9 @@ function DashboardPage() {
               </div>
 
               {stats.awaitingVerification.length > 0 && (
-                <div className="glass overflow-hidden rounded-2xl">
-                  <div className="border-b border-border p-5">
-                    <h2 className="flex items-center gap-2 text-sm font-bold">
+                <div className="surface-panel overflow-hidden">
+                  <div className="border-b border-border px-5 py-4">
+                    <h2 className="flex items-center gap-2 text-sm font-semibold">
                       <FiUserCheck className="text-primary" /> Resolution verification queue
                     </h2>
                   </div>
@@ -316,9 +334,9 @@ function DashboardPage() {
               )}
 
               {stats.recentlyClosed.length > 0 && (
-                <div className="glass overflow-hidden rounded-2xl">
-                  <div className="border-b border-border p-5">
-                    <h2 className="text-sm font-bold">Recently resolved</h2>
+                <div className="surface-panel overflow-hidden">
+                  <div className="border-b border-border px-5 py-4">
+                    <h2 className="text-sm font-semibold">Recently resolved</h2>
                   </div>
                   <ul className="divide-y divide-border">
                     {stats.recentlyClosed.map((r) => (
@@ -341,40 +359,36 @@ function DashboardPage() {
                 </div>
               )}
 
-              <div className="glass overflow-hidden rounded-2xl">
-                <div className="flex items-center justify-between gap-3 p-5">
-                  <h2 className="text-sm font-bold">Recent reports</h2>
-                  <Link to="/reports" className="text-xs font-bold text-primary hover:underline">
+              <div className="surface-panel overflow-hidden">
+                <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
+                  <h2 className="text-sm font-semibold">Recent reports</h2>
+                  <Link to="/reports" className="text-xs font-medium text-primary hover:underline">
                     View all
                   </Link>
                 </div>
                 <div className="hidden overflow-x-auto md:block">
-                  <table className="w-full min-w-[720px] text-left text-sm">
-                    <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
+                  <table className="ops-table">
+                    <thead>
                       <tr>
-                        <th className="px-5 py-3">Title</th>
-                        <th className="px-5 py-3">Assignee</th>
-                        <th className="px-5 py-3">SLA</th>
-                        <th className="px-5 py-3">Status</th>
-                        <th className="px-5 py-3 text-right">Action</th>
+                        <th>Title</th>
+                        <th>Assignee</th>
+                        <th>SLA</th>
+                        <th>Status</th>
+                        <th className="text-right">Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       {reports.slice(0, 8).map((r) => (
-                        <tr key={r.id} className="border-t border-border/60">
-                          <td className="max-w-[200px] truncate px-5 py-3 font-semibold">
-                            {r.title}
-                          </td>
-                          <td className="px-5 py-3 text-muted-foreground">
-                            {r.assigneeName ?? "—"}
-                          </td>
-                          <td className="px-5 py-3">
+                        <tr key={r.id}>
+                          <td className="max-w-[200px] truncate font-medium">{r.title}</td>
+                          <td className="text-muted-foreground">{r.assigneeName ?? "—"}</td>
+                          <td>
                             <SlaBadge report={r} />
                           </td>
-                          <td className="px-5 py-3">
+                          <td>
                             <StatusBadge status={r.status} />
                           </td>
-                          <td className="px-5 py-3 text-right">
+                          <td className="text-right">
                             {r.status === "In Progress" ? (
                               <button
                                 onClick={async () => {
@@ -388,7 +402,7 @@ function DashboardPage() {
                                     toast.error(e instanceof Error ? e.message : "Update failed");
                                   }
                                 }}
-                                className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-xs font-bold hover:bg-secondary"
+                                className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary"
                               >
                                 <FiCheck /> Resolve
                               </button>

@@ -15,6 +15,13 @@ import type {
 
 const SIGNED_IMAGE_TTL_SEC = 86_400;
 
+function formatDbError(message: string, context: string): string {
+  if (message.includes("row-level security") || message.includes("violates row-level security")) {
+    return `${context} denied by security policy — ensure your organization has an active subscription, public_reports enabled, and your staff profile is linked to the correct organization. (${message})`;
+  }
+  return message;
+}
+
 function isStoragePath(value: string): boolean {
   return (
     !value.startsWith("http://") && !value.startsWith("https://") && !value.startsWith("data:")
@@ -163,11 +170,13 @@ export async function fetchReports(organizationId?: string): Promise<Report[]> {
 
   let assigneeMap = new Map<string, string>();
   if (assigneeIds.length) {
-    const { data: profiles } = await sb
+    const { data: profiles, error: profileError } = await sb
       .from("profiles")
       .select("id, full_name, email")
       .in("id", assigneeIds);
-    assigneeMap = new Map((profiles ?? []).map((p) => [p.id, p.full_name ?? p.email ?? "Staff"]));
+    if (!profileError && profiles) {
+      assigneeMap = new Map(profiles.map((p) => [p.id, p.full_name ?? p.email ?? "Staff"]));
+    }
   }
 
   const mappedReports = reports.map((r) =>
@@ -227,7 +236,8 @@ export async function createReport(input: CreateReportInput): Promise<Report> {
         /* best-effort cleanup */
       }
     }
-    throw new Error(error?.message ?? "Failed to create report");
+    const message = error?.message ?? "Failed to create report";
+    throw new Error(formatDbError(message, "Report submission"));
   }
   const row = data as DbReport;
   const image = await resolveImageUrl(sb, row.image_url);
@@ -271,7 +281,7 @@ export async function updateReport(
   if (Object.keys(update).length === 0) return;
 
   const { error } = await sb.from("reports").update(update).eq("id", id);
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(formatDbError(error.message, "Report update"));
 }
 
 export async function deleteReport(id: string): Promise<void> {
@@ -319,7 +329,7 @@ export async function assignReport(reportId: string, assigneeId: string): Promis
     })
     .eq("id", reportId);
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(formatDbError(error.message, "Assignment"));
 }
 
 export async function verifyResolution(

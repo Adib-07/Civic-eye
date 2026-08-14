@@ -17,7 +17,7 @@ import { AppShell } from "@/components/AppShell";
 import { Loader } from "@/components/EmptyState";
 import { ImageModal } from "@/components/ImageModal";
 import { predictCategory } from "@/lib/ai";
-import { getDefaultOrganizationId, isSupabaseConfigured } from "@/lib/env";
+import { getDefaultOrganizationId, getSupabaseConfigError, isSupabaseConfigured } from "@/lib/env";
 import { useHydrated, useReportMutations } from "@/lib/hooks";
 import { DEFAULT_MAP_CENTER, isValidCoordinate } from "@/lib/map-config";
 import {
@@ -27,7 +27,6 @@ import {
   suggestTitle,
   type GeoStatus,
 } from "@/lib/report-quick";
-import { addReport } from "@/lib/storage";
 import { CATEGORIES, type Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -53,6 +52,7 @@ function ReportPage() {
   const navigate = useNavigate();
   const { create } = useReportMutations();
   const configured = isSupabaseConfigured();
+  const configError = getSupabaseConfigError();
   const orgMissing = configured && !getDefaultOrganizationId();
   const hydrated = useHydrated();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -145,7 +145,12 @@ function ReportPage() {
   };
 
   const readyToSubmit =
-    lat !== null && lng !== null && !submitting && !orgMissing && geoStatus !== "loading";
+    lat !== null &&
+    lng !== null &&
+    !submitting &&
+    configured &&
+    !orgMissing &&
+    geoStatus !== "loading";
 
   const handleLocationPick = (nextLat: number, nextLng: number) => {
     if (!isValidCoordinate(nextLat, nextLng)) {
@@ -187,31 +192,18 @@ function ReportPage() {
         location,
       });
 
-      let reportId: string;
-
-      if (configured) {
-        if (imageFile) setUploadPhase("uploading");
-        const created = await create.mutateAsync({
-          ...payload,
-          imageFile,
-          aiCategory: ai?.category ?? null,
-          aiConfidence: ai?.confidence ?? null,
-        });
-        reportId = created.id;
-      } else {
-        if (imageFile && imageFile.size > 800_000) {
-          throw new Error(
-            "Offline mode: image too large for local storage. Use a smaller photo or configure Supabase.",
-          );
-        }
-        const created = addReport({
-          ...payload,
-          image: imagePreview,
-          aiCategory: ai?.category ?? null,
-          aiConfidence: ai?.confidence ?? null,
-        });
-        reportId = created.id;
+      if (!configured) {
+        throw new Error(configError ?? "Supabase is not configured for report submission.");
       }
+
+      if (imageFile) setUploadPhase("uploading");
+      const created = await create.mutateAsync({
+        ...payload,
+        imageFile,
+        aiCategory: ai?.category ?? null,
+        aiConfidence: ai?.confidence ?? null,
+      });
+      const reportId = created.id;
 
       toast.success("Report submitted successfully");
       navigate({
@@ -236,16 +228,29 @@ function ReportPage() {
         : "Submit report";
 
   const field =
-    "mt-1.5 w-full rounded-xl border border-border bg-card/60 px-3 py-3 text-sm outline-none focus:border-primary";
+    "mt-1.5 w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm outline-none transition-colors focus:border-primary";
 
   return (
-    <AppShell title="Report an issue" subtitle="What happened → where → evidence → submit">
-      {!configured && (
-        <div className="mb-4 flex items-start gap-3 rounded-2xl border border-warning/30 bg-warning/10 p-3 text-sm">
-          <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
-          <p className="text-muted-foreground">
-            Offline demo mode — reports save to this device only.
-          </p>
+    <AppShell title="Report an issue" subtitle="Photo → location → category → submit">
+      <div className="surface-panel mb-4 p-4 text-sm leading-relaxed text-muted-foreground">
+        <p>
+          <span className="font-medium text-foreground">Required:</span> issue category and location
+          (GPS or map pin).
+        </p>
+        <p className="mt-1">
+          <span className="font-medium text-foreground">Optional:</span> photo evidence, title,
+          description, and place name.
+        </p>
+        <p className="mt-1">
+          <span className="font-medium text-foreground">After submit:</span> you&apos;ll receive a
+          reference ID and your organization will review the report in their operations queue.
+        </p>
+      </div>
+
+      {!configured && configError && (
+        <div className="mb-4 flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm">
+          <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+          <p>{configError}</p>
         </div>
       )}
 
@@ -269,13 +274,13 @@ function ReportPage() {
 
       <form onSubmit={submit} className="pb-24 lg:pb-0">
         {/* Progress indicator */}
-        <nav aria-label="Report progress" className="mb-5 flex gap-2">
+        <nav aria-label="Report progress" className="mb-5 grid grid-cols-4 gap-2">
           {(
             [
-              { n: 1, label: "What" },
-              { n: 2, label: "Where" },
-              { n: 3, label: "Evidence" },
-              { n: 4, label: "Submit" },
+              { n: 1, label: "Evidence" },
+              { n: 2, label: "Category" },
+              { n: 3, label: "Location" },
+              { n: 4, label: "Review" },
             ] as const
           ).map(({ n, label }) => (
             <button
@@ -283,30 +288,28 @@ function ReportPage() {
               type="button"
               onClick={() => setStep(n)}
               className={cn(
-                "flex flex-1 flex-col items-center gap-1 rounded-xl border px-2 py-2 text-center transition-colors",
+                "flex flex-col items-center gap-1.5 rounded-md border px-2 py-2.5 text-center transition-colors",
                 step === n
-                  ? "border-primary bg-primary/5 text-primary"
+                  ? "border-primary bg-primary/5 text-foreground"
                   : "border-border bg-card text-muted-foreground hover:bg-secondary",
               )}
             >
-              <span className="text-[10px] font-bold uppercase tracking-wide">{label}</span>
               <span
                 className={cn(
-                  "grid h-6 w-6 place-items-center rounded-full text-xs font-bold",
+                  "grid h-6 w-6 place-items-center rounded-full text-xs font-semibold",
                   step >= n ? "bg-primary text-primary-foreground" : "bg-secondary",
                 )}
               >
                 {n}
               </span>
+              <span className="text-[10px] font-medium uppercase tracking-wide">{label}</span>
             </button>
           ))}
         </nav>
 
         {/* 1 — Photo (primary action) */}
-        <section className={cn("glass rounded-2xl p-4 sm:p-5", step !== 1 && "hidden lg:block")}>
-          <p className="text-xs font-bold uppercase tracking-wide text-primary">
-            Step 1 · What happened?
-          </p>
+        <section className={cn("surface-panel p-4 sm:p-5", step !== 1 && "hidden lg:block")}>
+          <p className="section-label">Step 1 · Photo evidence</p>
           <input
             ref={fileInputRef}
             type="file"
@@ -332,12 +335,12 @@ function ReportPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="mt-3 flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 px-4 py-10 transition-colors hover:border-primary hover:bg-primary/10 active:scale-[0.99]"
+              className="mt-3 flex w-full flex-col items-center justify-center gap-3 rounded-md border-2 border-dashed border-border bg-secondary/50 px-4 py-10 transition-colors hover:border-primary/40 hover:bg-secondary"
             >
-              <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-primary-foreground">
-                <FiCamera className="h-7 w-7" />
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground">
+                <FiCamera className="h-6 w-6" />
               </span>
-              <span className="text-base font-bold">Tap to take or upload a photo</span>
+              <span className="text-sm font-semibold">Take or upload a photo</span>
               <span className="text-xs text-muted-foreground">Camera works best on your phone</span>
             </button>
           )}
@@ -375,7 +378,7 @@ function ReportPage() {
         {/* 2 — Category chips */}
         <section
           className={cn(
-            "glass mt-4 rounded-2xl p-4 sm:p-5",
+            "surface-panel mt-4 p-4 sm:p-5",
             step !== 2 && step !== 1 && "hidden lg:block",
           )}
         >
@@ -420,7 +423,7 @@ function ReportPage() {
         {/* 3 — Location status */}
         <section
           className={cn(
-            "glass mt-4 rounded-2xl p-4 sm:p-5",
+            "surface-panel mt-4 p-4 sm:p-5",
             step !== 3 && step < 3 && "hidden lg:block",
           )}
         >
@@ -500,9 +503,7 @@ function ReportPage() {
 
         {/* Step 4 — Review summary (mobile) */}
         {(step === 4 || step === 3) && (
-          <section
-            className={cn("glass mt-4 rounded-2xl p-4 sm:p-5", step !== 4 && "hidden lg:block")}
-          >
+          <section className={cn("surface-panel mt-4 p-4 sm:p-5", step !== 4 && "hidden lg:block")}>
             <p className="text-xs font-bold uppercase tracking-wide text-primary">
               Step 4 · Review
             </p>
@@ -526,7 +527,7 @@ function ReportPage() {
         )}
 
         {/* Optional details (collapsed by default) */}
-        <section className="glass mt-4 overflow-hidden rounded-2xl">
+        <section className="surface-panel mt-4 overflow-hidden">
           <button
             type="button"
             onClick={() => setShowDetails((v) => !v)}
