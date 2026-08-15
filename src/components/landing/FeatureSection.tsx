@@ -6,15 +6,17 @@ export function FeatureSection({
   description,
   children,
   className = "",
+  id,
 }: {
   label: string;
   title: string;
   description: string;
   children: ReactNode;
   className?: string;
+  id?: string;
 }) {
   return (
-    <section className={`py-16 sm:py-20 ${className}`}>
+    <section id={id} className={`py-16 sm:py-20 ${className}`}>
       <div className="page-container">
         <div className="max-w-2xl">
           <p className="section-label">{label}</p>

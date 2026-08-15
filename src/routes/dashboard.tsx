@@ -106,6 +106,17 @@ function DashboardPage() {
       recentlyClosed: reports
         .filter((r) => r.status === "Verified" || r.status === "Resolved")
         .slice(0, 5),
+      slaComplianceRate:
+        reports.length > 0
+          ? Math.round(
+              ((reports.length -
+                reports.filter(
+                  (r) => isSlaBreached(r) && r.status !== "Verified" && r.status !== "Closed",
+                ).length) /
+                reports.length) *
+                100,
+            )
+          : 100,
     };
   }, [reports]);
 
@@ -114,7 +125,7 @@ function DashboardPage() {
   return (
     <AppShell
       title="Operations dashboard"
-      subtitle={org?.name ?? "Issue intake, assignment, and resolution"}
+      subtitle={org?.name ?? "Live Operations & SLA Intelligence"}
       requireAuth
       requireStaff
     >
@@ -165,8 +176,9 @@ function DashboardPage() {
             />
             <StatCard
               icon={FiCheckCircle}
-              label="Resolved"
-              value={stats.resolved + stats.verified}
+              label="SLA Compliance"
+              value={stats.slaComplianceRate}
+              suffix="%"
               accent="text-success"
               delay={0.15}
             />

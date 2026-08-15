@@ -61,26 +61,33 @@ function MapPage() {
       subtitle={`${filtered.length} geo-tagged report${filtered.length === 1 ? "" : "s"} on map`}
     >
       {loading || !hydrated ? (
-        <Loader label="Loading map" />
-      ) : reports.length === 0 ? (
-        <EmptyState
-          icon={FiMapPin}
-          title="Nothing on the map yet"
-          description="Once reports are submitted with coordinates, they appear here as live markers."
-          action={
-            <Link to="/report" className="btn-primary px-5 py-2.5">
-              <FiPlusCircle /> New report
-            </Link>
-          }
-        />
+        <Loader label="Loading issue map" />
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
-          <div className="surface-panel overflow-hidden p-1">
+          <div className="surface-panel overflow-hidden p-1 relative">
             <div className="h-[50vh] min-h-[300px] w-full overflow-hidden rounded-md sm:h-[58vh] lg:h-[calc(100vh-12rem)]">
               <Suspense fallback={<Loader label="Preparing map" />}>
                 <MapView reports={filtered} selectedId={selectedId} />
               </Suspense>
             </div>
+            {filtered.length === 0 && (
+              <div className="absolute inset-4 pointer-events-none flex items-center justify-center">
+                <div className="pointer-events-auto max-w-sm rounded-xl border border-border bg-card/95 p-5 text-center shadow-lg backdrop-blur-md">
+                  <FiMapPin className="mx-auto h-8 w-8 text-primary mb-2" />
+                  <h3 className="text-base font-bold text-foreground">Interactive Map Ready</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    No reports match your current filters. Submit a new report to place a live
+                    marker on this map.
+                  </p>
+                  <Link
+                    to="/report"
+                    className="btn-primary mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-xs"
+                  >
+                    <FiPlusCircle /> Submit a report
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-3 lg:max-h-[calc(100vh-12rem)]">

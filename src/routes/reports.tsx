@@ -219,6 +219,67 @@ function ReportsPage() {
         </div>
       )}
 
+      {/* WHAT NEEDS ATTENTION NOW Operational Banner */}
+      {reports.length > 0 && (
+        <div className="mb-4 grid gap-3 grid-cols-1 sm:grid-cols-3">
+          <button
+            type="button"
+            onClick={() => setOverdueOnly(true)}
+            className="surface-panel p-3.5 text-left border-l-4 border-l-destructive hover:border-destructive/80 transition-all cursor-pointer"
+          >
+            <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-destructive flex items-center justify-between">
+              <span>SLA Overdue</span>
+              <span className="h-2 w-2 rounded-full bg-destructive animate-ping" />
+            </p>
+            <p className="mt-1 font-display text-2xl font-bold tabular-nums text-foreground">
+              {
+                reports.filter(
+                  (r) => isSlaBreached(r) && r.status !== "Verified" && r.status !== "Closed",
+                ).length
+              }
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Click to view overdue queue</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setAssignment("unassigned");
+              setStatus("Pending");
+              setOverdueOnly(false);
+            }}
+            className="surface-panel p-3.5 text-left border-l-4 border-l-amber-500 hover:border-amber-400 transition-all cursor-pointer"
+          >
+            <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-amber-500">
+              Unassigned Intake
+            </p>
+            <p className="mt-1 font-display text-2xl font-bold tabular-nums text-foreground">
+              {reports.filter((r) => !r.assignedTo && r.status === "Pending").length}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Awaiting staff assignment</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setStatus("Resolved");
+              setOverdueOnly(false);
+            }}
+            className="surface-panel p-3.5 text-left border-l-4 border-l-emerald-500 hover:border-emerald-400 transition-all cursor-pointer"
+          >
+            <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-emerald-500">
+              Awaiting Verification
+            </p>
+            <p className="mt-1 font-display text-2xl font-bold tabular-nums text-foreground">
+              {reports.filter((r) => r.status === "Resolved").length}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              Staff resolved — ready for sign-off
+            </p>
+          </button>
+        </div>
+      )}
+
       <div className="surface-panel space-y-3 p-4">
         <div className="flex items-center gap-2 rounded-md border border-border bg-background px-3">
           <FiSearch className="h-4 w-4 shrink-0 text-muted-foreground" />

@@ -92,53 +92,56 @@ export const DEMO_ISSUES: DemoIssue[] = [
 export const WORKFLOW_STEPS = [
   {
     key: "report",
-    label: "Report",
-    description: "Residents submit geo-tagged issues with photo evidence — no account required.",
+    label: "1. Report",
+    description:
+      "Citizens & staff submit geo-tagged issues with photo evidence and GPS location pin.",
+  },
+  {
+    key: "route",
+    label: "2. Route",
+    description: "System and ward managers triage intake and route to responsible departments.",
+  },
+  {
+    key: "act",
+    label: "3. Act",
+    description:
+      "Field teams & ward officers receive assignments and act with SLA countdown timers.",
   },
   {
     key: "verify",
-    label: "Verify",
-    description: "Staff validate intake, category, and location before routing to the right team.",
+    label: "4. Verify",
+    description: "Staff log resolution evidence and citizens or supervisors verify completion.",
   },
   {
-    key: "assign",
-    label: "Assign",
-    description: "Route issues to ward officers or facilities teams within your organization.",
-  },
-  {
-    key: "track",
-    label: "Track",
-    description: "Monitor SLA deadlines, status history, and assignments in one operations view.",
-  },
-  {
-    key: "resolve",
-    label: "Resolve",
-    description: "Close the loop with resolution updates and citizen verification.",
+    key: "analyze",
+    label: "5. Analyze",
+    description:
+      "Operations dashboard tracks SLA compliance, bottleneck wards, and resolution trends.",
   },
 ] as const;
 
 export const TRUST_ITEMS = [
   "Organization-scoped data isolation",
-  "Role-based staff access",
-  "Geo-tagged evidence & audit trail",
-  "SLA tracking built in",
+  "Role-based staff access (RBAC)",
+  "Geo-tagged photo & audit log",
+  "Automated SLA tracking & alerts",
 ] as const;
 
 export const ORG_USE_CASES = [
   {
-    title: "Municipalities",
-    text: "Ward-level intake, assignment, and resolution for streets, lighting, waste, and water.",
+    title: "Municipalities & Wards",
+    text: "Route citizen reports directly to ward officers, track maintenance SLAs, and monitor city-wide problem hotspots on live maps.",
   },
   {
-    title: "Campuses & institutions",
-    text: "Facilities teams manage maintenance requests with evidence and status history.",
+    title: "University & Corporate Campuses",
+    text: "Campus facilities teams manage lighting, sanitation, and safety reports with fast dispatch and verified sign-offs.",
   },
   {
-    title: "Communities & estates",
-    text: "Residents report in seconds; management committees triage transparently.",
+    title: "Housing Societies & Townships",
+    text: "Gated communities and residential estates give residents a 30-second issue reporting channel with management accountability.",
   },
   {
-    title: "Facility operators",
-    text: "Track issues across sites with map visibility and operational accountability.",
+    title: "Facility & Infrastructure Operators",
+    text: "Track multi-site asset defects, assign maintenance contractors, and maintain a verifiable resolution audit history.",
   },
 ] as const;

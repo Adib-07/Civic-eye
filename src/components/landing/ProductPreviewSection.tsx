@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiXCircle, FiCheckCircle, FiLayers } from "react-icons/fi";
 
 import { ProductShowcase } from "@/components/ProductShowcase";
 import { FeatureSection } from "@/components/landing/FeatureSection";
@@ -7,34 +7,97 @@ import { FeatureSection } from "@/components/landing/FeatureSection";
 export function ProductPreviewSection() {
   return (
     <FeatureSection
-      label="Product preview"
-      title="One interface for intake, triage, and resolution"
-      description="Staff work from a unified operations view — reports list, map, SLA indicators, and assignment tools scoped to your organization. Explore the live app after signing in."
+      id="workspace"
+      label="The Operational Problem"
+      title="Operational problems don't disappear when they are reported."
+      description="Most organizations struggle with lost emails, informal messaging threads, and zero SLA visibility. CivicEye unifies intake, routing, map tracking, and verified resolution into one operational workspace."
     >
-      <div className="grid items-start gap-8 lg:grid-cols-2">
-        <ProductShowcase />
-        <div className="flex flex-col justify-center">
-          <ul className="space-y-3 text-sm text-muted-foreground">
-            <li className="flex gap-2">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
-              Filter by category, status, assignment, and SLA deadline
-            </li>
-            <li className="flex gap-2">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
-              Assign ward officers and track resolution progress
-            </li>
-            <li className="flex gap-2">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
-              Verify fixes before closing issues with reporters
-            </li>
-          </ul>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/reports" className="btn-primary px-4 py-2.5 text-sm">
-              View reports <FiArrowRight aria-hidden />
-            </Link>
-            <Link to="/dashboard" className="btn-secondary px-4 py-2.5 text-sm">
-              Open dashboard
-            </Link>
+      <div className="space-y-12">
+        {/* The Problem vs CivicEye Workspace Comparison */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Legacy Problem Card */}
+          <div className="rounded-xl border border-red-500/20 bg-red-950/10 p-6 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-red-400 font-semibold text-sm">
+              <FiXCircle className="h-5 w-5" />
+              <span>The Problem: Legacy Fragmented Operations</span>
+            </div>
+            <ul className="mt-4 space-y-3 text-xs text-slate-300">
+              <li className="flex items-start gap-2">
+                <span className="text-red-400 font-bold">•</span>
+                Scattered complaints trapped in inboxes, paper logs, and messaging threads.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-400 font-bold">•</span>
+                Missing photo evidence and vague location descriptions.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-400 font-bold">•</span>
+                Unclear ownership and no structured routing to ward teams.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-400 font-bold">•</span>
+                Slow resolution times with zero SLA tracking or breach visibility.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-400 font-bold">•</span>
+                No accountability — issues marked done without supervisor sign-off.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-400 font-bold">•</span>
+                No audit trail or historical record of recurring infrastructure defects.
+              </li>
+            </ul>
+          </div>
+
+          {/* CivicEye Workspace Card */}
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/10 p-6 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-emerald-400 font-semibold text-sm">
+              <FiCheckCircle className="h-5 w-5" />
+              <span>CivicEye: One Command Workspace</span>
+            </div>
+            <ul className="mt-4 space-y-3 text-xs text-slate-300">
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 font-bold">•</span>
+                Unified intake feed with automatic AI category suggestions.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 font-bold">•</span>
+                Interactive OpenStreetMap pins + mandatory photo evidence.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 font-bold">•</span>
+                Automated SLA timers &amp; instant breach notifications for ward officers.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-400 font-bold">•</span>
+                Staff sign-off + citizen resolution verification workflow.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Live Interface Showcase */}
+        <div className="grid items-center gap-8 lg:grid-cols-2">
+          <ProductShowcase />
+          <div className="flex flex-col justify-center">
+            <div className="inline-flex items-center gap-2 rounded-md bg-blue-500/10 border border-blue-500/20 px-3 py-1 text-xs font-semibold text-blue-300 w-fit">
+              <FiLayers className="h-3.5 w-3.5" /> Operations Interface
+            </div>
+            <h3 className="mt-3 text-xl font-bold tracking-tight text-foreground">
+              Designed for speed, clarity, and daily staff triage
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Filter issues instantly by category, status, ward assignment, and SLA urgency. Your
+              team gets complete context — photo, coordinates, reporter details, and audit history.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link to="/reports" className="btn-primary px-4 py-2.5 text-sm">
+                Explore reports queue <FiArrowRight aria-hidden />
+              </Link>
+              <Link to="/dashboard" className="btn-secondary px-4 py-2.5 text-sm">
+                Open dashboard
+              </Link>
+            </div>
           </div>
         </div>
       </div>

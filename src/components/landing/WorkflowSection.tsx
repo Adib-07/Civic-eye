@@ -1,13 +1,20 @@
-import { FiArrowDown, FiCheckCircle, FiClipboard, FiMapPin, FiUserCheck } from "react-icons/fi";
+import {
+  FiArrowDown,
+  FiCheckCircle,
+  FiClipboard,
+  FiCompass,
+  FiActivity,
+  FiBarChart2,
+} from "react-icons/fi";
 
 import { WORKFLOW_STEPS } from "@/components/landing/landing-data";
 
 const ICONS = {
   report: FiClipboard,
+  route: FiCompass,
+  act: FiActivity,
   verify: FiCheckCircle,
-  assign: FiUserCheck,
-  track: FiMapPin,
-  resolve: FiCheckCircle,
+  analyze: FiBarChart2,
 } as const;
 
 export function WorkflowSection() {
@@ -24,7 +31,8 @@ export function WorkflowSection() {
 
         <ol className="mt-10 flex flex-col items-stretch gap-2 lg:flex-row lg:items-start lg:justify-between lg:gap-3">
           {WORKFLOW_STEPS.map((step, i) => {
-            const Icon = ICONS[step.key];
+            const Icon =
+              (step.key in ICONS ? ICONS[step.key as keyof typeof ICONS] : null) ?? FiClipboard;
             return (
               <li key={step.key} className="flex flex-1 flex-col items-center lg:items-stretch">
                 <div className="landing-workflow-card w-full max-w-sm lg:max-w-none">
