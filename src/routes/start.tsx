@@ -12,7 +12,7 @@ import { getPlan, PLANS, type PlanTier } from "@/lib/plans";
 import { submitOnboardingRequest } from "@/lib/subscription";
 
 const startSearchSchema = z.object({
-  plan: z.enum(["pilot", "starter", "professional", "enterprise"]).optional(),
+  plan: z.enum(["pilot", "community", "growth", "enterprise"]).optional(),
 });
 
 export const Route = createFileRoute("/start")({

@@ -54,7 +54,7 @@ export function SubscriptionBanner({ subscription }: { subscription: Organizatio
         </div>
         <Link
           to="/start"
-          search={{ plan: "starter" }}
+          search={{ plan: "community" }}
           className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
         >
           Upgrade <FiArrowRight className="h-4 w-4" aria-hidden />

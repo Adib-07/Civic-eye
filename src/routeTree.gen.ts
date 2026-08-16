@@ -10,23 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BookDemoRouteImport } from './routes/book-demo'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as ForOrganizationsRouteImport } from './routes/for-organizations'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as StartRouteImport } from './routes/start'
+import { Route as TermsRouteImport } from './routes/terms'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookDemoRoute = BookDemoRouteImport.update({
+  id: '/book-demo',
+  path: '/book-demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForOrganizationsRoute = ForOrganizationsRouteImport.update({
+  id: '/for-organizations',
+  path: '/for-organizations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -49,6 +69,11 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportRoute = ReportRouteImport.update({
   id: '/report',
   path: '/report',
@@ -64,87 +89,127 @@ const StartRoute = StartRouteImport.update({
   path: '/start',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/book-demo': typeof BookDemoRoute
   '/dashboard': typeof DashboardRoute
+  '/faq': typeof FaqRoute
+  '/for-organizations': typeof ForOrganizationsRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
   '/start': typeof StartRoute
+  '/terms': typeof TermsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/book-demo': typeof BookDemoRoute
   '/dashboard': typeof DashboardRoute
+  '/faq': typeof FaqRoute
+  '/for-organizations': typeof ForOrganizationsRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
   '/start': typeof StartRoute
+  '/terms': typeof TermsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/book-demo': typeof BookDemoRoute
   '/dashboard': typeof DashboardRoute
+  '/faq': typeof FaqRoute
+  '/for-organizations': typeof ForOrganizationsRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
   '/start': typeof StartRoute
+  '/terms': typeof TermsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/book-demo'
     | '/dashboard'
+    | '/faq'
+    | '/for-organizations'
     | '/login'
     | '/map'
     | '/onboarding'
     | '/pricing'
+    | '/privacy'
     | '/report'
     | '/reports'
     | '/start'
+    | '/terms'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/book-demo'
     | '/dashboard'
+    | '/faq'
+    | '/for-organizations'
     | '/login'
     | '/map'
     | '/onboarding'
     | '/pricing'
+    | '/privacy'
     | '/report'
     | '/reports'
     | '/start'
+    | '/terms'
   id:
     | '__root__'
     | '/'
+    | '/book-demo'
     | '/dashboard'
+    | '/faq'
+    | '/for-organizations'
     | '/login'
     | '/map'
     | '/onboarding'
     | '/pricing'
+    | '/privacy'
     | '/report'
     | '/reports'
     | '/start'
+    | '/terms'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BookDemoRoute: typeof BookDemoRoute
   DashboardRoute: typeof DashboardRoute
+  FaqRoute: typeof FaqRoute
+  ForOrganizationsRoute: typeof ForOrganizationsRoute
   LoginRoute: typeof LoginRoute
   MapRoute: typeof MapRoute
   OnboardingRoute: typeof OnboardingRoute
   PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
   ReportRoute: typeof ReportRoute
   ReportsRoute: typeof ReportsRoute
   StartRoute: typeof StartRoute
+  TermsRoute: typeof TermsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -156,11 +221,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/book-demo': {
+      id: '/book-demo'
+      path: '/book-demo'
+      fullPath: '/book-demo'
+      preLoaderRoute: typeof BookDemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/for-organizations': {
+      id: '/for-organizations'
+      path: '/for-organizations'
+      fullPath: '/for-organizations'
+      preLoaderRoute: typeof ForOrganizationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -191,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/report': {
       id: '/report'
       path: '/report'
@@ -212,19 +305,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BookDemoRoute: BookDemoRoute,
   DashboardRoute: DashboardRoute,
+  FaqRoute: FaqRoute,
+  ForOrganizationsRoute: ForOrganizationsRoute,
   LoginRoute: LoginRoute,
   MapRoute: MapRoute,
   OnboardingRoute: OnboardingRoute,
   PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
   ReportRoute: ReportRoute,
   ReportsRoute: ReportsRoute,
   StartRoute: StartRoute,
+  TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -5,11 +5,12 @@ import { useTheme } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 
 const mainNavLinks = [
-  { to: "/", hash: "workspace", label: "Product" },
-  { to: "/onboarding", hash: undefined, label: "Solutions" },
-  { to: "/reports", hash: undefined, label: "Operations Queue" },
+  { to: "/", hash: undefined, label: "Home" },
+  { to: "/for-organizations", hash: undefined, label: "For Organizations" },
+  { to: "/reports", hash: undefined, label: "Reports Queue" },
   { to: "/map", hash: undefined, label: "Live Map" },
   { to: "/pricing", hash: undefined, label: "Pricing" },
+  { to: "/faq", hash: undefined, label: "FAQ" },
 ] as const;
 
 export function Navbar({ variant = "default" }: { variant?: "default" | "cinematic" }) {
@@ -57,7 +58,7 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
           >
             Civic<span className="text-blue-400">Eye</span>
             <span className="ml-2 rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-blue-300 border border-blue-500/20 hidden sm:inline">
-              OPERATIONS
+              B2B SAAS
             </span>
           </span>
         </Link>
@@ -72,7 +73,7 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
         </nav>
 
         {/* Right CTA Actions */}
-        <div className="flex shrink-0 items-center gap-2.5">
+        <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={toggle}
@@ -88,6 +89,18 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
           </button>
 
           <Link
+            to="/report"
+            className={cn(
+              "hidden rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors sm:block",
+              cinematic
+                ? "border-white/15 text-slate-200 hover:bg-white/10 hover:text-white"
+                : "border-border text-foreground hover:bg-secondary",
+            )}
+          >
+            Report Issue
+          </Link>
+
+          <Link
             to="/login"
             className={cn(
               "hidden rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors sm:block",
@@ -100,7 +113,7 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
           </Link>
 
           <Link
-            to="/start"
+            to="/book-demo"
             className={cn(
               "hidden items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-semibold shadow-sm transition-all sm:flex",
               cinematic
@@ -108,7 +121,7 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
                 : "bg-primary text-primary-foreground hover:bg-primary/90",
             )}
           >
-            <span>Start a pilot</span>
+            <span>Book a Demo</span>
             <FiArrowRight className="h-3.5 w-3.5" />
           </Link>
 

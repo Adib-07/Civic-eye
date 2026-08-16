@@ -125,12 +125,9 @@ function PlanCta({
 
   if (tier === "enterprise") {
     return (
-      <a
-        href={`mailto:${SALES_EMAIL}?subject=CivicEye%20Enterprise%20inquiry`}
-        className={className}
-      >
+      <Link to="/book-demo" className={className}>
         {label} <FiArrowRight className="h-4 w-4" aria-hidden />
-      </a>
+      </Link>
     );
   }
 

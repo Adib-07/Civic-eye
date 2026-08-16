@@ -4,7 +4,7 @@
  * Change prices here without hunting through components.
  */
 
-export type PlanTier = "pilot" | "starter" | "professional" | "enterprise";
+export type PlanTier = "pilot" | "community" | "growth" | "enterprise";
 
 export type SubscriptionStatus = "pilot" | "active" | "past_due" | "cancelled" | "expired";
 
@@ -28,75 +28,75 @@ export type PlanDefinition = {
   highlighted?: boolean;
 };
 
-/** Business testing prices — not market claims. */
+/** Proposed organization pricing structure — business testing rates. */
 export const PLANS: PlanDefinition[] = [
   {
     tier: "pilot",
-    name: "Pilot",
-    tagline: "Evaluate CivicEye with your team at no cost",
+    name: "Free Pilot",
+    tagline: "30-day trial for RWAs, campuses, and facility teams",
     monthlyPriceInr: 0,
     annualPriceInr: 0,
-    limits: { maxStaff: 3, maxReportsPerMonth: 50, maxDepartments: 2 },
+    limits: { maxStaff: 5, maxReportsPerMonth: 100, maxDepartments: 3 },
     features: [
-      "Up to 3 staff members",
-      "50 issues per month",
-      "2 departments",
-      "Citizen reporting & map",
+      "Up to 5 staff members",
+      "100 issues per month",
+      "Citizen reporting & live map",
       "Assignment & SLA tracking",
-      "30-day pilot period",
+      "Before/After evidence capture",
+      "30-day full feature pilot",
     ],
-    cta: "Start pilot",
+    cta: "Start Free Pilot",
   },
   {
-    tier: "starter",
-    name: "Starter",
-    tagline: "For small wards, campuses, and societies getting started",
-    monthlyPriceInr: 2999,
-    annualPriceInr: 29990,
-    limits: { maxStaff: 10, maxReportsPerMonth: 500, maxDepartments: 5 },
+    tier: "community",
+    name: "Community",
+    tagline: "Proposed tier for RWAs, housing societies, and small campuses",
+    monthlyPriceInr: 3999,
+    annualPriceInr: 39990,
+    limits: { maxStaff: 15, maxReportsPerMonth: 1000, maxDepartments: 8 },
     features: [
-      "Up to 10 staff members",
-      "500 issues per month",
-      "5 departments",
+      "Up to 15 staff members",
+      "1,000 issues per month",
+      "8 departments/wards",
       "Operations dashboard",
-      "Resolution verification",
+      "Citizen resolution verification",
       "Organization data isolation",
     ],
-    cta: "Get started",
+    cta: "Start a Pilot",
+    highlighted: true,
   },
   {
-    tier: "professional",
-    name: "Professional",
-    tagline: "For growing municipal and facilities teams",
-    monthlyPriceInr: 7999,
-    annualPriceInr: 79990,
-    limits: { maxStaff: 50, maxReportsPerMonth: 5000, maxDepartments: 20 },
+    tier: "growth",
+    name: "Growth",
+    tagline: "Proposed tier for universities, large townships, and facility operators",
+    monthlyPriceInr: 9999,
+    annualPriceInr: 99990,
+    limits: { maxStaff: 50, maxReportsPerMonth: 5000, maxDepartments: 25 },
     features: [
       "Up to 50 staff members",
       "5,000 issues per month",
-      "20 departments",
-      "Priority support channel",
-      "Extended retention",
-      "All Starter features",
+      "25 departments",
+      "Priority SLA tracking",
+      "Custom SLA rules",
+      "All Community features",
     ],
-    cta: "Get started",
-    highlighted: true,
+    cta: "Start a Pilot",
   },
   {
     tier: "enterprise",
     name: "Enterprise",
-    tagline: "Custom deployment for large organizations",
+    tagline: "Custom deployment for multi-campus & large organization networks",
     monthlyPriceInr: null,
     annualPriceInr: null,
     limits: { maxStaff: null, maxReportsPerMonth: null, maxDepartments: null },
     features: [
-      "Unlimited staff & issues (fair use)",
-      "Custom SLA policies",
-      "Dedicated onboarding",
-      "Security review support",
-      "Custom billing & contracts",
+      "Unlimited staff & issue volume",
+      "Custom SLA & workflow policies",
+      "Dedicated onboarding manager",
+      "Security audit & review support",
+      "Custom contracts & billing",
     ],
-    cta: "Contact sales",
+    cta: "Book a Demo",
   },
 ];
 

@@ -22,26 +22,27 @@ export function LandingHero() {
 
           {/* Main Headline */}
           <h1 className="mt-6 font-display text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-[4.25rem]">
-            Turn every reported issue into a{" "}
+            Turn civic complaints into{" "}
             <span className="bg-gradient-to-r from-blue-400 via-indigo-200 to-sky-300 bg-clip-text text-transparent">
-              resolved outcome.
+              verified resolutions.
             </span>
           </h1>
 
           {/* Supporting Subtitle */}
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:text-xl">
-            CivicEye gives organizations one operational system to capture, assign, track and
-            resolve real-world issues — with location intelligence, evidence and SLA visibility
-            built in.
+            CivicEye helps communities and organizations report, assign, track and verify local issues from one platform.
           </p>
 
           {/* Primary & Secondary CTAs */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link to="/start" className="cinematic-btn-primary group shadow-lg shadow-blue-900/30">
-              <span>Start an Organization Pilot →</span>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link to="/report" className="cinematic-btn-primary group shadow-lg shadow-blue-900/30">
+              <span>Report an Issue →</span>
             </Link>
-            <Link to="/reports" className="cinematic-btn-secondary">
-              Explore the Platform
+            <Link to="/for-organizations" className="cinematic-btn-secondary">
+              For Organizations
+            </Link>
+            <Link to="/book-demo" className="rounded-xl border border-blue-500/40 bg-blue-600/20 px-5 py-3 text-sm font-semibold text-blue-200 hover:bg-blue-600/30 transition-all">
+              Book a Demo
             </Link>
           </div>
 
