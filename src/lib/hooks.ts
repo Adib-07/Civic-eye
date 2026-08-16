@@ -10,8 +10,10 @@ import {
   deleteReport,
   fetchIssueStatusHistory,
   fetchOrganization,
+  fetchReportEvidence,
   fetchReports,
   fetchStaffMembers,
+  resolveReportWithEvidence,
   updateReport,
   verifyResolution,
 } from "./reports";
@@ -25,6 +27,7 @@ const STAFF_KEY = ["staff"] as const;
 const ORG_KEY = ["organization"] as const;
 const SUBSCRIPTION_KEY = ["subscription"] as const;
 const HISTORY_KEY = ["issue-history"] as const;
+const EVIDENCE_KEY = ["issue-evidence"] as const;
 
 export function useAuth() {
   const qc = useQueryClient();
@@ -129,12 +132,22 @@ export function useIssueStatusHistory(reportId: string | null | undefined) {
   });
 }
 
+export function useIssueEvidence(reportId: string | null | undefined) {
+  return useQuery({
+    queryKey: [...EVIDENCE_KEY, reportId],
+    queryFn: () => fetchReportEvidence(reportId!),
+    enabled: Boolean(reportId) && isSupabaseConfigured(),
+    staleTime: 15_000,
+  });
+}
+
 export function useReportMutations() {
   const qc = useQueryClient();
 
   const invalidate = () => {
     void qc.invalidateQueries({ queryKey: REPORTS_KEY });
     void qc.invalidateQueries({ queryKey: HISTORY_KEY });
+    void qc.invalidateQueries({ queryKey: EVIDENCE_KEY });
   };
 
   const create = useMutation({
@@ -172,7 +185,13 @@ export function useReportMutations() {
     onSuccess: invalidate,
   });
 
-  return { create, update, remove, assign, verify };
+  const resolveWithEvidence = useMutation({
+    mutationFn: ({ reportId, file, notes }: { reportId: string; file: File; notes: string }) =>
+      resolveReportWithEvidence({ reportId, file, notes }),
+    onSuccess: invalidate,
+  });
+
+  return { create, update, remove, assign, verify, resolveWithEvidence };
 }
 
 export function useTheme() {

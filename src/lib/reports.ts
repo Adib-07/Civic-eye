@@ -6,6 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   Category,
   CreateReportInput,
+  IssueEvidence,
   Organization,
   Report,
   StaffMember,
@@ -353,15 +354,37 @@ export async function verifyResolution(
 
   if (vError) throw new Error(vError.message);
 
+  const newStatus = approved ? "Verified" : "Reopened";
   const { error: rError } = await sb
     .from("reports")
     .update({
-      status: approved ? "Verified" : "In Progress",
+      status: newStatus,
       resolved_at: approved ? new Date().toISOString() : null,
     })
     .eq("id", reportId);
 
   if (rError) throw new Error(rError.message);
+
+  if (notes?.trim()) {
+    try {
+      const { data: history } = await sb
+        .from("issue_status_history")
+        .select("id")
+        .eq("report_id", reportId)
+        .eq("to_status", newStatus)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (history?.id) {
+        await sb
+          .from("issue_status_history")
+          .update({ notes: notes.trim() })
+          .eq("id", history.id);
+      }
+    } catch {
+      /* non-critical notes update */
+    }
+  }
 }
 
 export async function fetchReport(id: string): Promise<Report | null> {
@@ -439,6 +462,7 @@ export type IssueStatusHistoryEntry = {
   fromStatus: string | null;
   toStatus: string;
   changedBy: string | null;
+  changedByName?: string | null;
   notes: string | null;
   createdAt: string;
 };
@@ -455,11 +479,141 @@ export async function fetchIssueStatusHistory(
 
   if (error) throw new Error(error.message);
 
+  const changedByIds = [
+    ...new Set((data ?? []).map((row) => row.changed_by).filter(Boolean)),
+  ] as string[];
+  let profileMap = new Map<string, string>();
+  if (changedByIds.length) {
+    const { data: profiles } = await sb
+      .from("profiles")
+      .select("id, full_name, email")
+      .in("id", changedByIds);
+    if (profiles) {
+      profileMap = new Map(profiles.map((p) => [p.id, p.full_name ?? p.email ?? "User"]));
+    }
+  }
+
   return (data ?? []).map((row) => ({
     id: row.id,
     fromStatus: row.from_status,
     toStatus: row.to_status,
     changedBy: row.changed_by,
+    changedByName: row.changed_by ? profileMap.get(row.changed_by) : null,
+    notes: row.notes,
+    createdAt: row.created_at,
+  }));
+}
+
+export async function resolveReportWithEvidence({
+  reportId,
+  file,
+  notes,
+}: {
+  reportId: string;
+  file: File;
+  notes: string;
+}): Promise<void> {
+  const sb = requireSupabase();
+  const { data: sessionData } = await sb.auth.getSession();
+  const userId = sessionData.session?.user?.id;
+  if (!userId) throw new Error("You must be signed in as staff to resolve reports.");
+
+  const { data: report, error: reportError } = await sb
+    .from("reports")
+    .select("id, organization_id, status")
+    .eq("id", reportId)
+    .maybeSingle();
+
+  if (reportError || !report) throw new Error("Report not found or access denied.");
+
+  const storagePath = await uploadReportImage(report.organization_id, file);
+
+  const { error: evidenceError } = await sb.from("issue_evidence").insert({
+    report_id: reportId,
+    storage_path: storagePath,
+    uploaded_by: userId,
+    content_type: file.type || "image/jpeg",
+    notes: notes.trim(),
+  });
+
+  if (evidenceError) {
+    try {
+      await removeReportImage(storagePath);
+    } catch {
+      /* best-effort cleanup */
+    }
+    throw new Error(formatDbError(evidenceError.message, "Resolution evidence upload"));
+  }
+
+  const { error: updateError } = await sb
+    .from("reports")
+    .update({
+      status: "Resolved",
+      resolved_at: new Date().toISOString(),
+    })
+    .eq("id", reportId);
+
+  if (updateError) {
+    throw new Error(formatDbError(updateError.message, "Report resolution update"));
+  }
+
+  if (notes.trim()) {
+    try {
+      const { data: history } = await sb
+        .from("issue_status_history")
+        .select("id")
+        .eq("report_id", reportId)
+        .eq("to_status", "Resolved")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (history?.id) {
+        await sb
+          .from("issue_status_history")
+          .update({ notes: notes.trim() })
+          .eq("id", history.id);
+      }
+    } catch {
+      /* non-critical notes update */
+    }
+  }
+}
+
+export async function fetchReportEvidence(reportId: string): Promise<IssueEvidence[]> {
+  const sb = requireSupabase();
+  const { data, error } = await sb
+    .from("issue_evidence")
+    .select("id, report_id, storage_path, public_url, content_type, uploaded_by, notes, created_at")
+    .eq("report_id", reportId)
+    .order("created_at", { ascending: false });
+
+  if (error || !data || data.length === 0) return [];
+
+  const uploaderIds = [...new Set(data.map((e) => e.uploaded_by).filter(Boolean))] as string[];
+  let uploaderMap = new Map<string, string>();
+  if (uploaderIds.length) {
+    const { data: profiles } = await sb
+      .from("profiles")
+      .select("id, full_name, email")
+      .in("id", uploaderIds);
+    if (profiles) {
+      uploaderMap = new Map(profiles.map((p) => [p.id, p.full_name ?? p.email ?? "Staff"]));
+    }
+  }
+
+  const imageMap = await resolveImageUrlMap(
+    sb,
+    data.map((e) => e.storage_path),
+  );
+
+  return data.map((row) => ({
+    id: row.id,
+    reportId: row.report_id,
+    storagePath: row.storage_path,
+    publicUrl: imageMap.get(row.storage_path) ?? row.public_url ?? null,
+    contentType: row.content_type,
+    uploadedBy: row.uploaded_by,
+    uploaderName: row.uploaded_by ? uploaderMap.get(row.uploaded_by) : null,
     notes: row.notes,
     createdAt: row.created_at,
   }));

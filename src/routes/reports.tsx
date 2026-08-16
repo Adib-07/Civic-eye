@@ -25,6 +25,7 @@ import { EmptyState, Loader, QueryError } from "@/components/EmptyState";
 import { ImageModal } from "@/components/ImageModal";
 import { IssueWorkflowBar } from "@/components/IssueWorkflowBar";
 import { OnboardingBanner } from "@/components/OnboardingBanner";
+import { ResolveIssueDialog } from "@/components/ResolveIssueDialog";
 import { SlaBadge } from "@/components/SlaBadge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ReportImage } from "@/components/ReportImage";
@@ -35,6 +36,7 @@ import { getDefaultOrganizationId } from "@/lib/env";
 import { isSlaBreached } from "@/lib/sla";
 import {
   useAuth,
+  useIssueEvidence,
   useIssueStatusHistory,
   useReportMutations,
   useReports,
@@ -101,7 +103,7 @@ function ReportsPage() {
   const { profile, user } = useAuth();
   const orgId = profile?.organizationId ?? getDefaultOrganizationId();
   const { data: staff = [] } = useStaffMembers(isConfigured ? orgId : null);
-  const { update, remove, assign, verify } = useReportMutations();
+  const { update, remove, assign, verify, resolveWithEvidence } = useReportMutations();
 
   const isStaff = canManageReports(profile?.role);
 
@@ -116,6 +118,7 @@ function ReportsPage() {
   const [toDelete, setToDelete] = useState<Report | null>(null);
   const [editing, setEditing] = useState<Report | null>(null);
   const [assignTarget, setAssignTarget] = useState<Report | null>(null);
+  const [resolveTarget, setResolveTarget] = useState<Report | null>(null);
   const [verifyTarget, setVerifyTarget] = useState<Report | null>(null);
   const [detail, setDetail] = useState<Report | null>(null);
   const [zoom, setZoom] = useState<string | null>(null);
@@ -555,19 +558,9 @@ function ReportsPage() {
                             <FiUserPlus /> Assign
                           </button>
                         )}
-                        {r.status === "In Progress" && (
+                        {(r.status === "In Progress" || r.status === "Reopened") && (
                           <button
-                            onClick={async () => {
-                              try {
-                                await update.mutateAsync({
-                                  id: r.id,
-                                  patch: { status: "Resolved" },
-                                });
-                                toast.success("Marked as resolved — awaiting verification");
-                              } catch (e) {
-                                toast.error(e instanceof Error ? e.message : "Resolution failed");
-                              }
-                            }}
+                            onClick={() => setResolveTarget(r)}
                             className="btn-secondary flex-1 py-2 text-xs text-success"
                           >
                             <FiCheck /> Resolve
@@ -666,6 +659,23 @@ function ReportsPage() {
         }}
       />
 
+      <ResolveIssueDialog
+        open={!!resolveTarget}
+        report={resolveTarget}
+        loading={resolveWithEvidence.isPending}
+        onCancel={() => setResolveTarget(null)}
+        onSubmit={async (file, notes) => {
+          if (!resolveTarget) return;
+          try {
+            await resolveWithEvidence.mutateAsync({ reportId: resolveTarget.id, file, notes });
+            toast.success("Resolution submitted successfully — pending citizen verification");
+            setResolveTarget(null);
+          } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Resolution submission failed");
+          }
+        }}
+      />
+
       <VerifyDialog
         open={!!verifyTarget}
         title={verifyTarget?.title ?? ""}
@@ -675,7 +685,7 @@ function ReportsPage() {
           if (!verifyTarget) return;
           try {
             await verify.mutateAsync({ reportId: verifyTarget.id, approved: true, notes });
-            toast.success("Resolution verified");
+            toast.success("Resolution verified — status updated to VERIFIED");
             setVerifyTarget(null);
           } catch (e) {
             toast.error(e instanceof Error ? e.message : "Verification failed");
@@ -685,7 +695,7 @@ function ReportsPage() {
           if (!verifyTarget) return;
           try {
             await verify.mutateAsync({ reportId: verifyTarget.id, approved: false, notes });
-            toast.info("Issue reopened — sent back to In Progress");
+            toast.info("Reported as still unresolved — status updated to REOPENED");
             setVerifyTarget(null);
           } catch (e) {
             toast.error(e instanceof Error ? e.message : "Verification failed");
@@ -707,15 +717,9 @@ function ReportsPage() {
           if (liveDetail) setEditing(liveDetail);
           setDetail(null);
         }}
-        onResolve={async () => {
-          if (!liveDetail) return;
-          try {
-            await update.mutateAsync({ id: liveDetail.id, patch: { status: "Resolved" } });
-            toast.success("Marked as resolved");
-            setDetail(null);
-          } catch (e) {
-            toast.error(e instanceof Error ? e.message : "Resolution failed");
-          }
+        onResolve={() => {
+          if (liveDetail) setResolveTarget(liveDetail);
+          setDetail(null);
         }}
         onVerify={() => {
           if (liveDetail) setVerifyTarget(liveDetail);
@@ -976,6 +980,8 @@ function IssueDetailDialog({
   history: IssueStatusHistoryEntry[];
   historyLoading: boolean;
 }) {
+  const { data: evidences = [], isLoading: evidenceLoading } = useIssueEvidence(report?.id);
+
   return (
     <AnimatePresence>
       {report && (
@@ -1035,12 +1041,12 @@ function IssueDetailDialog({
                     Assign
                   </button>
                 )}
-                {isStaff && report.status === "In Progress" && (
+                {isStaff && (report.status === "In Progress" || report.status === "Reopened") && (
                   <button
                     onClick={onResolve}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-success/30 px-4 py-2 text-sm font-bold text-success hover:bg-success/5"
                   >
-                    Mark resolved
+                    Resolve issue
                   </button>
                 )}
                 {canVerify && isAwaitingCitizenVerification(report.status) && (
@@ -1068,15 +1074,88 @@ function IssueDetailDialog({
 
                 <section className="mt-6">
                   <h4 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                    Evidence
+                    Evidence Comparison (Before &amp; After)
                   </h4>
-                  <ReportImage
-                    src={report.image}
-                    alt={report.title}
-                    onClick={report.image ? () => onZoomImage(report.image!) : undefined}
-                    className="mt-2 h-52 w-full rounded-xl object-cover sm:h-56"
-                    placeholderClassName="mt-2 h-52 w-full rounded-xl sm:h-56"
-                  />
+                  {evidenceLoading ? (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Loading resolution evidence…
+                    </p>
+                  ) : evidences.length > 0 ? (
+                    <div className="mt-3 grid gap-4 md:grid-cols-2">
+                      {/* Original Issue */}
+                      <div className="rounded-xl border border-border bg-card p-3.5 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-500">
+                            1. Original Report
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {new Date(report.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <ReportImage
+                          src={report.image}
+                          alt={report.title}
+                          onClick={report.image ? () => onZoomImage(report.image!) : undefined}
+                          className="h-40 w-full rounded-lg object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          placeholderClassName="h-40 w-full rounded-lg"
+                        />
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {report.description}
+                        </p>
+                      </div>
+
+                      {/* Resolution Evidence */}
+                      {evidences.map((ev) => (
+                        <div
+                          key={ev.id}
+                          className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3.5 space-y-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-500 flex items-center gap-1">
+                              <FiCheckCircle /> 2. Staff Resolution
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {new Date(ev.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {ev.publicUrl ? (
+                            <ReportImage
+                              src={ev.publicUrl}
+                              alt="Staff resolution evidence"
+                              onClick={() => onZoomImage(ev.publicUrl!)}
+                              className="h-40 w-full rounded-lg object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                              placeholderClassName="h-40 w-full rounded-lg"
+                            />
+                          ) : (
+                            <div className="h-40 w-full rounded-lg bg-secondary grid place-items-center text-xs text-muted-foreground">
+                              No resolution image
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-xs font-semibold text-foreground">
+                              By: {ev.uploaderName ?? "Staff Member"}
+                            </p>
+                            {ev.notes && (
+                              <p className="mt-1 text-xs text-muted-foreground bg-background/60 rounded-md p-2 border border-border/60">
+                                "{ev.notes}"
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-2">
+                      <p className="text-xs text-muted-foreground mb-1.5">Original issue photo:</p>
+                      <ReportImage
+                        src={report.image}
+                        alt={report.title}
+                        onClick={report.image ? () => onZoomImage(report.image!) : undefined}
+                        className="h-52 w-full rounded-xl object-cover sm:h-56 cursor-pointer"
+                        placeholderClassName="h-52 w-full rounded-xl sm:h-56"
+                      />
+                    </div>
+                  )}
                 </section>
 
                 <section className="mt-6">
@@ -1103,19 +1182,43 @@ function IssueDetailDialog({
                       No status changes recorded yet.
                     </p>
                   ) : (
-                    <ul className="mt-3 space-y-2">
+                    <ul className="mt-3 space-y-2.5">
                       {history.map((entry) => (
                         <li
                           key={entry.id}
-                          className="rounded-xl border border-border bg-secondary/40 px-3 py-2 text-sm"
+                          className="rounded-xl border border-border bg-secondary/40 px-3.5 py-2.5 text-sm space-y-1"
                         >
-                          <p className="font-semibold">
-                            {entry.fromStatus ? `${entry.fromStatus} → ` : ""}
-                            {entry.toStatus}
-                          </p>
-                          <p className="mt-0.5 text-xs text-muted-foreground">
-                            {new Date(entry.createdAt).toLocaleString()}
-                          </p>
+                          <div className="flex items-center justify-between">
+                            <p className="font-semibold text-foreground flex items-center gap-1.5">
+                              <span>{entry.fromStatus ? `${entry.fromStatus} → ` : "Status set: "}</span>
+                              <span
+                                className={
+                                  entry.toStatus === "Verified"
+                                    ? "text-emerald-500 font-bold"
+                                    : entry.toStatus === "Reopened"
+                                    ? "text-rose-500 font-bold"
+                                    : entry.toStatus === "Resolved"
+                                    ? "text-amber-500 font-bold"
+                                    : ""
+                                }
+                              >
+                                {entry.toStatus}
+                              </span>
+                            </p>
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              {new Date(entry.createdAt).toLocaleString()}
+                            </span>
+                          </div>
+                          {entry.changedByName && (
+                            <p className="text-xs text-muted-foreground">
+                              Actor: <span className="font-medium text-foreground">{entry.changedByName}</span>
+                            </p>
+                          )}
+                          {entry.notes && (
+                            <p className="text-xs text-muted-foreground bg-background/50 rounded-md p-2 border border-border/40 mt-1">
+                              &ldquo;{entry.notes}&rdquo;
+                            </p>
+                          )}
                         </li>
                       ))}
                     </ul>

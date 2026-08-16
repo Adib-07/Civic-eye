@@ -24,6 +24,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/AppShell";
 import { EmptyState, Loader, QueryError } from "@/components/EmptyState";
+import { ResolveIssueDialog } from "@/components/ResolveIssueDialog";
 import { SlaBadge } from "@/components/SlaBadge";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -81,8 +82,9 @@ function DashboardPage() {
   const orgId = resolveOrganizationId(profile) ?? getDefaultOrganizationId();
   const { data: org } = useOrganization(orgId);
   const { data: subscription } = useOrganizationSubscription(orgId);
-  const { update, verify } = useReportMutations();
+  const { update, verify, resolveWithEvidence } = useReportMutations();
   const [verifyTarget, setVerifyTarget] = useState<Report | null>(null);
+  const [resolveTarget, setResolveTarget] = useState<Report | null>(null);
 
   const stats = useMemo(() => {
     const byCategory = countByCategory(reports);
@@ -403,17 +405,7 @@ function DashboardPage() {
                           <td className="text-right">
                             {r.status === "In Progress" ? (
                               <button
-                                onClick={async () => {
-                                  try {
-                                    await update.mutateAsync({
-                                      id: r.id,
-                                      patch: { status: "Resolved" },
-                                    });
-                                    toast.success("Marked as resolved — pending verification");
-                                  } catch (e) {
-                                    toast.error(e instanceof Error ? e.message : "Update failed");
-                                  }
-                                }}
+                                onClick={() => setResolveTarget(r)}
                                 className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary"
                               >
                                 <FiCheck /> Resolve
@@ -448,20 +440,10 @@ function DashboardPage() {
                       </p>
                       <div className="flex items-center justify-between gap-2">
                         <SlaBadge report={r} />
-                        {r.status === "In Progress" ? (
+                        {r.status === "In Progress" || r.status === "Reopened" ? (
                           <button
                             type="button"
-                            onClick={async () => {
-                              try {
-                                await update.mutateAsync({
-                                  id: r.id,
-                                  patch: { status: "Resolved" },
-                                });
-                                toast.success("Marked as resolved");
-                              } catch (e) {
-                                toast.error(e instanceof Error ? e.message : "Update failed");
-                              }
-                            }}
+                            onClick={() => setResolveTarget(r)}
                             className="rounded-xl border border-border px-3 py-1.5 text-xs font-bold"
                           >
                             Resolve
@@ -481,6 +463,23 @@ function DashboardPage() {
         </div>
       )}
 
+      <ResolveIssueDialog
+        open={!!resolveTarget}
+        report={resolveTarget}
+        loading={resolveWithEvidence.isPending}
+        onCancel={() => setResolveTarget(null)}
+        onSubmit={async (file, notes) => {
+          if (!resolveTarget) return;
+          try {
+            await resolveWithEvidence.mutateAsync({ reportId: resolveTarget.id, file, notes });
+            toast.success("Resolution submitted successfully — pending citizen verification");
+            setResolveTarget(null);
+          } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Resolution submission failed");
+          }
+        }}
+      />
+
       <VerifyDialog
         open={!!verifyTarget}
         title={verifyTarget?.title ?? ""}
@@ -490,7 +489,7 @@ function DashboardPage() {
           if (!verifyTarget) return;
           try {
             await verify.mutateAsync({ reportId: verifyTarget.id, approved: true, notes });
-            toast.success("Resolution verified");
+            toast.success("Resolution verified — status updated to VERIFIED");
             setVerifyTarget(null);
           } catch (e) {
             toast.error(e instanceof Error ? e.message : "Verification failed");
@@ -500,7 +499,7 @@ function DashboardPage() {
           if (!verifyTarget) return;
           try {
             await verify.mutateAsync({ reportId: verifyTarget.id, approved: false, notes });
-            toast.info("Sent back to In Progress");
+            toast.info("Reported as still unresolved — status updated to REOPENED");
             setVerifyTarget(null);
           } catch (e) {
             toast.error(e instanceof Error ? e.message : "Verification failed");

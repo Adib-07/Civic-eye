@@ -2,7 +2,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 export type UserRole = "citizen" | "ward_officer" | "admin" | "super_admin";
 export type SlaPriority = "low" | "normal" | "high" | "critical";
-export type ReportStatus = "Pending" | "In Progress" | "Resolved" | "Verified" | "Closed";
+export type ReportStatus = "Pending" | "In Progress" | "Resolved" | "Verified" | "Closed" | "Reopened";
 export type VerificationStatus = "approved" | "rejected" | "pending";
 export type NotificationChannel = "in_app" | "email" | "sms" | "whatsapp";
 
@@ -294,6 +294,7 @@ export type Database = {
           public_url: string | null;
           content_type: string | null;
           uploaded_by: string | null;
+          notes: string | null;
           created_at: string;
         };
         Insert: {
@@ -303,11 +304,13 @@ export type Database = {
           public_url?: string | null;
           content_type?: string | null;
           uploaded_by?: string | null;
+          notes?: string | null;
           created_at?: string;
         };
         Update: {
           public_url?: string | null;
           content_type?: string | null;
+          notes?: string | null;
         };
         Relationships: [];
       };

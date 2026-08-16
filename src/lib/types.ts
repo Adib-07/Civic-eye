@@ -9,7 +9,7 @@ export const CATEGORIES = [
 
 export type Category = (typeof CATEGORIES)[number];
 
-export const STATUSES = ["Pending", "In Progress", "Resolved", "Verified", "Closed"] as const;
+export const STATUSES = ["Pending", "In Progress", "Resolved", "Verified", "Closed", "Reopened"] as const;
 
 export type Status = (typeof STATUSES)[number];
 
@@ -69,6 +69,18 @@ export interface SlaPolicy {
   priority: string;
   responseHours: number;
   resolutionHours: number;
+}
+
+export interface IssueEvidence {
+  id: string;
+  reportId: string;
+  storagePath: string;
+  publicUrl: string | null;
+  contentType: string | null;
+  uploadedBy: string | null;
+  uploaderName?: string | null;
+  notes: string | null;
+  createdAt: string;
 }
 
 export interface CreateReportInput {

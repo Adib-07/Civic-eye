@@ -7,6 +7,7 @@ const styles: Record<Status, string> = {
   Resolved: "bg-accent text-accent-foreground border-border",
   Verified: "bg-success/10 text-success border-success/25",
   Closed: "bg-muted text-muted-foreground border-border",
+  Reopened: "bg-destructive/10 text-destructive border-destructive/25",
 };
 
 export function StatusBadge({ status, className }: { status: Status; className?: string }) {
