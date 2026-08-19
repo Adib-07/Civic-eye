@@ -3,8 +3,8 @@ import {
   FiCheckCircle,
   FiClipboard,
   FiCompass,
-  FiTarget,
   FiEye,
+  FiTarget,
 } from "react-icons/fi";
 
 import { WORKFLOW_STEPS } from "@/components/landing/landing-data";
@@ -19,13 +19,16 @@ const ICONS = {
 
 export function WorkflowSection() {
   return (
-    <section id="workflow" className="border-b border-border bg-secondary/30 py-16 sm:py-20">
+    <section id="workflow" className="border-y border-border bg-secondary/30 py-16 sm:py-20">
       <div className="page-container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="section-label">How It Works</p>
-          <h2 className="mt-2 section-title text-2xl sm:text-3xl">From report to verified resolution</h2>
+          <h2 className="mt-2 section-title text-2xl sm:text-3xl">
+            Five accountable stages, end to end
+          </h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Five accountable stages your organization runs every day — visible to staff and reporters.
+            From the moment an issue is spotted to final citizen verification &mdash;
+            every step is tracked, attributed, and auditable.
           </p>
         </div>
 

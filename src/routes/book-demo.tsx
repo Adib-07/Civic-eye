@@ -30,6 +30,15 @@ const ORG_TYPES = [
   "Other",
 ] as const;
 
+const ROLES = [
+  "Administrator",
+  "Facility Manager",
+  "Operations Lead",
+  "Ward Officer",
+  "IT / Technical",
+  "Other",
+] as const;
+
 export function BookDemoPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,6 +47,7 @@ export function BookDemoPage() {
     organization: string;
     email: string;
     orgType: (typeof ORG_TYPES)[number];
+    role: (typeof ROLES)[number];
     phone: string;
     message: string;
   }>({
@@ -45,6 +55,7 @@ export function BookDemoPage() {
     organization: "",
     email: "",
     orgType: ORG_TYPES[0],
+    role: ROLES[0],
     phone: "",
     message: "",
   });
@@ -118,10 +129,10 @@ export function BookDemoPage() {
                   <div className="h-14 w-14 rounded-full bg-emerald-500/15 text-emerald-500 grid place-items-center mx-auto">
                     <FiCheckCircle className="h-8 w-8" />
                   </div>
-                  <h3 className="text-xl font-bold text-foreground">Demo Request Received</h3>
+                  <h3 className="text-xl font-bold text-foreground">Request Received</h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    Thank you. Your request has been recorded and will be reviewed by the CivicEye team.
-                    We will contact you at <strong>{formData.email}</strong> within one business day.
+                    Thanks. Your request has been received. Our team will review your requirements
+                    and get back to you.
                   </p>
                   <div className="pt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
                     <Link
@@ -205,6 +216,23 @@ export function BookDemoPage() {
                         ))}
                       </select>
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-foreground mb-1">
+                      Your Role <span className="text-destructive">*</span>
+                    </label>
+                    <select
+                      value={formData.role}
+                      onChange={(e) => setFormData({ ...formData, role: e.target.value as (typeof ROLES)[number] })}
+                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                    >
+                      {ROLES.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>

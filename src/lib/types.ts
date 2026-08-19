@@ -1,3 +1,5 @@
+export const OTHER_CATEGORY = "Other" as const;
+
 export const CATEGORIES = [
   "Pothole",
   "Garbage",
@@ -5,11 +7,19 @@ export const CATEGORIES = [
   "Water Leakage",
   "Broken Street Light",
   "Road Damage",
+  OTHER_CATEGORY,
 ] as const;
 
-export type Category = (typeof CATEGORIES)[number];
+export type Category = (typeof CATEGORIES)[number] | string;
 
-export const STATUSES = ["Pending", "In Progress", "Resolved", "Verified", "Closed", "Reopened"] as const;
+export const STATUSES = [
+  "Pending",
+  "In Progress",
+  "Resolved",
+  "Verified",
+  "Closed",
+  "Reopened",
+] as const;
 
 export type Status = (typeof STATUSES)[number];
 

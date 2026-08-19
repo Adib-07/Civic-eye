@@ -2,12 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
-import { DashboardPreviewSection } from "@/components/landing/DashboardPreviewSection";
-import { EvidenceSection } from "@/components/landing/EvidenceSection";
 import { LandingCTA } from "@/components/landing/LandingCTA";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingPricingTeaser } from "@/components/landing/LandingPricingTeaser";
-import { MapPreviewSection } from "@/components/landing/MapPreviewSection";
 import { OperationsSection } from "@/components/landing/OperationsSection";
 import {
   PlatformFeaturesSection,
@@ -20,20 +17,20 @@ import { WorkflowSection } from "@/components/landing/WorkflowSection";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CivicEye — Civic Operations Platform" },
+      { title: "CivicEye — Issue Management & Verified Resolution Platform" },
       {
         name: "description",
         content:
-          "CivicEye helps communities and organizations report, assign, track, and verify local issues from one accountable workflow.",
+          "CivicEye helps organizations report issues, assign responsibility, track progress, and verify completed work from one accountable workflow.",
       },
       {
         property: "og:title",
-        content: "CivicEye — Civic Operations Platform",
+        content: "CivicEye — Issue Management & Verified Resolution Platform",
       },
       {
         property: "og:description",
         content:
-          "Civic operations, from report to verified resolution. Report issues, assign responsibility, track progress, and verify completed work.",
+          "One platform for organizations to report, assign, track, and verify local issues with photo evidence and SLA accountability.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -50,12 +47,9 @@ function Landing() {
       <main>
         <LandingHero />
         <TrustStrip />
-        <WorkflowSection />
         <ProductPreviewSection />
-        <MapPreviewSection />
-        <EvidenceSection />
+        <WorkflowSection />
         <OperationsSection />
-        <DashboardPreviewSection />
         <PlatformFeaturesSection />
         <TrustSecuritySection />
         <LandingPricingTeaser />

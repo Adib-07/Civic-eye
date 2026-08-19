@@ -51,19 +51,69 @@ export function isSupabaseConfigured(): boolean {
   return Boolean(getSupabaseUrl() && getSupabaseAnonKey());
 }
 
-/** Clear error when Supabase client env vars are missing. CivicEye requires cloud persistence. */
+/**
+ * Returns a human-readable error when Supabase is not configured.
+ * Returns null when Supabase is properly set up.
+ */
 export function getSupabaseConfigError(): string | null {
   if (isSupabaseConfigured()) return null;
 
   const missing: string[] = [];
   if (!getSupabaseUrl()) {
-    missing.push("VITE_SUPABASE_URL or VITE_SUPABASE_PROJECT_ID");
+    missing.push("VITE_SUPABASE_URL (or VITE_SUPABASE_PROJECT_ID)");
   }
   if (!getSupabaseAnonKey()) {
-    missing.push("VITE_SUPABASE_ANON_KEY or VITE_SUPABASE_PUBLISHABLE_KEY");
+    missing.push("VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY)");
   }
 
-  return `Supabase is required but not configured. Missing ${missing.join(" and ")}. Set these in your environment (e.g. Vercel or .env) and rebuild. CivicEye does not store reports locally.`;
+  return `Supabase credentials missing: ${missing.join(" and ")}. Copy .env.example to .env and set your project credentials.`;
+}
+
+/**
+ * Diagnostic summary showing which env vars are detected.
+ * Useful for debugging configuration issues.
+ */
+export function getSupabaseConfigSummary(): {
+  configured: boolean;
+  urlPresent: boolean;
+  keyPresent: boolean;
+  orgPresent: boolean;
+  urlRaw: string | undefined;
+  keyRaw: string | undefined;
+  orgRaw: string | undefined;
+} {
+  const urlRaw = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim();
+  const keyRaw =
+    (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim() ??
+    (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined)?.trim();
+  const orgRaw = (import.meta.env.VITE_DEFAULT_ORGANIZATION_ID as string | undefined)?.trim();
+  return {
+    configured: isSupabaseConfigured(),
+    urlPresent: Boolean(getSupabaseUrl()),
+    keyPresent: Boolean(getSupabaseAnonKey()),
+    orgPresent: Boolean(getDefaultOrganizationId()),
+    urlRaw: urlRaw || undefined,
+    keyRaw: keyRaw ? `${keyRaw.slice(0, 6)}…` : undefined,
+    orgRaw: orgRaw || undefined,
+  };
+}
+
+/**
+ * Logs a console warning once when Supabase is not configured.
+ * Helps developers diagnose missing env vars without cluttering the UI.
+ */
+let warnedOnce = false;
+if (typeof window !== "undefined" && !isSupabaseConfigured()) {
+  warnedOnce = true;
+  const summary = getSupabaseConfigSummary();
+  console.warn(
+    "[CivicEye] Supabase is not configured. Report submission and staff features require database access.\n" +
+      `→ VITE_SUPABASE_URL detected: ${summary.urlPresent ? "yes" : "NO — not found or placeholder"}\n` +
+      `→ VITE_SUPABASE_ANON_KEY detected: ${summary.keyPresent ? "yes" : "NO — not found or placeholder"}\n` +
+      `→ VITE_DEFAULT_ORGANIZATION_ID detected: ${summary.orgPresent ? "yes" : "NO"}\n` +
+      "→ Copy .env.example to .env and set VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY.\n" +
+      "→ For Lovable projects, use VITE_SUPABASE_PUBLISHABLE_KEY instead of VITE_SUPABASE_ANON_KEY.",
+  );
 }
 
 /** Organization UUID for routing citizen reports. Required when Supabase is enabled. */

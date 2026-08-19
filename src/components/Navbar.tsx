@@ -4,12 +4,12 @@ import { FiMenu, FiX, FiMoon, FiSun, FiEye, FiArrowRight } from "react-icons/fi"
 import { useTheme } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 
-const mainNavLinks = [
-  { to: "/for-organizations", hash: undefined, label: "Platform" },
+const marketingNavLinks = [
+  { to: "/for-organizations", hash: undefined, label: "Product" },
   { to: "/for-organizations", hash: "solutions", label: "Solutions" },
   { to: "/for-organizations", hash: "workflow", label: "How It Works" },
   { to: "/pricing", hash: undefined, label: "Pricing" },
-  { to: "/faq", hash: undefined, label: "Resources" },
+  { to: "/faq", hash: undefined, label: "FAQ" },
 ] as const;
 
 export function Navbar({ variant = "default" }: { variant?: "default" | "cinematic" }) {
@@ -61,8 +61,13 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
-          {mainNavLinks.map((l) => (
-            <Link key={`${l.to}-${l.hash ?? ''}`} to={l.to} hash={l.hash} className={linkClass(pathname === l.to, !!l.hash)}>
+          {marketingNavLinks.map((l) => (
+            <Link
+              key={`${l.to}-${l.hash ?? ""}`}
+              to={l.to}
+              hash={l.hash}
+              className={linkClass(pathname === l.to, !!l.hash)}
+            >
               {l.label}
             </Link>
           ))}
@@ -147,7 +152,7 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
           )}
           aria-label="Mobile navigation"
         >
-          {mainNavLinks.map((l) => (
+          {marketingNavLinks.map((l) => (
             <Link
               key={l.label}
               to={l.to}

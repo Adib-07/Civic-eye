@@ -15,8 +15,8 @@ export function Footer() {
             </span>
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-            Civic operations platform for communities, campuses, townships, and facility
-            management teams.
+            Issue management and verified-resolution platform for communities,
+            campuses, townships, and facility management teams.
           </p>
         </div>
 
@@ -29,34 +29,29 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/report" className="transition-colors hover:text-foreground">
-                Report an Issue
+              <Link to="/for-organizations" hash="workflow" className="transition-colors hover:text-foreground">
+                How It Works
               </Link>
             </li>
             <li>
-              <Link to="/map" className="transition-colors hover:text-foreground">
-                Live Map
-              </Link>
-            </li>
-            <li>
-              <Link to="/reports" className="transition-colors hover:text-foreground">
-                Reports Queue
+              <Link to="/for-organizations" hash="solutions" className="transition-colors hover:text-foreground">
+                Solutions
               </Link>
             </li>
           </ul>
         </div>
 
         <div>
-          <h4 className="text-sm font-semibold">Solutions</h4>
+          <h4 className="text-sm font-semibold">Resources</h4>
           <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            <li>
-              <Link to="/for-organizations" className="transition-colors hover:text-foreground">
-                For Organizations
-              </Link>
-            </li>
             <li>
               <Link to="/pricing" className="transition-colors hover:text-foreground">
                 Pricing
+              </Link>
+            </li>
+            <li>
+              <Link to="/faq" className="transition-colors hover:text-foreground">
+                FAQ
               </Link>
             </li>
             <li>
@@ -68,13 +63,8 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="text-sm font-semibold">Resources</h4>
+          <h4 className="text-sm font-semibold">Legal</h4>
           <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            <li>
-              <Link to="/faq" className="transition-colors hover:text-foreground">
-                FAQ
-              </Link>
-            </li>
             <li>
               <Link to="/privacy" className="transition-colors hover:text-foreground">
                 Privacy Policy
@@ -89,7 +79,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-        &copy; {new Date().getFullYear()} CivicEye. Civic operations, from report to verified resolution.
+        &copy; {new Date().getFullYear()} CivicEye. Issue management from report to verified resolution.
       </div>
     </footer>
   );
