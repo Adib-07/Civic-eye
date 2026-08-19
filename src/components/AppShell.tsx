@@ -14,13 +14,16 @@ import {
   FiMoon,
   FiUser,
   FiAlertTriangle,
+  FiLock,
+  FiArrowRight,
 } from "react-icons/fi";
 import { toast } from "sonner";
 
 import { signOut } from "@/lib/auth";
-import { useAuth, useTheme } from "@/lib/hooks";
+import { useAuth, useOrganizationSubscription, useTheme } from "@/lib/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { canManageReports, isStaffRole } from "@/lib/types";
+import { getDefaultOrganizationId, resolveOrganizationId } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import { Loader } from "./EmptyState";
 
@@ -74,6 +77,11 @@ export function AppShell({
   const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.search }) as Record<string, unknown>;
+
+  const orgId = resolveOrganizationId(profile) ?? getDefaultOrganizationId();
+  const { data: subscription } = useOrganizationSubscription(
+    requireStaff && isStaffRole(profile?.role) ? orgId : null,
+  );
 
   useEffect(() => {
     if (authLoading) return;
@@ -227,7 +235,15 @@ export function AppShell({
             transition={{ duration: 0.25 }}
             className="mt-4 pb-16"
           >
-            {ready ? children : <Loader label="Checking session" />}
+            {ready ? (
+              requireStaff && subscription && !subscription.isActive ? (
+                <SubscriptionPaywall subscription={subscription} />
+              ) : (
+                children
+              )
+            ) : (
+              <Loader label="Checking session" />
+            )}
           </motion.div>
         </main>
       </div>
@@ -236,3 +252,45 @@ export function AppShell({
 }
 
 export { canManageReports };
+
+function SubscriptionPaywall({
+  subscription,
+}: {
+  subscription: { planName: string; status: string; trialEndsAt: string | null };
+}) {
+  const isExpired =
+    subscription.status === "expired" ||
+    subscription.status === "cancelled" ||
+    (subscription.trialEndsAt && new Date(subscription.trialEndsAt).getTime() < Date.now());
+
+  return (
+    <div className="surface-panel mx-auto max-w-lg p-8 text-center">
+      <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-destructive/10 text-destructive">
+        <FiLock className="h-7 w-7" />
+      </div>
+      <h2 className="mt-4 font-display text-xl font-bold">Subscription inactive</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {isExpired
+          ? `Your ${subscription.planName} plan has expired. Contact your organization administrator to renew.`
+          : `Your ${subscription.planName} plan is not currently active. Staff actions are restricted until the subscription is restored.`}
+      </p>
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <Link
+          to="/pricing"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
+        >
+          View plans <FiArrowRight className="h-4 w-4" />
+        </Link>
+        <Link
+          to="/"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold"
+        >
+          Back to home
+        </Link>
+      </div>
+      <p className="mt-4 text-xs text-muted-foreground">
+        Read-only access may still be available. Contact support if you believe this is an error.
+      </p>
+    </div>
+  );
+}

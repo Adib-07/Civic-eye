@@ -34,32 +34,6 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/pricing" className="transition-colors hover:text-foreground">
-                Pricing
-              </Link>
-            </li>
-            <li>
-              <Link to="/map" className="transition-colors hover:text-foreground">
-                Live map
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="text-sm font-semibold">Product</h4>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            <li>
-              <Link to="/report" className="transition-colors hover:text-foreground">
-                Report an issue
-              </Link>
-            </li>
-            <li>
-              <Link to="/reports" className="transition-colors hover:text-foreground">
-                Browse reports
-              </Link>
-            </li>
-            <li>
               <Link to="/for-organizations" className="transition-colors hover:text-foreground">
                 For Organizations
               </Link>
@@ -83,11 +57,6 @@ export function Footer() {
             <li>
               <Link to="/book-demo" className="transition-colors hover:text-foreground">
                 Book a Demo
-              </Link>
-            </li>
-            <li>
-              <Link to="/dashboard" className="transition-colors hover:text-foreground">
-                Operations dashboard
               </Link>
             </li>
             <li>

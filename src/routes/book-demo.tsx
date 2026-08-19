@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { FiCheckCircle, FiSend, FiShield, FiClock, FiUsers } from "react-icons/fi";
+import { FiCheckCircle, FiSend, FiShield, FiClock, FiUsers, FiArrowRight } from "react-icons/fi";
 import { toast } from "sonner";
 
 import { Footer } from "@/components/Footer";
@@ -122,13 +122,16 @@ export function BookDemoPage() {
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">
                     Thank you, <strong>{formData.name}</strong>! We have received your demo inquiry for <strong>{formData.organization}</strong>. Our team will contact you at <strong>{formData.email}</strong> within 24 hours.
                   </p>
-                  <p className="text-xs font-mono text-muted-foreground bg-secondary/50 p-2.5 rounded-xl border border-border/60">
-                    Note: Demo request registered for sales review. Automated email dispatch will connect in upcoming production release.
-                  </p>
-                  <div className="pt-4">
+                  <div className="pt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
+                    <Link
+                      to="/"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold"
+                    >
+                      Back to home
+                    </Link>
                     <button
                       onClick={() => setSubmitted(false)}
-                      className="btn-secondary text-xs"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
                     >
                       Submit another request
                     </button>
