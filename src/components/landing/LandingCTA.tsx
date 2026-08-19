@@ -11,15 +11,14 @@ export function LandingCTA() {
             Ready to run civic operations with accountability?
           </h2>
           <p className="mt-4 text-base leading-relaxed text-white/65">
-            Start a pilot workspace, submit a test report, or sign in to triage live issues for your
-            organization.
+            Start a pilot workspace or request a walkthrough with our product team.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link to="/start" className="cinematic-btn-primary">
-              Start pilot <FiArrowRight aria-hidden />
+            <Link to="/book-demo" className="cinematic-btn-primary">
+              Request a Demo <FiArrowRight aria-hidden />
             </Link>
-            <Link to="/login" className="cinematic-btn-secondary">
-              Staff sign in
+            <Link to="/start" className="cinematic-btn-secondary">
+              Start Pilot
             </Link>
           </div>
         </div>

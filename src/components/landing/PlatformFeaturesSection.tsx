@@ -34,7 +34,7 @@ const PLATFORM_FEATURES = [
   {
     icon: FiCheckCircle,
     title: "Verify before close",
-    text: "Resolved work can be confirmed or sent back to In Progress — a clear audit trail for accountability.",
+    text: "Resolved work can be confirmed or sent back — a clear audit trail for accountability.",
   },
   {
     icon: FiMapPin,
@@ -87,9 +87,9 @@ export function PlatformFeaturesSection() {
 export function TrustSecuritySection() {
   return (
     <FeatureSection
-      label="Trust & security"
-      title="Ready for organization adoption"
-      description="We do not show fabricated customer counts or ratings. CivicEye earns trust through a clear workflow and database-enforced isolation between organizations."
+      label="Trust &amp; security"
+      title="Built for organizational adoption"
+      description="CivicEye earns trust through a clear workflow and database-enforced isolation between organizations."
     >
       <div className="grid gap-4 sm:grid-cols-3">
         {TRUST_POINTS.map((t) => (

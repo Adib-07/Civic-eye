@@ -78,16 +78,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CivicEye — Civic Issue Reporting for Organizations" },
+      { title: "CivicEye — Civic Operations Platform" },
       {
         name: "description",
         content:
-          "Report city problems with a photo, get instant AI classification, and track fixes on a live map.",
+          "Civic operations, from report to verified resolution. Report issues, assign responsibility, track progress, and verify completed work.",
       },
-      { property: "og:title", content: "CivicEye — Civic Issue Reporting for Organizations" },
+      { property: "og:title", content: "CivicEye — Civic Operations Platform" },
       {
         property: "og:description",
-        content: "Photo-first civic issue reporting with AI classification and a live city map.",
+        content: "Civic operations platform for communities, campuses, townships, and facility management teams.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

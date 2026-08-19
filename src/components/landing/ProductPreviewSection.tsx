@@ -13,70 +13,66 @@ export function ProductPreviewSection() {
       description="Most organizations struggle with lost emails, informal messaging threads, and zero SLA visibility. CivicEye unifies intake, routing, map tracking, and verified resolution into one operational workspace."
     >
       <div className="space-y-12">
-        {/* The Problem vs CivicEye Workspace Comparison */}
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Legacy Problem Card */}
           <div className="rounded-xl border border-red-500/20 bg-red-950/10 p-6 backdrop-blur-sm">
             <div className="flex items-center gap-3 text-red-400 font-semibold text-sm">
               <FiXCircle className="h-5 w-5" />
-              <span>The Problem: Legacy Fragmented Operations</span>
+              <span>The Problem: Fragmented Operations</span>
             </div>
             <ul className="mt-4 space-y-3 text-xs text-slate-300">
               <li className="flex items-start gap-2">
-                <span className="text-red-400 font-bold">•</span>
+                <span className="text-red-400 font-bold">&bull;</span>
                 Scattered complaints trapped in inboxes, paper logs, and messaging threads.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-400 font-bold">•</span>
+                <span className="text-red-400 font-bold">&bull;</span>
                 Missing photo evidence and vague location descriptions.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-400 font-bold">•</span>
-                Unclear ownership and no structured routing to ward teams.
+                <span className="text-red-400 font-bold">&bull;</span>
+                Unclear ownership and no structured routing to responsible teams.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-400 font-bold">•</span>
+                <span className="text-red-400 font-bold">&bull;</span>
                 Slow resolution times with zero SLA tracking or breach visibility.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-400 font-bold">•</span>
-                No accountability — issues marked done without supervisor sign-off.
+                <span className="text-red-400 font-bold">&bull;</span>
+                No accountability — issues marked done without verification.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-400 font-bold">•</span>
-                No audit trail or historical record of recurring infrastructure defects.
+                <span className="text-red-400 font-bold">&bull;</span>
+                No audit trail or historical record of recurring defects.
               </li>
             </ul>
           </div>
 
-          {/* CivicEye Workspace Card */}
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/10 p-6 backdrop-blur-sm">
             <div className="flex items-center gap-3 text-emerald-400 font-semibold text-sm">
               <FiCheckCircle className="h-5 w-5" />
-              <span>CivicEye: One Command Workspace</span>
+              <span>CivicEye: One Accountable Workspace</span>
             </div>
             <ul className="mt-4 space-y-3 text-xs text-slate-300">
               <li className="flex items-start gap-2">
-                <span className="text-emerald-400 font-bold">•</span>
-                Unified intake feed with automatic AI category suggestions.
+                <span className="text-emerald-400 font-bold">&bull;</span>
+                Unified intake feed with structured categories and descriptions.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-400 font-bold">•</span>
-                Interactive OpenStreetMap pins + mandatory photo evidence.
+                <span className="text-emerald-400 font-bold">&bull;</span>
+                Interactive map pins with mandatory photo evidence.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-400 font-bold">•</span>
-                Automated SLA timers &amp; instant breach notifications for ward officers.
+                <span className="text-emerald-400 font-bold">&bull;</span>
+                Automated SLA timers and breach alerts for assigned staff.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-400 font-bold">•</span>
-                Staff sign-off + citizen resolution verification workflow.
+                <span className="text-emerald-400 font-bold">&bull;</span>
+                Staff sign-off plus citizen resolution verification.
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Live Interface Showcase */}
         <div className="grid items-center gap-8 lg:grid-cols-2">
           <ProductShowcase />
           <div className="flex flex-col justify-center">

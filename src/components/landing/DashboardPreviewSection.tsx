@@ -26,8 +26,7 @@ export function DashboardPreviewSection() {
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
               Staff sign in to see live KPIs, attention queues, category breakdowns, and recent
-              reports — all scoped to your organization. No fabricated metrics on this page; your
-              dashboard reflects real Supabase data.
+              reports — all scoped to your organization.
             </p>
             <Link to="/dashboard" className="btn-primary mt-6 inline-flex px-4 py-2.5 text-sm">
               Open dashboard <FiArrowRight aria-hidden />

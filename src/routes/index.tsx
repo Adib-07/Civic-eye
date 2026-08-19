@@ -20,20 +20,20 @@ import { WorkflowSection } from "@/components/landing/WorkflowSection";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CivicEye — Civic Issue Reporting for Organizations" },
+      { title: "CivicEye — Civic Operations Platform" },
       {
         name: "description",
         content:
-          "CivicEye helps municipalities, campuses, and housing societies collect geo-tagged issue reports, assign staff, track SLAs, and verify resolutions — with organization-level data isolation.",
+          "CivicEye helps communities and organizations report, assign, track, and verify local issues from one accountable workflow.",
       },
       {
         property: "og:title",
-        content: "CivicEye — Civic Issue Reporting for Organizations",
+        content: "CivicEye — Civic Operations Platform",
       },
       {
         property: "og:description",
         content:
-          "Photo-first citizen reporting plus a staff operations dashboard: assign, resolve, and verify civic issues in one workflow.",
+          "Civic operations, from report to verified resolution. Report issues, assign responsibility, track progress, and verify completed work.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

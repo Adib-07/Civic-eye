@@ -10,7 +10,7 @@ export function EvidenceSection() {
     <section className="border-y border-border bg-secondary/25 py-16 sm:py-20">
       <div className="page-container">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="section-label">Evidence & verification</p>
+          <p className="section-label">Evidence &amp; verification</p>
           <h2 className="mt-2 section-title text-2xl sm:text-3xl">
             Photo evidence and verified resolutions
           </h2>
@@ -49,8 +49,8 @@ export function EvidenceSection() {
         <div className="mx-auto mt-8 flex max-w-xl items-start gap-3 rounded-xl border border-border bg-background p-4 text-sm text-muted-foreground">
           <FiShield className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
           <p>
-            Images upload to your Supabase storage bucket with organization-scoped paths. Existing
-            upload and display logic is unchanged — this section shows the operational workflow.
+            Every resolution requires photo evidence and a verification step. This ensures work
+            is actually completed — not just marked done in a spreadsheet.
           </p>
         </div>
       </div>

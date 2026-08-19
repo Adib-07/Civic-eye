@@ -12,11 +12,12 @@ export function LandingPricingTeaser() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="section-label">Pricing</p>
           <h2 className="mt-2 section-title text-2xl sm:text-3xl">
-            Organization plans — residents report free
+            Plans for organizations, not citizens
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Your municipality, campus, or society subscribes. Staff operate the platform. Citizens
-            never pay to report an issue.
+            Your organization subscribes. Staff operate the platform. Residents
+            report issues for free. All plans include organization-scoped data isolation and
+            role-based staff access.
           </p>
         </div>
 

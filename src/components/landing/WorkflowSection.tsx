@@ -3,29 +3,29 @@ import {
   FiCheckCircle,
   FiClipboard,
   FiCompass,
-  FiActivity,
-  FiBarChart2,
+  FiTarget,
+  FiEye,
 } from "react-icons/fi";
 
 import { WORKFLOW_STEPS } from "@/components/landing/landing-data";
 
 const ICONS = {
   report: FiClipboard,
-  route: FiCompass,
-  act: FiActivity,
-  verify: FiCheckCircle,
-  analyze: FiBarChart2,
+  assign: FiTarget,
+  track: FiCompass,
+  resolve: FiCheckCircle,
+  verify: FiEye,
 } as const;
 
 export function WorkflowSection() {
   return (
-    <section className="border-b border-border bg-secondary/30 py-16 sm:py-20">
+    <section id="workflow" className="border-b border-border bg-secondary/30 py-16 sm:py-20">
       <div className="page-container">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="section-label">Workflow</p>
-          <h2 className="mt-2 section-title text-2xl sm:text-3xl">From report to resolution</h2>
+          <p className="section-label">How It Works</p>
+          <h2 className="mt-2 section-title text-2xl sm:text-3xl">From report to verified resolution</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Five stages your organization runs every day — visible to staff and reporters.
+            Five accountable stages your organization runs every day — visible to staff and reporters.
           </p>
         </div>
 
@@ -54,7 +54,7 @@ export function WorkflowSection() {
                       className="mx-2 mt-12 hidden text-muted-foreground/40 lg:inline"
                       aria-hidden
                     >
-                      →
+                      &rarr;
                     </span>
                   </>
                 )}

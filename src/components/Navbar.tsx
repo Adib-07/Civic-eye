@@ -5,12 +5,11 @@ import { useTheme } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 
 const mainNavLinks = [
-  { to: "/", hash: undefined, label: "Home" },
-  { to: "/for-organizations", hash: undefined, label: "For Organizations" },
-  { to: "/reports", hash: undefined, label: "Reports Queue" },
-  { to: "/map", hash: undefined, label: "Live Map" },
+  { to: "/for-organizations", hash: undefined, label: "Platform" },
+  { to: "/for-organizations", hash: "solutions", label: "Solutions" },
+  { to: "/for-organizations", hash: "workflow", label: "How It Works" },
   { to: "/pricing", hash: undefined, label: "Pricing" },
-  { to: "/faq", hash: undefined, label: "FAQ" },
+  { to: "/faq", hash: undefined, label: "Resources" },
 ] as const;
 
 export function Navbar({ variant = "default" }: { variant?: "default" | "cinematic" }) {
@@ -19,14 +18,14 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const cinematic = variant === "cinematic";
 
-  const linkClass = (active: boolean) =>
+  const linkClass = (active: boolean, hasHash?: boolean) =>
     cn(
       "rounded-md px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors",
       cinematic
-        ? cn("text-slate-300 hover:text-white", active && "bg-white/10 text-white")
+        ? cn("text-slate-300 hover:text-white", active && !hasHash && "bg-white/10 text-white")
         : cn(
             "text-muted-foreground hover:text-foreground",
-            active && "bg-secondary text-foreground",
+            active && !hasHash && "bg-secondary text-foreground",
           ),
     );
 
@@ -57,16 +56,13 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
             )}
           >
             Civic<span className="text-blue-400">Eye</span>
-            <span className="ml-2 rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-blue-300 border border-blue-500/20 hidden sm:inline">
-              B2B SAAS
-            </span>
           </span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
           {mainNavLinks.map((l) => (
-            <Link key={l.label} to={l.to} hash={l.hash} className={linkClass(pathname === l.to)}>
+            <Link key={`${l.to}-${l.hash ?? ''}`} to={l.to} hash={l.hash} className={linkClass(pathname === l.to, !!l.hash)}>
               {l.label}
             </Link>
           ))}
@@ -121,7 +117,7 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
                 : "bg-primary text-primary-foreground hover:bg-primary/90",
             )}
           >
-            <span>Book a Demo</span>
+            <span>Request Demo</span>
             <FiArrowRight className="h-3.5 w-3.5" />
           </Link>
 
@@ -180,14 +176,14 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
                 cinematic ? "text-white" : "text-foreground",
               )}
             >
-              Staff sign in
+              Sign In
             </Link>
             <Link
-              to="/start"
+              to="/book-demo"
               onClick={() => setOpen(false)}
               className="rounded-lg px-3 py-2 text-xs font-semibold text-center bg-blue-600 text-white"
             >
-              Start an organization pilot →
+              Request Demo
             </Link>
           </div>
         </nav>

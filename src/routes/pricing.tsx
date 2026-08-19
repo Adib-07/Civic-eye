@@ -13,7 +13,7 @@ export const Route = createFileRoute("/pricing")({
       {
         name: "description",
         content:
-          "Organization-based pricing for CivicEye. Start a free pilot or choose Starter, Professional, or Enterprise plans.",
+          "Organization-based pricing for CivicEye. Start a free pilot or choose Community, Growth, or Enterprise plans.",
       },
     ],
   }),
@@ -37,7 +37,7 @@ function PricingPage() {
             role-based staff access.
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
-            Prices shown are business testing rates and may change before general availability.
+            Pricing shown reflects current commercial structure and may evolve as the platform matures.
           </p>
         </div>
 
@@ -65,7 +65,7 @@ function PricingPage() {
               </p>
               {plan.annualPriceInr !== null && plan.annualPriceInr > 0 && (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  or {formatInr(plan.annualPriceInr)}/year (annual billing coming soon)
+                  or {formatInr(plan.annualPriceInr)}/year (annual billing)
                 </p>
               )}
 
@@ -88,9 +88,9 @@ function PricingPage() {
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li>Organizations subscribe; citizens never pay to report an issue.</li>
             <li>Pilot workspaces are free for 30 days with plan limits enforced.</li>
-            <li>Paid plans are activated manually until online checkout is connected.</li>
+            <li>Paid plans are activated until online checkout is connected.</li>
             <li>
-              No payment secrets are stored in the browser — billing runs server-side when enabled.
+              No payment data is stored in the browser — billing runs server-side.
             </li>
           </ul>
           <p className="mt-4 text-sm">

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { FiCheckCircle, FiSend, FiShield, FiClock, FiUsers, FiArrowRight } from "react-icons/fi";
+import { FiCheckCircle, FiSend, FiShield, FiClock, FiUsers } from "react-icons/fi";
 import { toast } from "sonner";
 
 import { Footer } from "@/components/Footer";
@@ -9,7 +9,7 @@ import { Navbar } from "@/components/Navbar";
 export const Route = createFileRoute("/book-demo")({
   head: () => ({
     meta: [
-      { title: "Book a Demo — CivicEye for Organizations" },
+      { title: "Request a Demo — CivicEye for Organizations" },
       {
         name: "description",
         content:
@@ -22,10 +22,11 @@ export const Route = createFileRoute("/book-demo")({
 
 const ORG_TYPES = [
   "Residential Community / RWA",
-  "College / University",
-  "Campus",
+  "University / College",
+  "Corporate Campus",
   "Township",
   "Facility Management",
+  "Public-Sector / Municipal",
   "Other",
 ] as const;
 
@@ -72,14 +73,13 @@ export function BookDemoPage() {
           {/* Left Column — Value Prop */}
           <div className="lg:col-span-5 space-y-6">
             <div>
-              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-blue-400">
-                Schedule a Walkthrough
-              </span>
+              <p className="section-label">Schedule a Walkthrough</p>
               <h1 className="mt-2 text-3xl font-bold sm:text-4xl text-foreground">
                 See how CivicEye works for your team
               </h1>
               <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                Book a 15-minute product demonstration. We will show you how to capture photo reports, manage staff dispatch, track SLAs, and enforce citizen resolution verification.
+                Request a 15-minute product demonstration. We will show you how to capture photo reports,
+                manage staff dispatch, track SLAs, and enforce resolution verification.
               </p>
             </div>
 
@@ -95,7 +95,7 @@ export function BookDemoPage() {
               <div className="flex items-start gap-3 text-xs sm:text-sm">
                 <FiShield className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-foreground">No obligation pilot workspace</strong>
+                  <strong className="text-foreground">No-obligation pilot workspace</strong>
                   <p className="text-muted-foreground">Test live workflows with up to 5 staff members free.</p>
                 </div>
               </div>
@@ -103,8 +103,8 @@ export function BookDemoPage() {
               <div className="flex items-start gap-3 text-xs sm:text-sm">
                 <FiClock className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-foreground">Fast 24-hour response</strong>
-                  <p className="text-muted-foreground">Our product team will confirm your slot within one business day.</p>
+                  <strong className="text-foreground">Response within one business day</strong>
+                  <p className="text-muted-foreground">Our product team will confirm your slot within 24 hours.</p>
                 </div>
               </div>
             </div>
@@ -112,7 +112,7 @@ export function BookDemoPage() {
 
           {/* Right Column — Form */}
           <div className="lg:col-span-7">
-            <div className="glass p-6 sm:p-8 rounded-2xl border border-border shadow-xl">
+            <div className="surface-panel p-6 sm:p-8">
               {submitted ? (
                 <div className="text-center py-8 space-y-4">
                   <div className="h-14 w-14 rounded-full bg-emerald-500/15 text-emerald-500 grid place-items-center mx-auto">
@@ -120,18 +120,19 @@ export function BookDemoPage() {
                   </div>
                   <h3 className="text-xl font-bold text-foreground">Demo Request Received</h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    Thank you, <strong>{formData.name}</strong>! We have received your demo inquiry for <strong>{formData.organization}</strong>. Our team will contact you at <strong>{formData.email}</strong> within 24 hours.
+                    Thank you. Your request has been recorded and will be reviewed by the CivicEye team.
+                    We will contact you at <strong>{formData.email}</strong> within one business day.
                   </p>
                   <div className="pt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
                     <Link
                       to="/"
-                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold"
+                      className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold"
                     >
                       Back to home
                     </Link>
                     <button
                       onClick={() => setSubmitted(false)}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
+                      className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
                     >
                       Submit another request
                     </button>
@@ -140,7 +141,7 @@ export function BookDemoPage() {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <h3 className="text-lg font-bold text-foreground pb-2 border-b border-border">
-                    Request an Organization Demo
+                    Request a Demo
                   </h3>
 
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -154,13 +155,13 @@ export function BookDemoPage() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="e.g. Aditi Sharma"
-                        className="w-full rounded-xl border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
                       />
                     </div>
 
                     <div>
                       <label className="block text-xs font-bold text-foreground mb-1">
-                        Organization Name <span className="text-destructive">*</span>
+                        Organization <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="text"
@@ -168,7 +169,7 @@ export function BookDemoPage() {
                         value={formData.organization}
                         onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
                         placeholder="e.g. Green Valley RWA / IIT Campus"
-                        className="w-full rounded-xl border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
                       />
                     </div>
                   </div>
@@ -184,7 +185,7 @@ export function BookDemoPage() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="name@organization.com"
-                        className="w-full rounded-xl border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
                       />
                     </div>
 
@@ -195,7 +196,7 @@ export function BookDemoPage() {
                       <select
                         value={formData.orgType}
                         onChange={(e) => setFormData({ ...formData, orgType: e.target.value as (typeof ORG_TYPES)[number] })}
-                        className="w-full rounded-xl border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
                       >
                         {ORG_TYPES.map((t) => (
                           <option key={t} value={t}>
@@ -208,27 +209,27 @@ export function BookDemoPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-foreground mb-1">
-                      Phone Number <span className="text-muted-foreground font-normal">(Optional)</span>
+                      Phone <span className="text-muted-foreground font-normal">(optional)</span>
                     </label>
                     <input
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="+91 98765 43210"
-                      className="w-full rounded-xl border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-foreground mb-1">
-                      Message / Requirements <span className="text-muted-foreground font-normal">(Optional)</span>
+                      What would you like to manage? <span className="text-muted-foreground font-normal">(optional)</span>
                     </label>
                     <textarea
                       rows={3}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Tell us about your team size, campus area, or primary maintenance challenges..."
-                      className="w-full rounded-xl border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                      placeholder="e.g. Campus facility maintenance, township infrastructure, community issue tracking..."
+                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
                     />
                   </div>
 
@@ -236,14 +237,14 @@ export function BookDemoPage() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-blue-500 disabled:opacity-60"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-blue-500 disabled:opacity-60"
                     >
                       {loading ? (
                         <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
                       ) : (
                         <FiSend className="h-4 w-4" />
                       )}
-                      Submit Demo Request
+                      Request a Demo
                     </button>
                   </div>
                 </form>

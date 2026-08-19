@@ -46,7 +46,7 @@ export const Route = createFileRoute("/report")({
       {
         name: "description",
         content:
-          "Report a city issue with photo evidence, GPS pin location, and instant AI category suggestion.",
+          "Report a city issue with photo evidence, GPS pin location, and category suggestion.",
       },
     ],
   }),
@@ -146,7 +146,7 @@ export function ReportPage() {
       const result = predictCategory(file.name);
       setAi(result);
       applyCategory(result.category, true);
-      toast.success(`Photo attached — AI suggested "${result.category}"`);
+      toast.success(`Photo attached — suggested category: "${result.category}"`);
     };
     reader.readAsDataURL(file);
   };
@@ -200,7 +200,7 @@ export function ReportPage() {
       });
 
       if (!configured) {
-        throw new Error(configError ?? "Supabase is not configured for report submission.");
+        throw new Error("Report submission is unavailable. The database connection is not configured for this environment.");
       }
 
       if (imageFile) setUploadPhase("uploading");
@@ -251,12 +251,15 @@ export function ReportPage() {
     >
       <div className="mx-auto max-w-3xl">
         {/* Supabase / Env Config Warnings */}
-        {!configured && configError && (
+        {!configured && (
           <div className="mb-6 flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
             <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
             <div>
-              <p className="font-bold text-destructive">Database Connection Issue</p>
-              <p className="mt-1 text-muted-foreground">{configError}</p>
+              <p className="font-bold text-destructive">Service Unavailable</p>
+              <p className="mt-1 text-muted-foreground">
+                Database connection is not configured for this environment.
+                Report submission is temporarily unavailable. Please try again later.
+              </p>
             </div>
           </div>
         )}
@@ -265,10 +268,10 @@ export function ReportPage() {
           <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
             <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
             <div>
-              <p className="font-bold text-amber-500">Organization ID Required</p>
+              <p className="font-bold text-amber-500">Configuration Required</p>
               <p className="mt-1 text-muted-foreground">
-                Set <code className="font-mono text-xs">VITE_DEFAULT_ORGANIZATION_ID</code> in your
-                env before submitting production reports.
+                The default organization is not configured. Please contact your administrator
+                to complete environment setup before submitting reports.
               </p>
             </div>
           </div>
@@ -511,8 +514,8 @@ export function ReportPage() {
                   <h2 className="text-lg font-bold">Select Category</h2>
                 </div>
                 {ai && (
-                  <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-500/20">
-                    AI Suggested: {ai.category} ({ai.confidence}%)
+                    <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-500/20">
+                    Suggested: {ai.category} ({ai.confidence}%)
                   </span>
                 )}
               </div>

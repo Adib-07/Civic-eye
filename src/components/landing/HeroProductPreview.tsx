@@ -7,7 +7,6 @@ import {
   FiCheckCircle,
   FiLayers,
   FiChevronRight,
-  FiAlertTriangle,
 } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 
@@ -15,48 +14,40 @@ const WORKFLOW_STEPS = [
   {
     id: "report",
     step: "01",
-    title: "Citizen Report",
-    desc: "30-second intake via web or mobile link",
+    title: "Report",
+    desc: "Capture the issue with photo and location",
     icon: FiCamera,
     color: "from-blue-500 to-indigo-600",
   },
   {
-    id: "evidence",
+    id: "assign",
     step: "02",
-    title: "Evidence + Location",
-    desc: "GPS coordinates & photo attachment",
-    icon: FiMapPin,
+    title: "Assign",
+    desc: "Route responsibility to the appropriate team",
+    icon: FiUserCheck,
     color: "from-indigo-500 to-sky-500",
   },
   {
-    id: "queue",
+    id: "track",
     step: "03",
-    title: "Operations Queue",
-    desc: "Central intake panel for facility teams",
-    icon: FiLayers,
+    title: "Track",
+    desc: "Monitor progress and SLA timelines",
+    icon: FiClock,
     color: "from-sky-500 to-blue-600",
   },
   {
-    id: "assignment",
+    id: "resolve",
     step: "04",
-    title: "Staff Assignment",
-    desc: "Auto-routing to ward officers",
-    icon: FiUserCheck,
+    title: "Resolve",
+    desc: "Require evidence and work notes",
+    icon: FiLayers,
     color: "from-blue-600 to-amber-500",
   },
   {
-    id: "sla",
+    id: "verify",
     step: "05",
-    title: "SLA Tracking",
-    desc: "Countdown timer & breach alerts",
-    icon: FiClock,
-    color: "from-amber-500 to-emerald-500",
-  },
-  {
-    id: "resolution",
-    step: "06",
-    title: "Verified Resolution",
-    desc: "Staff sign-off & citizen feedback",
+    title: "Verify",
+    desc: "Reporter confirms actual resolution",
     icon: FiCheckCircle,
     color: "from-emerald-500 to-teal-400",
   },
@@ -96,7 +87,7 @@ const PREVIEW_ISSUES = [
     location: "Block C Residential Complex",
     coords: "12.9654, 77.6011",
     priority: "High",
-    sla: "SLA Overdue (2h)",
+    sla: "Overdue",
     status: "In Progress",
     statusBg: "bg-red-500/10 text-red-400 border-red-500/20",
     assignee: "Officer M. Patil",
@@ -104,31 +95,75 @@ const PREVIEW_ISSUES = [
   },
 ];
 
+const STAGE_DETAILS: Record<string, { title: string; text: string; borderClass: string; bgClass: string; titleClass: string }> = {
+  report: {
+    title: "Citizen Reporting",
+    text: "Zero app installation required. Citizens submit photos and location tags via a lightweight web form.",
+    borderClass: "border-blue-500/20",
+    bgClass: "bg-blue-500/5",
+    titleClass: "text-blue-300",
+  },
+  evidence: {
+    title: "Geo & Visual Evidence",
+    text: "Automatic device GPS capture with interactive map pin and photo storage.",
+    borderClass: "border-indigo-500/20",
+    bgClass: "bg-indigo-500/5",
+    titleClass: "text-indigo-300",
+  },
+  queue: {
+    title: "Central Intake Console",
+    text: "Multi-column filterable operations table designed for ward managers and facility dispatchers.",
+    borderClass: "border-sky-500/20",
+    bgClass: "bg-sky-500/5",
+    titleClass: "text-sky-300",
+  },
+  assignment: {
+    title: "Staff Assignment",
+    text: "Assign issues to designated ward officers or specialized maintenance crews based on category.",
+    borderClass: "border-blue-500/20",
+    bgClass: "bg-blue-500/5",
+    titleClass: "text-blue-300",
+  },
+  sla: {
+    title: "SLA Tracking",
+    text: "Configurable resolution timelines per category. Automatic breach alerts for overdue tasks.",
+    borderClass: "border-amber-500/20",
+    bgClass: "bg-amber-500/5",
+    titleClass: "text-amber-300",
+  },
+  resolution: {
+    title: "Verified Resolution",
+    text: "Staff mark resolved with photo evidence, supervisors verify proof, and reporters receive status updates.",
+    borderClass: "border-emerald-500/20",
+    bgClass: "bg-emerald-500/5",
+    titleClass: "text-emerald-300",
+  },
+};
+
 export function HeroProductPreview() {
-  const [activeStep, setActiveStep] = useState(2); // default to Operations Queue (02/03)
+  const [activeStep, setActiveStep] = useState(2);
+
+  const stageKeys = ["report", "evidence", "queue", "assignment", "sla", "resolution"] as const;
+  const currentDetail = STAGE_DETAILS[stageKeys[activeStep]] ?? STAGE_DETAILS.queue;
 
   return (
     <div className="cinematic-product-shell mx-auto max-w-5xl">
-      {/* Top Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-slate-950/80 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-3">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-blue-500 animate-pulse" />
-          <span className="text-xs font-semibold text-white/90">CivicEye Operational Matrix</span>
+          <span className="text-xs font-semibold text-white/90">CivicEye Operations</span>
           <span className="rounded bg-blue-500/15 px-2 py-0.5 text-[10px] font-mono font-medium text-blue-300 border border-blue-500/20">
-            Org: Metro West Zone
+            Organization Workspace
           </span>
         </div>
         <div className="flex items-center gap-4 text-[11px] text-slate-400">
           <span className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            Live Supabase Sync
+            Role-Based Access
           </span>
-          <span className="hidden font-mono sm:inline">100% RLS Protected</span>
         </div>
       </div>
 
-      {/* Workflow Stepper Navigation */}
-      <div className="grid grid-cols-2 border-b border-white/10 bg-slate-900/60 p-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5">
+      <div className="grid grid-cols-2 border-b border-white/10 bg-slate-900/60 p-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5">
         {WORKFLOW_STEPS.map((step, idx) => {
           const Icon = step.icon;
           const isActive = activeStep === idx;
@@ -159,21 +194,18 @@ export function HeroProductPreview() {
         })}
       </div>
 
-      {/* Step Focus Detail & Interactive Mockup Workspace */}
       <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
-        {/* Left Interactive Operations Dashboard Workspace */}
         <div className="p-4 sm:p-6 border-b border-white/10 lg:border-b-0 lg:border-r border-white/10">
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-[11px] font-mono uppercase tracking-wider text-blue-400">
-                Stage {WORKFLOW_STEPS[activeStep].step} Focus
+                Stage {WORKFLOW_STEPS[activeStep].step}
               </p>
               <h3 className="text-base font-bold text-white">{WORKFLOW_STEPS[activeStep].title}</h3>
             </div>
             <span className="text-xs text-slate-400">{WORKFLOW_STEPS[activeStep].desc}</span>
           </div>
 
-          {/* Issue Intake List */}
           <div className="space-y-3">
             {PREVIEW_ISSUES.map((issue) => (
               <div
@@ -219,109 +251,21 @@ export function HeroProductPreview() {
           </div>
         </div>
 
-        {/* Right Stage Intelligence Panel */}
         <div className="p-4 sm:p-6 bg-slate-950/50 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 mb-3">
               <FiLayers className="text-blue-400" />
-              Live Stage Insights
+              Stage Details
             </div>
 
-            {activeStep === 0 && (
-              <div className="space-y-3 text-xs text-slate-300">
-                <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3">
-                  <p className="font-semibold text-blue-300">Citizen Mobile Intake</p>
-                  <p className="mt-1 text-slate-400 leading-relaxed">
-                    Zero app installation required. Citizens submit photos and location tags via
-                    lightweight mobile web form.
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-white/10 bg-white/5 font-mono text-[11px]">
-                  <span>Average Time to Submit</span>
-                  <span className="font-bold text-emerald-400">28 seconds</span>
-                </div>
+            <div className="space-y-3 text-xs text-slate-300">
+              <div className={cn("rounded-lg border p-3", currentDetail.borderClass, currentDetail.bgClass)}>
+                <p className={cn("font-semibold", currentDetail.titleClass)}>{currentDetail.title}</p>
+                <p className="mt-1 text-slate-400 leading-relaxed">
+                  {currentDetail.text}
+                </p>
               </div>
-            )}
-
-            {activeStep === 1 && (
-              <div className="space-y-3 text-xs text-slate-300">
-                <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-3">
-                  <p className="font-semibold text-indigo-300">Geo &amp; Visual Evidence</p>
-                  <p className="mt-1 text-slate-400 leading-relaxed">
-                    Automatic device GPS capture with interactive Leaflet map pin fallback and
-                    encrypted photo storage.
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-white/10 bg-white/5 font-mono text-[11px]">
-                  <span>Storage Integrity</span>
-                  <span className="font-bold text-blue-400">Supabase Bucket Locked</span>
-                </div>
-              </div>
-            )}
-
-            {activeStep === 2 && (
-              <div className="space-y-3 text-xs text-slate-300">
-                <div className="rounded-lg border border-sky-500/20 bg-sky-500/5 p-3">
-                  <p className="font-semibold text-sky-300">Central Intake Console</p>
-                  <p className="mt-1 text-slate-400 leading-relaxed">
-                    Multi-column filterable operations table designed for city ward managers and
-                    facility dispatchers.
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-white/10 bg-white/5 font-mono text-[11px]">
-                  <span>Queued Reports</span>
-                  <span className="font-bold text-amber-400">2 Pending Intake</span>
-                </div>
-              </div>
-            )}
-
-            {activeStep === 3 && (
-              <div className="space-y-3 text-xs text-slate-300">
-                <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3">
-                  <p className="font-semibold text-blue-300">Staff Assignment &amp; Routing</p>
-                  <p className="mt-1 text-slate-400 leading-relaxed">
-                    Assign issues to designated ward officers or specialized maintenance crews based
-                    on category.
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-white/10 bg-white/5 font-mono text-[11px]">
-                  <span>Officer Response Rate</span>
-                  <span className="font-bold text-emerald-400">94.2%</span>
-                </div>
-              </div>
-            )}
-
-            {activeStep === 4 && (
-              <div className="space-y-3 text-xs text-slate-300">
-                <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
-                  <p className="font-semibold text-amber-300">Automated SLA Tracking</p>
-                  <p className="mt-1 text-slate-400 leading-relaxed">
-                    Configurable resolution timelines per category. Automatic breach alerts for
-                    overdue tasks.
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-white/10 bg-white/5 font-mono text-[11px]">
-                  <span>Overdue SLA Warning</span>
-                  <span className="font-bold text-red-400">1 Urgent Breach</span>
-                </div>
-              </div>
-            )}
-
-            {activeStep === 5 && (
-              <div className="space-y-3 text-xs text-slate-300">
-                <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-                  <p className="font-semibold text-emerald-300">Verified Resolution Audit</p>
-                  <p className="mt-1 text-slate-400 leading-relaxed">
-                    Staff mark resolved, admins verify proof of fix, and citizen submitters receive
-                    status updates.
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-white/10 bg-white/5 font-mono text-[11px]">
-                  <span>Verification Pass Rate</span>
-                  <span className="font-bold text-emerald-400">98.5% Verified</span>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
 
           <div className="mt-6 flex items-center justify-between pt-4 border-t border-white/10">
