@@ -15,8 +15,36 @@ const PLACEHOLDER_VALUES = new Set([
   "your-project-id",
 ]);
 
+/**
+ * Static env map using explicit `import.meta.env.VITE_*` property access.
+ *
+ * Vite's `define` (used by @lovable.dev/vite-tanstack-config) performs static
+ * text-replacement of `import.meta.env.VITE_*` references.  Dynamic access
+ * like `import.meta.env[key]` is NOT matched by `define` and depends on
+ * Vite's built-in `import.meta.env` object-inlining, which can be unreliable
+ * when the plugin's own `define` entries shadow the namespace — especially on
+ * CI platforms (Vercel, Lovable) where the build runs without a local `.env`.
+ *
+ * Listing every known VITE_* key with static property access guarantees the
+ * values are always inlined, regardless of how the host platform resolves
+ * `import.meta.env`.
+ */
+const _env: Record<string, string | undefined> = {
+  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL as string | undefined,
+  VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined,
+  VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as
+    string | undefined,
+  VITE_SUPABASE_PROJECT_ID: import.meta.env.VITE_SUPABASE_PROJECT_ID as string | undefined,
+  VITE_DEFAULT_ORGANIZATION_ID: import.meta.env.VITE_DEFAULT_ORGANIZATION_ID as string | undefined,
+  VITE_BILLING_PROVIDER: import.meta.env.VITE_BILLING_PROVIDER as string | undefined,
+  VITE_BILLING_CHECKOUT_ENABLED: import.meta.env.VITE_BILLING_CHECKOUT_ENABLED as
+    string | undefined,
+  VITE_MAP_TILE_URL: import.meta.env.VITE_MAP_TILE_URL as string | undefined,
+  VITE_MAP_TILE_ATTRIBUTION: import.meta.env.VITE_MAP_TILE_ATTRIBUTION as string | undefined,
+};
+
 function readEnv(key: string): string | undefined {
-  const value = import.meta.env[key] as string | undefined;
+  const value = _env[key];
   if (!value) return undefined;
   const trimmed = value.trim();
   if (PLACEHOLDER_VALUES.has(trimmed)) return undefined;

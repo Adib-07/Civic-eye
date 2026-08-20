@@ -5,8 +5,13 @@
  * VITE_MAP_TILE_ATTRIBUTION — HTML attribution string for the tile layer
  */
 
+const _mapEnv: Record<string, string | undefined> = {
+  VITE_MAP_TILE_URL: import.meta.env.VITE_MAP_TILE_URL as string | undefined,
+  VITE_MAP_TILE_ATTRIBUTION: import.meta.env.VITE_MAP_TILE_ATTRIBUTION as string | undefined,
+};
+
 function readEnv(key: string): string | undefined {
-  const value = import.meta.env[key] as string | undefined;
+  const value = _mapEnv[key];
   if (!value?.trim()) return undefined;
   return value.trim();
 }
