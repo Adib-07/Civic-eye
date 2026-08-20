@@ -94,29 +94,30 @@ export const WORKFLOW_STEPS = [
     key: "report",
     label: "01 Report",
     description:
-      "Capture the issue with photo and location.",
+      "Capture the issue with photo, location, and category — via a lightweight web form. No app install required.",
   },
   {
     key: "assign",
     label: "02 Assign",
-    description: "Route responsibility to the appropriate team.",
+    description:
+      "Route responsibility to the appropriate team or officer based on category and location.",
   },
   {
     key: "track",
     label: "03 Track",
     description:
-      "Monitor progress and SLA timelines.",
+      "Monitor progress with SLA timers, status updates, and real-time queue visibility.",
   },
   {
     key: "resolve",
     label: "04 Resolve",
-    description: "Require evidence and work notes.",
+    description: "Require photo evidence and work notes before an issue can be marked complete.",
   },
   {
     key: "verify",
     label: "05 Verify",
     description:
-      "Let the reporter confirm whether the issue was actually resolved.",
+      "Let the reporter or supervisor confirm whether the issue was actually resolved — closing the accountability loop.",
   },
 ] as const;
 
@@ -124,34 +125,137 @@ export const TRUST_ITEMS = [
   "Organization-isolated data",
   "Role-based access",
   "Evidence-backed resolution",
+  "SLA tracking",
   "Location-aware reporting",
-  "Status history",
   "Resolution verification",
 ] as const;
 
-export const ORG_USE_CASES = [
+export const BENEFITS = [
   {
-    title: "Residential Communities",
-    text: "Give residents a 30-second reporting link. Track repairs, waste collection, and lighting outages with full accountability.",
+    title: "Centralized Issue Management",
+    description:
+      "Replace scattered emails, WhatsApp threads, and spreadsheets with a single structured intake system for all operational issues.",
+    icon: "layers" as const,
   },
   {
-    title: "Universities & Campuses",
-    text: "Streamline campus maintenance across academic blocks, hostels, and sports facilities with automated staff routing.",
+    title: "Clear Ownership",
+    description:
+      "Every issue gets assigned to a specific team or officer. No ambiguity about who is responsible for resolution.",
+    icon: "user-check" as const,
   },
   {
-    title: "Corporate & Tech Campuses",
-    text: "Keep multi-building office parks operational. Assign facility tickets instantly and verify completion with photo evidence.",
+    title: "SLA Tracking",
+    description:
+      "Configurable resolution timelines per category with automatic breach alerts. Know exactly what is overdue and what is on track.",
+    icon: "clock" as const,
   },
   {
-    title: "Townships",
-    text: "Centralize infrastructure maintenance across large residential townships. Monitor problem hotspots on interactive maps.",
+    title: "Evidence-Based Resolution",
+    description:
+      "Staff must upload photo evidence and completion notes before marking an issue resolved. No more unverified closures.",
+    icon: "camera" as const,
   },
   {
-    title: "Facility Operations",
-    text: "Manage client SLA commitments, track vendor resolution times, and maintain a digital audit history of all repairs.",
+    title: "Resolution Verification",
+    description:
+      "Reporters and supervisors confirm or reject completed work — ensuring accountability at the final step.",
+    icon: "check-circle" as const,
   },
   {
-    title: "Public-Sector Operations",
-    text: "Route citizen reports to ward officers, track maintenance SLAs, and monitor problem hotspots across city infrastructure.",
+    title: "Operational Analytics",
+    description:
+      "Dashboard KPIs, category breakdowns, and SLA compliance metrics give operations teams full visibility into performance.",
+    icon: "bar-chart" as const,
+  },
+] as const;
+
+export const SOLUTIONS = [
+  {
+    title: "Facility Management",
+    description:
+      "Designed for facility management companies managing client SLAs. Track vendor resolution times, maintain digital audit trails, and demonstrate compliance with contractual obligations.",
+    icon: "building" as const,
+    audience: "Facility managers and operations teams",
+  },
+  {
+    title: "Corporate & Technology Campuses",
+    description:
+      "Keep multi-building office parks operational. Assign facility tickets instantly, monitor maintenance SLAs across buildings, and verify completion with photo evidence.",
+    icon: "briefcase" as const,
+    audience: "Campus operations and workplace teams",
+  },
+  {
+    title: "Universities & Colleges",
+    description:
+      "Streamline campus maintenance across academic blocks, hostels, labs, and sports facilities. Students and staff report issues; operations teams track and resolve with full accountability.",
+    icon: "book-open" as const,
+    audience: "University administration and maintenance",
+  },
+  {
+    title: "Large Communities & Townships",
+    description:
+      "Centralize infrastructure maintenance across large residential townships. From potholes to streetlights to waste management — monitor problem hotspots on interactive maps.",
+    icon: "map" as const,
+    audience: "RWA boards, township administrators",
+  },
+] as const;
+
+export const PLATFORM_FEATURES = [
+  {
+    title: "Photo-first Reporting",
+    description:
+      "Citizens and staff submit issues with mandatory photo evidence and automatic GPS location — no app installation needed.",
+  },
+  {
+    title: "Structured Intake",
+    description:
+      "Every report includes category, description, coordinates, and evidence — giving field teams complete context before dispatch.",
+  },
+  {
+    title: "Operations Dashboard",
+    description:
+      "Staff see open issues, SLA status, assignments, and resolution queues scoped to their organization and role.",
+  },
+  {
+    title: "Organization Isolation",
+    description:
+      "Database-level row security keeps each organization's issues, staff, and files completely separate.",
+  },
+  {
+    title: "Verify Before Close",
+    description:
+      "Resolved work must be confirmed or sent back — a clear audit trail that ensures accountability.",
+  },
+  {
+    title: "Map-Ready Records",
+    description:
+      "Geo-tagged issues feed an interactive map view so field crews know exactly where to go.",
+  },
+] as const;
+
+export const FAQS = [
+  {
+    q: "What is CivicEye?",
+    a: "CivicEye is an operational issue management platform designed for facility managers, campuses, townships, and residential communities to report, assign, track, and verify local physical issues from one accountable workflow.",
+  },
+  {
+    q: "Who is CivicEye for?",
+    a: "CivicEye serves facility management companies, corporate and technology campuses, universities and colleges, large residential communities and townships, and public-sector operations teams.",
+  },
+  {
+    q: "Do residents or citizens pay to report issues?",
+    a: "No. Community members and residents report issues for free via a lightweight web form. Organizations subscribe to manage their staff operations queue, SLA compliance, and verification workflows.",
+  },
+  {
+    q: "How does resolution verification work?",
+    a: "When staff resolve an issue, they upload photo evidence and completion notes. The reporter or supervisor then inspects the evidence and confirms resolution or reports it as still unresolved.",
+  },
+  {
+    q: "How does the free pilot work?",
+    a: "Organizations can start a free 30-day pilot with up to 5 staff members and 100 issue reports per month. No credit card is required to begin.",
+  },
+  {
+    q: "Is organization data kept isolated?",
+    a: "Yes. All organization data, staff profiles, and issue reports are isolated using database-level Row Level Security (RLS) policies and organization-scoped storage.",
   },
 ] as const;

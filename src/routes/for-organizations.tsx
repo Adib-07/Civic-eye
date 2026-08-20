@@ -85,7 +85,7 @@ export function ForOrganizationsPage() {
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Link to="/book-demo" className="cinematic-btn-primary group shadow-lg shadow-blue-900/30">
-                <span>Request a Demo</span>
+                <span>Book a Demo</span>
                 <FiArrowRight className="h-4 w-4" />
               </Link>
               <Link to="/pricing" className="cinematic-btn-secondary">
@@ -239,7 +239,7 @@ export function ForOrganizationsPage() {
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Link to="/book-demo" className="cinematic-btn-primary">
-                Request a Demo <FiArrowRight />
+                Book a Demo <FiArrowRight />
               </Link>
               <Link to="/pricing" className="cinematic-btn-secondary">
                 View Pricing

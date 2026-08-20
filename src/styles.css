@@ -322,7 +322,7 @@
   }
 }
 
-/* ── Cinematic landing (homepage hero & product preview) ── */
+/* ── Premium landing design system ── */
 
 .cinematic-hero {
   background: #07111f;
@@ -333,15 +333,14 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(29, 95, 233, 0.18), transparent 55%),
-    radial-gradient(ellipse 50% 40% at 85% 60%, rgba(79, 140, 255, 0.08), transparent 50%),
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(29, 95, 233, 0.15), transparent 55%),
     linear-gradient(180deg, #0b1728 0%, #07111f 45%, #07111f 100%);
 }
 
 .cinematic-hero-grid {
   position: absolute;
   inset: 0;
-  opacity: 0.35;
+  opacity: 0.3;
   background-image:
     linear-gradient(rgba(79, 140, 255, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(79, 140, 255, 0.04) 1px, transparent 1px);
@@ -356,16 +355,6 @@
   background-image:
     radial-gradient(circle at 20% 80%, rgba(79, 140, 255, 0.06) 0%, transparent 40%),
     radial-gradient(circle at 78% 22%, rgba(37, 99, 235, 0.05) 0%, transparent 35%);
-}
-
-.cinematic-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cpath d='M0 100 Q50 80 100 100 T200 100' fill='none' stroke='rgba(79,140,255,0.06)' stroke-width='0.5'/%3E%3Cpath d='M0 140 Q50 120 100 140 T200 140' fill='none' stroke='rgba(79,140,255,0.04)' stroke-width='0.5'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-  mask-image: linear-gradient(180deg, transparent, black 30%, black 70%, transparent);
-  pointer-events: none;
 }
 
 .cinematic-eyebrow {
@@ -383,8 +372,8 @@
   gap: 0.5rem;
   border-radius: 0.5rem;
   background: #2563eb;
-  padding: 0.625rem 1.125rem;
-  font-size: 0.875rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: #fff;
   transition: background-color 0.15s ease;
@@ -405,8 +394,8 @@
   border-radius: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.04);
-  padding: 0.625rem 1.125rem;
-  font-size: 0.875rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.85);
   transition:
@@ -472,20 +461,137 @@
   box-shadow: var(--shadow-card-hover);
 }
 
-.landing-workflow-card {
+/* ── Workflow connector ── */
+
+.workflow-connector {
+  position: relative;
+}
+
+.workflow-connector::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -1rem;
+  width: 2rem;
+  height: 1px;
+  background: var(--border);
+}
+
+.workflow-connector:last-child::after {
+  display: none;
+}
+
+/* ── Solution card with image ── */
+
+.solution-card {
+  position: relative;
+  overflow: hidden;
   border-radius: 1rem;
   border: 1px solid var(--surface-border);
   background: var(--surface);
-  padding: 1.25rem;
   box-shadow: var(--shadow-card);
   transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
-.landing-workflow-card:hover {
-  border-color: color-mix(in oklab, var(--primary) 18%, var(--surface-border));
+.solution-card:hover {
+  border-color: color-mix(in oklab, var(--primary) 25%, var(--surface-border));
   box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.solution-card-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  transition: opacity 0.2s ease;
+}
+
+.solution-card:hover .solution-card-bg {
+  opacity: 0.1;
+}
+
+/* ── Product showcase frame ── */
+
+.product-frame {
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow:
+    0 4px 6px oklch(0.18 0.02 262 / 4%),
+    0 10px 15px oklch(0.18 0.02 262 / 6%);
+  overflow: hidden;
+}
+
+.product-frame-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.product-frame-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+/* ── Responsive overrides ── */
+
+@media (max-width: 639px) {
+  .page-container {
+    width: min(1200px, 92vw);
+  }
+
+  .landing-feature-card {
+    border-radius: 0.75rem;
+  }
+
+  .workflow-connector::after {
+    display: none;
+  }
+}
+
+html {
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .cinematic-reveal {
+    animation: none;
+  }
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media print {
+  header,
+  footer {
+    display: none;
+  }
 }
 
 @keyframes cinematic-reveal-up {
@@ -496,15 +602,5 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cinematic-reveal {
-    animation: none;
-  }
-
-  .cinematic-btn-primary:hover {
-    transform: none;
   }
 }

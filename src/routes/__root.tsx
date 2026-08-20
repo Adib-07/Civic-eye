@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "../components/ui/sonner";
+import { HelpWidget } from "../components/HelpWidget";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -78,19 +79,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CivicEye — Civic Operations Platform" },
+      { title: "CivicEye — Issue Management & Verified Resolution Platform" },
       {
         name: "description",
         content:
-          "Civic operations, from report to verified resolution. Report issues, assign responsibility, track progress, and verify completed work.",
+          "CivicEye helps organizations receive, assign, track, resolve and verify operational issues with SLA visibility and evidence-backed workflows.",
       },
-      { property: "og:title", content: "CivicEye — Civic Operations Platform" },
+      {
+        property: "og:title",
+        content: "CivicEye — Issue Management & Verified Resolution Platform",
+      },
       {
         property: "og:description",
-        content: "Civic operations platform for communities, campuses, townships, and facility management teams.",
+        content:
+          "One platform for facility and operations teams to manage the complete issue lifecycle — from report to verified resolution.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "CivicEye" },
       { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "CivicEye — Issue Management & Verified Resolution Platform",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Helps organizations receive, assign, track, resolve and verify operational issues with SLA visibility.",
+      },
+      { name: "robots", content: "index, follow" },
     ],
     links: [
       {
@@ -120,6 +136,12 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        >
+          Skip to main content
+        </a>
         {children}
         <Scripts />
       </body>
@@ -135,6 +157,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster position="top-right" richColors closeButton />
+      <HelpWidget />
     </QueryClientProvider>
   );
 }

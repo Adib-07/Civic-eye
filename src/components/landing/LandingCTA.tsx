@@ -4,21 +4,23 @@ import { FiArrowRight } from "react-icons/fi";
 export function LandingCTA() {
   return (
     <section className="cinematic-hero relative overflow-hidden">
-      <div className="cinematic-hero-bg opacity-90" aria-hidden />
-      <div className="page-container relative z-10 py-16 sm:py-20">
+      <div className="cinematic-hero-bg" aria-hidden />
+      <div className="cinematic-hero-glow" aria-hidden />
+      <div className="page-container relative z-10 py-20 lg:py-28">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-            Ready to run civic operations with accountability?
+          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-white">
+            Ready to bring accountability to your operations?
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-white/65">
-            Start a pilot workspace or request a walkthrough with our product team.
+          <p className="mt-4 text-base text-white/60 max-w-xl mx-auto">
+            See how CivicEye can fit into your organization&apos;s existing issue-resolution
+            workflow.
           </p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <div className="mt-8 flex justify-center gap-3">
             <Link to="/book-demo" className="cinematic-btn-primary">
-              Request a Demo <FiArrowRight aria-hidden />
+              Book a Demo <FiArrowRight aria-hidden />
             </Link>
-            <Link to="/start" className="cinematic-btn-secondary">
-              Start Pilot
+            <Link to="/for-organizations" className="cinematic-btn-secondary">
+              Explore the Product
             </Link>
           </div>
         </div>

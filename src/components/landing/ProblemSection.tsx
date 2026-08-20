@@ -1,44 +1,44 @@
 import { Link } from "@tanstack/react-router";
-import { FiArrowRight, FiCheckCircle, FiLayers, FiXCircle } from "react-icons/fi";
+import { FiArrowRight, FiCheckCircle, FiXCircle } from "react-icons/fi";
 
 import { ProductShowcase } from "@/components/ProductShowcase";
 import { FeatureSection } from "@/components/landing/FeatureSection";
 
-export function ProductPreviewSection() {
+export function ProblemSection() {
   return (
     <FeatureSection
-      id="workspace"
+      id="problem"
       label="The Problem"
-      title="Operational problems don't disappear when they are reported."
-      description="Most organizations struggle with lost emails, informal messaging threads, and zero SLA visibility. CivicEye unifies intake, routing, map tracking, and verified resolution into one operational workspace."
+      title="Operational issues shouldn't disappear into WhatsApp, email and spreadsheets."
+      description="Most organizations struggle with fragmented reporting, unclear ownership, and zero SLA visibility. CivicEye brings the workflow into one operational system."
     >
       <div className="space-y-10">
         <div className="grid gap-5 md:grid-cols-2">
           <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-5">
             <div className="flex items-center gap-3 text-red-600 dark:text-red-400 font-semibold text-sm">
               <FiXCircle className="h-5 w-5" />
-              <span>The Problem: Fragmented Operations</span>
+              <span>Fragmented Operations</span>
             </div>
             <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-red-500 font-bold mt-0.5">&bull;</span>
-                Complaints trapped in inboxes, paper logs, and messaging threads.
+                <span className="text-red-500 font-bold mt-0.5 shrink-0">&bull;</span>
+                <span>Complaints trapped in inboxes, paper logs, and messaging threads.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-500 font-bold mt-0.5">&bull;</span>
-                Missing photo evidence and vague location descriptions.
+                <span className="text-red-500 font-bold mt-0.5 shrink-0">&bull;</span>
+                <span>Missing photo evidence and vague location descriptions.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-500 font-bold mt-0.5">&bull;</span>
-                Unclear ownership and no structured routing to responsible teams.
+                <span className="text-red-500 font-bold mt-0.5 shrink-0">&bull;</span>
+                <span>Unclear ownership and no structured routing to responsible teams.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-500 font-bold mt-0.5">&bull;</span>
-                Slow resolution with zero SLA tracking or breach visibility.
+                <span className="text-red-500 font-bold mt-0.5 shrink-0">&bull;</span>
+                <span>Slow resolution with zero SLA tracking or breach visibility.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-500 font-bold mt-0.5">&bull;</span>
-                No accountability &mdash; issues marked done without verification.
+                <span className="text-red-500 font-bold mt-0.5 shrink-0">&bull;</span>
+                <span>No accountability &mdash; issues marked done without verification.</span>
               </li>
             </ul>
           </div>
@@ -50,20 +50,20 @@ export function ProductPreviewSection() {
             </div>
             <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-emerald-500 font-bold mt-0.5">&bull;</span>
-                Unified intake feed with structured categories and descriptions.
+                <span className="text-emerald-500 font-bold mt-0.5 shrink-0">&bull;</span>
+                <span>Unified intake feed with structured categories and descriptions.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-500 font-bold mt-0.5">&bull;</span>
-                Interactive map pins with mandatory photo evidence.
+                <span className="text-emerald-500 font-bold mt-0.5 shrink-0">&bull;</span>
+                <span>Interactive map pins with mandatory photo evidence.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-500 font-bold mt-0.5">&bull;</span>
-                Automated SLA timers and breach alerts for assigned staff.
+                <span className="text-emerald-500 font-bold mt-0.5 shrink-0">&bull;</span>
+                <span>Automated SLA timers and breach alerts for assigned staff.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-500 font-bold mt-0.5">&bull;</span>
-                Staff sign-off plus citizen resolution verification.
+                <span className="text-emerald-500 font-bold mt-0.5 shrink-0">&bull;</span>
+                <span>Staff sign-off plus citizen resolution verification.</span>
               </li>
             </ul>
           </div>
@@ -73,7 +73,7 @@ export function ProductPreviewSection() {
           <ProductShowcase />
           <div className="flex flex-col justify-center">
             <div className="inline-flex items-center gap-2 rounded-md bg-primary/10 border border-primary/20 px-3 py-1 text-xs font-semibold text-primary w-fit">
-              <FiLayers className="h-3.5 w-3.5" /> Operations Interface
+              Operations Interface
             </div>
             <h3 className="mt-3 text-xl font-bold tracking-tight text-foreground">
               Designed for speed, clarity, and daily staff triage

@@ -1,19 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { FiCheckCircle, FiSend, FiShield, FiClock, FiUsers } from "react-icons/fi";
+import { FiCheckCircle, FiSend, FiShield, FiClock, FiUsers, FiAlertCircle } from "react-icons/fi";
 import { toast } from "sonner";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/book-demo")({
   head: () => ({
     meta: [
-      { title: "Request a Demo — CivicEye for Organizations" },
+      { title: "Book a Demo — CivicEye for Organizations" },
       {
         name: "description",
         content:
-          "Schedule a live product demonstration of CivicEye for your RWA, university campus, township, or facility management team.",
+          "Schedule a live product demonstration of CivicEye for your facility management, campus, township, or community operations team.",
       },
     ],
   }),
@@ -21,58 +22,165 @@ export const Route = createFileRoute("/book-demo")({
 });
 
 const ORG_TYPES = [
-  "Residential Community / RWA",
-  "University / College",
-  "Corporate Campus",
-  "Township",
   "Facility Management",
+  "Corporate / Technology Campus",
+  "University / College",
+  "Residential Community / RWA",
+  "Township / Large Estate",
   "Public-Sector / Municipal",
   "Other",
 ] as const;
 
-const ROLES = [
+const SITE_COUNTS = ["1 site", "2–5 sites", "6–15 sites", "16–50 sites", "50+ sites"] as const;
+
+const ROLE_OPTIONS = [
   "Administrator",
   "Facility Manager",
   "Operations Lead",
-  "Ward Officer",
+  "Maintenance Head",
   "IT / Technical",
   "Other",
 ] as const;
 
+type FormData = {
+  fullName: string;
+  workEmail: string;
+  organization: string;
+  role: (typeof ROLE_OPTIONS)[number];
+  orgType: (typeof ORG_TYPES)[number];
+  siteCount: (typeof SITE_COUNTS)[number];
+  message: string;
+};
+
+type FieldErrors = Partial<Record<keyof FormData, string>>;
+
+const INITIAL_FORM: FormData = {
+  fullName: "",
+  workEmail: "",
+  organization: "",
+  role: ROLE_OPTIONS[0],
+  orgType: ORG_TYPES[0],
+  siteCount: SITE_COUNTS[0],
+  message: "",
+};
+
+function validateEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validate(form: FormData): FieldErrors {
+  const errors: FieldErrors = {};
+
+  if (!form.fullName.trim()) {
+    errors.fullName = "Full name is required.";
+  } else if (form.fullName.trim().length < 2) {
+    errors.fullName = "Please enter your full name.";
+  }
+
+  if (!form.workEmail.trim()) {
+    errors.workEmail = "Work email is required.";
+  } else if (!validateEmail(form.workEmail)) {
+    errors.workEmail = "Please enter a valid email address.";
+  }
+
+  if (!form.organization.trim()) {
+    errors.organization = "Organization name is required.";
+  } else if (form.organization.trim().length < 2) {
+    errors.organization = "Please enter your organization name.";
+  }
+
+  return errors;
+}
+
+function FieldError({ message, id }: { message?: string; id?: string }) {
+  if (!message) return null;
+  return (
+    <p id={id} role="alert" className="mt-1 flex items-center gap-1 text-[11px] text-destructive">
+      <FiAlertCircle className="h-3 w-3 shrink-0" aria-hidden />
+      {message}
+    </p>
+  );
+}
+
 export function BookDemoPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<{
-    name: string;
-    organization: string;
-    email: string;
-    orgType: (typeof ORG_TYPES)[number];
-    role: (typeof ROLES)[number];
-    phone: string;
-    message: string;
-  }>({
-    name: "",
-    organization: "",
-    email: "",
-    orgType: ORG_TYPES[0],
-    role: ROLES[0],
-    phone: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState<FormData>(INITIAL_FORM);
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const updateField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    if (errors[key]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
+  };
+
+  const handleBlur = (key: keyof FormData) => {
+    setTouched((prev) => ({ ...prev, [key]: true }));
+    const fieldErrors = validate(formData);
+    if (fieldErrors[key]) {
+      setErrors((prev) => ({ ...prev, [key]: fieldErrors[key] }));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.organization.trim() || !formData.email.trim()) {
-      toast.error("Please fill in your name, organization, and work email.");
+
+    const validationErrors = validate(formData);
+    setErrors(validationErrors);
+    setTouched({
+      fullName: true,
+      workEmail: true,
+      organization: true,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      toast.error("Please fix the highlighted fields.");
       return;
     }
 
     setLoading(true);
+
+    // ── Integration point ──────────────────────────────────────────
+    // Replace this setTimeout with your actual backend call:
+    //
+    //   await fetch("/api/demo-requests", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({
+    //       ...formData,
+    //       submittedAt: new Date().toISOString(),
+    //     }),
+    //   });
+    //
+    // Or connect to your CRM/email service:
+    //   - Formspree, Resend, SendGrid, Loops, etc.
+    //   - Supabase Edge Function
+    //   - Webhook to Slack/Discord
+    // ────────────────────────────────────────────────────────────────
+
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
-      toast.success("Demo request recorded successfully!");
-    }, 600);
+      toast.success("Demo request submitted successfully.");
+
+      // ── Analytics integration point ─────────────────────────────
+      // Track this conversion event:
+      //
+      //   window.dispatchEvent(new CustomEvent("civiceye:demo-submitted", {
+      //     detail: { orgType: formData.orgType, siteCount: formData.siteCount }
+      //   }));
+      //
+      // Or call your analytics provider:
+      //   posthog?.capture("demo_form_submitted", { org_type: formData.orgType });
+      //   gtag?.("event", "generate_lead", { event_category: "demo" });
+      // ─────────────────────────────────────────────────────────────
+    }, 800);
   };
 
   return (
@@ -81,7 +189,6 @@ export function BookDemoPage() {
 
       <main className="page-container py-12 sm:py-16">
         <div className="max-w-4xl mx-auto grid gap-12 lg:grid-cols-12 items-start">
-          {/* Left Column — Value Prop */}
           <div className="lg:col-span-5 space-y-6">
             <div>
               <p className="section-label">Schedule a Walkthrough</p>
@@ -89,8 +196,8 @@ export function BookDemoPage() {
                 See how CivicEye works for your team
               </h1>
               <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                Request a 15-minute product demonstration. We will show you how to capture photo reports,
-                manage staff dispatch, track SLAs, and enforce resolution verification.
+                Request a 15-minute product demonstration. We will walk you through photo reporting,
+                staff dispatch, SLA tracking, and resolution verification for your organization.
               </p>
             </div>
 
@@ -98,61 +205,78 @@ export function BookDemoPage() {
               <div className="flex items-start gap-3 text-xs sm:text-sm">
                 <FiCheckCircle className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-foreground">Tailored for your organization type</strong>
-                  <p className="text-muted-foreground">RWAs, campuses, townships, and facilities management.</p>
+                  <strong className="text-foreground">Tailored to your organization type</strong>
+                  <p className="text-muted-foreground">
+                    Campuses, communities, townships, and facility operations.
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3 text-xs sm:text-sm">
                 <FiShield className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-foreground">No-obligation pilot workspace</strong>
-                  <p className="text-muted-foreground">Test live workflows with up to 5 staff members free.</p>
+                  <strong className="text-foreground">No-obligation free pilot</strong>
+                  <p className="text-muted-foreground">
+                    Test live workflows with up to 5 staff members at no cost.
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3 text-xs sm:text-sm">
                 <FiClock className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-foreground">Response within one business day</strong>
-                  <p className="text-muted-foreground">Our product team will confirm your slot within 24 hours.</p>
+                  <strong className="text-foreground">Quick response</strong>
+                  <p className="text-muted-foreground">
+                    We will confirm your demonstration slot promptly.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column — Form */}
           <div className="lg:col-span-7">
             <div className="surface-panel p-6 sm:p-8">
               {submitted ? (
-                <div className="text-center py-8 space-y-4">
+                <div className="text-center py-8 space-y-4" role="status" aria-live="polite">
                   <div className="h-14 w-14 rounded-full bg-emerald-500/15 text-emerald-500 grid place-items-center mx-auto">
                     <FiCheckCircle className="h-8 w-8" />
                   </div>
-                  <h3 className="text-xl font-bold text-foreground">Request Received</h3>
+                  <h3 className="text-xl font-bold text-foreground">
+                    Thanks — your demo request has been received.
+                  </h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    Thanks. Your request has been received. Our team will review your requirements
-                    and get back to you.
+                    Our team will review your requirements and follow up to schedule a demonstration
+                    that fits your organization&apos;s workflow.
                   </p>
                   <div className="pt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
                     <Link
                       to="/"
-                      className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold"
+                      className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
                     >
                       Back to home
                     </Link>
                     <button
-                      onClick={() => setSubmitted(false)}
-                      className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+                      onClick={() => {
+                        setSubmitted(false);
+                        setFormData(INITIAL_FORM);
+                        setErrors({});
+                        setTouched({});
+                      }}
+                      className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                     >
                       Submit another request
                     </button>
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-5"
+                  noValidate
+                  aria-label="Book a Demo request form"
+                >
                   <h3 className="text-lg font-bold text-foreground pb-2 border-b border-border">
-                    Request a Demo
+                    Book a Demo
                   </h3>
 
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -162,42 +286,103 @@ export function BookDemoPage() {
                       </label>
                       <input
                         type="text"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        value={formData.fullName}
+                        onChange={(e) => updateField("fullName", e.target.value)}
+                        onBlur={() => handleBlur("fullName")}
                         placeholder="e.g. Aditi Sharma"
-                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                        className={cn(
+                          "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary",
+                          touched.fullName && errors.fullName
+                            ? "border-destructive"
+                            : "border-border",
+                        )}
+                        autoComplete="name"
+                        aria-invalid={!!(touched.fullName && errors.fullName)}
+                        aria-describedby={
+                          touched.fullName && errors.fullName ? "err-fullName" : undefined
+                        }
+                      />
+                      <FieldError
+                        message={touched.fullName ? errors.fullName : undefined}
+                        id="err-fullName"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-bold text-foreground mb-1">
-                        Organization <span className="text-destructive">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.organization}
-                        onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
-                        placeholder="e.g. Green Valley RWA / IIT Campus"
-                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2">
                     <div>
                       <label className="block text-xs font-bold text-foreground mb-1">
                         Work Email <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="name@organization.com"
-                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                        value={formData.workEmail}
+                        onChange={(e) => updateField("workEmail", e.target.value)}
+                        onBlur={() => handleBlur("workEmail")}
+                        placeholder="you@organization.com"
+                        className={cn(
+                          "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary",
+                          touched.workEmail && errors.workEmail
+                            ? "border-destructive"
+                            : "border-border",
+                        )}
+                        autoComplete="email"
+                        aria-invalid={!!(touched.workEmail && errors.workEmail)}
+                        aria-describedby={
+                          touched.workEmail && errors.workEmail ? "err-workEmail" : undefined
+                        }
                       />
+                      <FieldError
+                        message={touched.workEmail ? errors.workEmail : undefined}
+                        id="err-workEmail"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-foreground mb-1">
+                      Organization <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.organization}
+                      onChange={(e) => updateField("organization", e.target.value)}
+                      onBlur={() => handleBlur("organization")}
+                      placeholder="e.g. Acme Facilities"
+                      className={cn(
+                        "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary",
+                        touched.organization && errors.organization
+                          ? "border-destructive"
+                          : "border-border",
+                      )}
+                      autoComplete="organization"
+                      aria-invalid={!!(touched.organization && errors.organization)}
+                      aria-describedby={
+                        touched.organization && errors.organization ? "err-organization" : undefined
+                      }
+                    />
+                    <FieldError
+                      message={touched.organization ? errors.organization : undefined}
+                      id="err-organization"
+                    />
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-xs font-bold text-foreground mb-1">
+                        Your Role <span className="text-destructive">*</span>
+                      </label>
+                      <select
+                        value={formData.role}
+                        onChange={(e) =>
+                          updateField("role", e.target.value as (typeof ROLE_OPTIONS)[number])
+                        }
+                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary"
+                      >
+                        {ROLE_OPTIONS.map((r) => (
+                          <option key={r} value={r}>
+                            {r}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
@@ -206,8 +391,10 @@ export function BookDemoPage() {
                       </label>
                       <select
                         value={formData.orgType}
-                        onChange={(e) => setFormData({ ...formData, orgType: e.target.value as (typeof ORG_TYPES)[number] })}
-                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                        onChange={(e) =>
+                          updateField("orgType", e.target.value as (typeof ORG_TYPES)[number])
+                        }
+                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary"
                       >
                         {ORG_TYPES.map((t) => (
                           <option key={t} value={t}>
@@ -220,16 +407,18 @@ export function BookDemoPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-foreground mb-1">
-                      Your Role <span className="text-destructive">*</span>
+                      Number of Sites
                     </label>
                     <select
-                      value={formData.role}
-                      onChange={(e) => setFormData({ ...formData, role: e.target.value as (typeof ROLES)[number] })}
-                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                      value={formData.siteCount}
+                      onChange={(e) =>
+                        updateField("siteCount", e.target.value as (typeof SITE_COUNTS)[number])
+                      }
+                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary"
                     >
-                      {ROLES.map((r) => (
-                        <option key={r} value={r}>
-                          {r}
+                      {SITE_COUNTS.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
                         </option>
                       ))}
                     </select>
@@ -237,31 +426,19 @@ export function BookDemoPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-foreground mb-1">
-                      Phone <span className="text-muted-foreground font-normal">(optional)</span>
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+91 98765 43210"
-                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-foreground mb-1">
-                      What would you like to manage? <span className="text-muted-foreground font-normal">(optional)</span>
+                      Current Challenge or Question{" "}
+                      <span className="text-muted-foreground font-normal">(optional)</span>
                     </label>
                     <textarea
                       rows={3}
                       value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="e.g. Campus facility maintenance, township infrastructure, community issue tracking..."
-                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none focus:border-primary"
+                      onChange={(e) => updateField("message", e.target.value)}
+                      placeholder="e.g. We manage 12 campus buildings and need SLA tracking for maintenance..."
+                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary"
                     />
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-1">
                     <button
                       type="submit"
                       disabled={loading}
@@ -272,7 +449,7 @@ export function BookDemoPage() {
                       ) : (
                         <FiSend className="h-4 w-4" />
                       )}
-                      Request a Demo
+                      Book a Demo
                     </button>
                   </div>
                 </form>

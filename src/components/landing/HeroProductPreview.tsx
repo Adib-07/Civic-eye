@@ -95,7 +95,10 @@ const PREVIEW_ISSUES = [
   },
 ];
 
-const STAGE_DETAILS: Record<string, { title: string; text: string; borderClass: string; bgClass: string; titleClass: string }> = {
+const STAGE_DETAILS: Record<
+  string,
+  { title: string; text: string; borderClass: string; bgClass: string; titleClass: string }
+> = {
   report: {
     title: "Citizen Reporting",
     text: "Zero app installation required. Citizens submit photos and location tags via a lightweight web form.",
@@ -259,11 +262,17 @@ export function HeroProductPreview() {
             </div>
 
             <div className="space-y-3 text-xs text-slate-300">
-              <div className={cn("rounded-lg border p-3", currentDetail.borderClass, currentDetail.bgClass)}>
-                <p className={cn("font-semibold", currentDetail.titleClass)}>{currentDetail.title}</p>
-                <p className="mt-1 text-slate-400 leading-relaxed">
-                  {currentDetail.text}
+              <div
+                className={cn(
+                  "rounded-lg border p-3",
+                  currentDetail.borderClass,
+                  currentDetail.bgClass,
+                )}
+              >
+                <p className={cn("font-semibold", currentDetail.titleClass)}>
+                  {currentDetail.title}
                 </p>
+                <p className="mt-1 text-slate-400 leading-relaxed">{currentDetail.text}</p>
               </div>
             </div>
           </div>

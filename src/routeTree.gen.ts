@@ -21,6 +21,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as SecurityRouteImport } from './routes/security'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as TermsRouteImport } from './routes/terms'
 
@@ -84,6 +85,11 @@ const ReportsRoute = ReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SecurityRoute = SecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StartRoute = StartRouteImport.update({
   id: '/start',
   path: '/start',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
+  '/security': typeof SecurityRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
 }
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
+  '/security': typeof SecurityRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
 }
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
+  '/security': typeof SecurityRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
 }
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/report'
     | '/reports'
+    | '/security'
     | '/start'
     | '/terms'
   fileRoutesByTo: FileRoutesByTo
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/report'
     | '/reports'
+    | '/security'
     | '/start'
     | '/terms'
   id:
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/report'
     | '/reports'
+    | '/security'
     | '/start'
     | '/terms'
   fileRoutesById: FileRoutesById
@@ -208,6 +220,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ReportRoute: typeof ReportRoute
   ReportsRoute: typeof ReportsRoute
+  SecurityRoute: typeof SecurityRoute
   StartRoute: typeof StartRoute
   TermsRoute: typeof TermsRoute
 }
@@ -298,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/security': {
+      id: '/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof SecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/start': {
       id: '/start'
       path: '/start'
@@ -328,6 +348,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ReportRoute: ReportRoute,
   ReportsRoute: ReportsRoute,
+  SecurityRoute: SecurityRoute,
   StartRoute: StartRoute,
   TermsRoute: TermsRoute,
 }

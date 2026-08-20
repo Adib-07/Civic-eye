@@ -49,8 +49,8 @@ export function EvidenceSection() {
         <div className="mx-auto mt-8 flex max-w-xl items-start gap-3 rounded-xl border border-border bg-background p-4 text-sm text-muted-foreground">
           <FiShield className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
           <p>
-            Every resolution requires photo evidence and a verification step. This ensures work
-            is actually completed — not just marked done in a spreadsheet.
+            Every resolution requires photo evidence and a verification step. This ensures work is
+            actually completed — not just marked done in a spreadsheet.
           </p>
         </div>
       </div>
