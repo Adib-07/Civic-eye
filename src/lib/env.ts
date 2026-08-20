@@ -43,6 +43,20 @@ const _env: Record<string, string | undefined> = {
   VITE_MAP_TILE_ATTRIBUTION: import.meta.env.VITE_MAP_TILE_ATTRIBUTION as string | undefined,
 };
 
+/**
+ * SSR / Node.js fallback — Vite only exposes VITE_* variables on
+ * `import.meta.env` for the client bundle.  During server-side rendering
+ * (Nitro / Node.js), `import.meta.env` contains only MODE, BASE_URL, PROD,
+ * DEV, and SSR.  `process.env` always has the actual values server-side.
+ */
+if (typeof process !== "undefined" && process.env) {
+  for (const key of Object.keys(_env)) {
+    if (_env[key] === undefined) {
+      _env[key] = process.env[key];
+    }
+  }
+}
+
 function readEnv(key: string): string | undefined {
   const value = _env[key];
   if (!value) return undefined;
@@ -110,11 +124,10 @@ export function getSupabaseConfigSummary(): {
   keyRaw: string | undefined;
   orgRaw: string | undefined;
 } {
-  const urlRaw = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim();
+  const urlRaw = _env["VITE_SUPABASE_URL"]?.trim();
   const keyRaw =
-    (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim() ??
-    (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined)?.trim();
-  const orgRaw = (import.meta.env.VITE_DEFAULT_ORGANIZATION_ID as string | undefined)?.trim();
+    (_env["VITE_SUPABASE_ANON_KEY"] ?? _env["VITE_SUPABASE_PUBLISHABLE_KEY"])?.trim();
+  const orgRaw = _env["VITE_DEFAULT_ORGANIZATION_ID"]?.trim();
   return {
     configured: isSupabaseConfigured(),
     urlPresent: Boolean(getSupabaseUrl()),
