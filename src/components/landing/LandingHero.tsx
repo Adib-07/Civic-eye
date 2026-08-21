@@ -10,10 +10,30 @@ const statCards = [
 ];
 
 const issues = [
-  { id: "CE-1042", title: "HVAC Unit 3 — Filter replacement overdue", status: "Open", badge: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
-  { id: "CE-1038", title: "Loading Dock B — Exterior light outage", status: "In Progress", badge: "bg-amber-500/15 text-amber-400 border-amber-500/20" },
-  { id: "CE-1035", title: "Parking Structure L2 — Water leak near Bay 14", status: "In Review", badge: "bg-indigo-500/15 text-indigo-400 border-indigo-500/20" },
-  { id: "CE-1031", title: "Main Lobby — Access card reader malfunction", status: "Resolved", badge: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" },
+  {
+    id: "CE-1042",
+    title: "HVAC Unit 3 — Filter replacement overdue",
+    status: "Open",
+    badge: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+  },
+  {
+    id: "CE-1038",
+    title: "Loading Dock B — Exterior light outage",
+    status: "In Progress",
+    badge: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+  },
+  {
+    id: "CE-1035",
+    title: "Parking Structure L2 — Water leak near Bay 14",
+    status: "In Review",
+    badge: "bg-indigo-500/15 text-indigo-400 border-indigo-500/20",
+  },
+  {
+    id: "CE-1031",
+    title: "Main Lobby — Access card reader malfunction",
+    status: "Resolved",
+    badge: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
+  },
 ];
 
 export function LandingHero() {
@@ -42,7 +62,10 @@ export function LandingHero() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3">
-              <Link to="/book-demo" className={cn("cinematic-btn-primary", "px-6 py-3 text-[15px]")}>
+              <Link
+                to="/book-demo"
+                className={cn("cinematic-btn-primary", "px-6 py-3 text-[15px]")}
+              >
                 Book a Demo
                 <FiArrowRight className="h-4 w-4" />
               </Link>
@@ -63,7 +86,9 @@ export function LandingHero() {
               <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
               <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
-              <span className="ml-3 text-xs font-medium text-slate-400/80">CivicEye Operations</span>
+              <span className="ml-3 text-xs font-medium text-slate-400/80">
+                CivicEye Operations
+              </span>
             </div>
 
             <div className="p-5">
@@ -77,9 +102,7 @@ export function LandingHero() {
                     <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
                       {card.label}
                     </p>
-                    <p className={cn("mt-1 text-xl font-bold", card.color)}>
-                      {card.value}
-                    </p>
+                    <p className={cn("mt-1 text-xl font-bold", card.color)}>{card.value}</p>
                   </div>
                 ))}
               </div>
@@ -87,15 +110,15 @@ export function LandingHero() {
               {/* Issue list */}
               <div className="mt-4 rounded-lg border border-white/[0.06] bg-white/[0.02]">
                 <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
-                  <span className="text-xs font-semibold text-slate-300">Recent Issues</span>
-                  <span className="text-[10px] text-slate-500">Last 7 days</span>
+                  <span className="text-xs font-semibold text-slate-300">Live KPI Snapshot</span>
+                  <span className="flex items-center gap-1.5 text-[10px] text-slate-500">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Live
+                  </span>
                 </div>
                 <div className="divide-y divide-white/[0.05]">
                   {issues.map((issue) => (
-                    <div
-                      key={issue.id}
-                      className="flex items-center gap-3 px-4 py-2.5"
-                    >
+                    <div key={issue.id} className="flex items-center gap-3 px-4 py-2.5">
                       <span className="shrink-0 text-[11px] font-mono text-slate-500">
                         {issue.id}
                       </span>
@@ -114,6 +137,11 @@ export function LandingHero() {
                   ))}
                 </div>
               </div>
+
+              <p className="mt-3 text-[11px] leading-snug text-slate-500">
+                A real-time leadership view of KPIs and latest activity. The full triage and
+                assignment console is shown in the Issues Workspace below.
+              </p>
             </div>
           </div>
         </div>

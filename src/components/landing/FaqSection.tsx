@@ -1,4 +1,9 @@
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 const FAQS = [
   {
@@ -53,16 +58,14 @@ export function FaqSection() {
         </h2>
 
         <div className="max-w-3xl mx-auto mt-10">
-          <Accordion type="single" collapsible>
+          <Accordion type="multiple" defaultValue={FAQS.map((_, index) => `faq-${index}`)}>
             {FAQS.map((faq, index) => (
               <AccordionItem key={index} value={`faq-${index}`}>
                 <AccordionTrigger className="text-sm font-semibold">
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed pb-4">
-                    {faq.answer}
-                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed pb-4">{faq.answer}</p>
                 </AccordionContent>
               </AccordionItem>
             ))}

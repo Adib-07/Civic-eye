@@ -74,10 +74,7 @@ export function ProductVisualSection() {
           <div className="hidden lg:block">
             <div className="relative flex items-start justify-between gap-2">
               {/* Connecting line */}
-              <div
-                className="absolute top-5 left-[10%] right-[10%] h-px bg-border"
-                aria-hidden
-              />
+              <div className="absolute top-5 left-[10%] right-[10%] h-px bg-border" aria-hidden />
 
               {STAGES.map((stage) => {
                 const Icon = stage.icon;
@@ -86,10 +83,7 @@ export function ProductVisualSection() {
                     key={stage.num}
                     className="flex flex-col items-center text-center max-w-[140px]"
                   >
-                    <Icon
-                      className="mb-3 h-4 w-4 text-muted-foreground/60"
-                      aria-hidden
-                    />
+                    <Icon className="mb-3 h-4 w-4 text-muted-foreground/60" aria-hidden />
                     <span className="relative z-10 grid h-10 w-10 place-items-center rounded-full border border-primary/30 bg-primary/10 text-sm font-bold text-primary">
                       {stage.num}
                     </span>
@@ -106,10 +100,7 @@ export function ProductVisualSection() {
           {/* Mobile layout — vertical timeline */}
           <div className="lg:hidden">
             <div className="relative flex flex-col gap-6 pl-8">
-              <div
-                className="absolute left-[15px] top-5 bottom-5 w-px bg-border"
-                aria-hidden
-              />
+              <div className="absolute left-[15px] top-5 bottom-5 w-px bg-border" aria-hidden />
 
               {STAGES.map((stage) => {
                 const Icon = stage.icon;
@@ -120,10 +111,7 @@ export function ProductVisualSection() {
                     </span>
                     <div className="pt-1">
                       <div className="flex items-center gap-2">
-                        <Icon
-                          className="h-3.5 w-3.5 text-muted-foreground/60"
-                          aria-hidden
-                        />
+                        <Icon className="h-3.5 w-3.5 text-muted-foreground/60" aria-hidden />
                         <span className="text-sm font-bold">{stage.name}</span>
                       </div>
                       <p className="mt-1 text-xs leading-snug text-muted-foreground">
@@ -139,6 +127,15 @@ export function ProductVisualSection() {
 
         {/* Product Screenshot Mock */}
         <div className="mt-14 lg:mt-20">
+          <div className="mb-4 max-w-2xl">
+            <p className="section-label">The Issues Workspace</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              The operational console where teams triage, filter, assign and track every report —
+              with live SLA timers. This is the working tool staff use day to day, distinct from the
+              high-level KPI snapshot in the hero above.
+            </p>
+          </div>
+
           <div className="product-frame">
             <div className="product-frame-header">
               <span className="product-frame-dot" />
@@ -146,6 +143,18 @@ export function ProductVisualSection() {
               <span className="product-frame-dot" />
               <span className="ml-2 flex-1 truncate text-[11px] font-medium text-muted-foreground">
                 app.civiceye.com/issues
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 border-b border-border bg-secondary/40 px-4 py-2">
+              <span className="rounded-md border border-border bg-background px-2 py-1 text-[10px] font-medium text-muted-foreground">
+                Filter: All
+              </span>
+              <span className="rounded-md border border-border bg-background px-2 py-1 text-[10px] font-medium text-muted-foreground">
+                Sort: SLA
+              </span>
+              <span className="rounded-md border border-primary/20 bg-primary/10 px-2 py-1 text-[10px] font-medium text-primary">
+                Assign
               </span>
             </div>
 

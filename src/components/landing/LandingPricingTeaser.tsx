@@ -3,10 +3,7 @@ import { FiArrowRight, FiCheck } from "react-icons/fi";
 
 import { formatInr, PLANS } from "@/lib/plans";
 
-const DISPLAYED_PLANS = PLANS.filter((p) => p.tier !== "enterprise").slice(
-  0,
-  3,
-);
+const DISPLAYED_PLANS = PLANS.filter((p) => p.tier !== "enterprise").slice(0, 3);
 
 export function LandingPricingTeaser() {
   return (
@@ -18,8 +15,8 @@ export function LandingPricingTeaser() {
             Plans for organizations, not citizens
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-base text-muted-foreground">
-            Your organization subscribes. Staff operate the platform. Residents
-            report issues for free.
+            Your organization subscribes. Staff operate the platform. Residents report issues for
+            free.
           </p>
         </div>
 
@@ -37,26 +34,17 @@ export function LandingPricingTeaser() {
                 </span>
               )}
               <h3 className="text-lg font-semibold">{plan.name}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {plan.tagline}
-              </p>
+              <p className="mt-1 text-sm text-muted-foreground">{plan.tagline}</p>
               <p className="mt-4 font-display text-3xl font-bold">
-                {plan.monthlyPriceInr === 0
-                  ? "Free"
-                  : formatInr(plan.monthlyPriceInr)}
+                {plan.monthlyPriceInr === 0 ? "Free" : formatInr(plan.monthlyPriceInr)}
                 {plan.monthlyPriceInr !== null && plan.monthlyPriceInr !== 0 && (
-                  <span className="text-sm font-medium text-muted-foreground">
-                    /mo
-                  </span>
+                  <span className="text-sm font-medium text-muted-foreground">/mo</span>
                 )}
               </p>
               <ul className="mt-4 flex-1 space-y-2 text-sm text-muted-foreground">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2">
-                    <FiCheck
-                      className="mt-0.5 h-4 w-4 shrink-0 text-success"
-                      aria-hidden
-                    />
+                    <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
                     {f}
                   </li>
                 ))}
@@ -64,9 +52,7 @@ export function LandingPricingTeaser() {
               <div className="mt-6">
                 <Link
                   to="/pricing"
-                  className={`${
-                    plan.highlighted ? "btn-primary" : "btn-secondary"
-                  } inline-flex w-full items-center justify-center gap-2 px-5 py-2.5`}
+                  className="btn-secondary inline-flex w-full items-center justify-center gap-2 px-5 py-2.5"
                 >
                   {plan.cta} <FiArrowRight aria-hidden />
                 </Link>
@@ -76,10 +62,7 @@ export function LandingPricingTeaser() {
         </div>
 
         <div className="mt-8 text-center">
-          <Link
-            to="/pricing"
-            className="btn-secondary inline-flex items-center gap-2 px-5 py-2.5"
-          >
+          <Link to="/pricing" className="btn-secondary inline-flex items-center gap-2 px-5 py-2.5">
             View all plans <FiArrowRight aria-hidden />
           </Link>
           <p className="mt-4 text-xs text-muted-foreground">

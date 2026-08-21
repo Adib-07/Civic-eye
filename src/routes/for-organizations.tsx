@@ -1,17 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  FiArrowRight,
-  FiCheckCircle,
-  FiCheckSquare,
-  FiClock,
-  FiLayers,
-  FiMapPin,
-  FiShield,
-  FiUsers,
-} from "react-icons/fi";
+import { FiArrowRight, FiCheckCircle, FiClock, FiMapPin, FiShield } from "react-icons/fi";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/for-organizations")({
   head: () => ({
@@ -31,27 +23,32 @@ const TARGET_ORGS = [
   {
     title: "Residential Communities & RWAs",
     desc: "Empower residents with a 30-second issue reporting link. Track pothole repairs, waste collection, and lighting outages with full accountability.",
-    icon: FiUsers,
+    image: "/assets/residential-1600.jpg",
+    featured: true,
   },
   {
     title: "Universities & Campuses",
     desc: "Streamline campus maintenance across academic blocks, hostels, and sports facilities with automated staff routing and SLA visibility.",
-    icon: FiLayers,
+    image: "/assets/university-1600.jpg",
+    featured: false,
   },
   {
     title: "Corporate & Tech Campuses",
     desc: "Keep multi-building office parks operational. Assign facility tickets instantly and verify completion with mandatory photo evidence.",
-    icon: FiShield,
+    image: "/assets/corporate-1600.jpg",
+    featured: false,
   },
   {
     title: "Integrated Townships & Estates",
     desc: "Centralize infrastructure maintenance across large residential townships. Monitor problem hotspots on interactive maps.",
-    icon: FiMapPin,
+    image: "/assets/township-1600.jpg",
+    featured: false,
   },
   {
     title: "Facility Management Companies",
     desc: "Manage client SLA commitments, track vendor resolution times, and maintain a tamper-proof digital audit history of all repairs.",
-    icon: FiCheckSquare,
+    image: "/assets/facility-1600.jpg",
+    featured: false,
   },
 ];
 
@@ -60,7 +57,11 @@ const WORKFLOW_STAGES = [
   { step: "02", title: "Assign", text: "Route responsibility to the appropriate team." },
   { step: "03", title: "Track", text: "Monitor progress and SLA timelines." },
   { step: "04", title: "Resolve", text: "Require evidence and work notes." },
-  { step: "05", title: "Verify", text: "Let the reporter confirm whether the issue was actually resolved." },
+  {
+    step: "05",
+    title: "Verify",
+    text: "Let the reporter confirm whether the issue was actually resolved.",
+  },
 ];
 
 export function ForOrganizationsPage() {
@@ -84,7 +85,10 @@ export function ForOrganizationsPage() {
               assign responsibility, track progress, and verify completed work.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <Link to="/book-demo" className="cinematic-btn-primary group shadow-lg shadow-blue-900/30">
+              <Link
+                to="/book-demo"
+                className="cinematic-btn-primary group shadow-lg shadow-blue-900/30"
+              >
                 <span>Book a Demo</span>
                 <FiArrowRight className="h-4 w-4" />
               </Link>
@@ -104,8 +108,8 @@ export function ForOrganizationsPage() {
                 Most civic operations still run on WhatsApp and spreadsheets
               </h2>
               <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                Complaints get lost in email threads. There is no SLA tracking. Nobody knows who is responsible.
-                Issues get marked "done" without verification. There is no audit trail.
+                Complaints get lost in email threads. There is no SLA tracking. Nobody knows who is
+                responsible. Issues get marked "done" without verification. There is no audit trail.
               </p>
             </div>
           </div>
@@ -121,22 +125,42 @@ export function ForOrganizationsPage() {
               </h2>
             </div>
 
-            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-6">
               {TARGET_ORGS.map((org) => (
-                <div
+                <article
                   key={org.title}
-                  className="surface-panel p-6 flex flex-col justify-between hover:border-primary/40 transition-colors"
+                  className={cn(
+                    "solution-card group flex flex-col overflow-hidden",
+                    org.featured ? "lg:col-span-6" : "lg:col-span-3",
+                  )}
                 >
-                  <div>
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary grid place-items-center mb-4">
-                      <org.icon className="h-5 w-5" />
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground">{org.title}</h3>
-                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                      {org.desc}
-                    </p>
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={org.image}
+                      alt={org.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-[16/9] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                    />
+                    <div
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent"
+                      aria-hidden
+                    />
                   </div>
-                </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="text-lg font-bold tracking-tight text-foreground sm:text-xl">
+                      {org.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{org.desc}</p>
+                    <Link
+                      to="/book-demo"
+                      className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                    >
+                      Explore solution
+                      <FiArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                    </Link>
+                  </div>
+                </article>
               ))}
             </div>
           </div>
@@ -151,7 +175,8 @@ export function ForOrganizationsPage() {
                 The CivicEye operational workflow
               </h2>
               <p className="mt-3 text-sm text-muted-foreground">
-                End-to-end operational clarity from the second a problem is spotted until citizen verification.
+                End-to-end operational clarity from the second a problem is spotted until citizen
+                verification.
               </p>
             </div>
 
@@ -177,22 +202,26 @@ export function ForOrganizationsPage() {
                   No ticket is closed without verified evidence
                 </h3>
                 <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                  Field staff cannot mark an issue resolved without attaching photo evidence. Citizens
-                  verify the work on-site, ensuring true operational accountability.
+                  Field staff cannot mark an issue resolved without attaching photo evidence.
+                  Citizens verify the work on-site, ensuring true operational accountability.
                 </p>
               </div>
               <div className="surface-panel p-6 space-y-3">
                 <div className="flex items-center gap-3 text-sm font-semibold">
-                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> Mandatory after-fix photo upload
+                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> Mandatory after-fix photo
+                  upload
                 </div>
                 <div className="flex items-center gap-3 text-sm font-semibold">
-                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> Citizen confirm / reopen flow
+                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> Citizen confirm / reopen
+                  flow
                 </div>
                 <div className="flex items-center gap-3 text-sm font-semibold">
-                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> Complete audit trail history
+                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> Complete audit trail
+                  history
                 </div>
                 <div className="flex items-center gap-3 text-sm font-semibold">
-                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> SLA timers and breach alerts
+                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> SLA timers and breach
+                  alerts
                 </div>
               </div>
             </div>
@@ -214,9 +243,21 @@ export function ForOrganizationsPage() {
             </div>
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
               {[
-                { icon: FiShield, title: "Row Level Security", text: "Database-enforced data isolation between organizations." },
-                { icon: FiClock, title: "Role-Based Access", text: "Ward officers, admins, and citizens have distinct capabilities." },
-                { icon: FiMapPin, title: "Location-Aware", text: "Geo-tagged reports with interactive map visualization." },
+                {
+                  icon: FiShield,
+                  title: "Row Level Security",
+                  text: "Database-enforced data isolation between organizations.",
+                },
+                {
+                  icon: FiClock,
+                  title: "Role-Based Access",
+                  text: "Ward officers, admins, and citizens have distinct capabilities.",
+                },
+                {
+                  icon: FiMapPin,
+                  title: "Location-Aware",
+                  text: "Geo-tagged reports with interactive map visualization.",
+                },
               ].map((item) => (
                 <article key={item.title} className="landing-feature-card p-5">
                   <span className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-background text-primary">
@@ -233,9 +274,12 @@ export function ForOrganizationsPage() {
         {/* CTA Banner */}
         <section className="py-16 bg-slate-950 text-white border-t border-white/10 text-center">
           <div className="page-container max-w-3xl">
-            <h2 className="text-3xl font-bold sm:text-4xl">Ready to pilot CivicEye in your organization?</h2>
+            <h2 className="text-3xl font-bold sm:text-4xl">
+              Ready to pilot CivicEye in your organization?
+            </h2>
             <p className="mt-4 text-slate-300 text-sm sm:text-base">
-              Set up your organization workspace in minutes. Request a walkthrough with our product team.
+              Set up your organization workspace in minutes. Request a walkthrough with our product
+              team.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Link to="/book-demo" className="cinematic-btn-primary">

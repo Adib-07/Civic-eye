@@ -102,7 +102,7 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
           <Link
             to="/login"
             className={cn(
-              "hidden rounded-lg border px-3 py-1.5 text-[13px] font-medium transition-colors sm:block",
+              "hidden rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors sm:block",
               cinematic
                 ? "border-white/15 text-slate-200 hover:bg-white/10 hover:text-white"
                 : "border-border text-foreground hover:bg-secondary",
@@ -114,7 +114,7 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
           <Link
             to="/book-demo"
             className={cn(
-              "hidden items-center gap-1.5 rounded-lg px-4 py-2 text-[13px] font-semibold shadow-sm transition-all sm:flex",
+              "hidden items-center gap-1.5 rounded-md px-4 py-2 text-[13px] font-semibold shadow-sm transition-all sm:flex",
               cinematic
                 ? "bg-blue-600 text-white hover:bg-blue-500 shadow-blue-900/40"
                 : "bg-primary text-primary-foreground hover:bg-primary/90",
