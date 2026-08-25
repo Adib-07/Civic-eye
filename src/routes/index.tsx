@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { ProductVisualSection } from "@/components/landing/ProductVisualSection";
+import { ProductTour } from "@/components/landing/ProductTour";
 import { ProblemStorySection } from "@/components/landing/ProblemStorySection";
 import { CapabilitiesSection } from "@/components/landing/CapabilitiesSection";
 import { SolutionsSection } from "@/components/landing/SolutionsSection";
@@ -57,6 +58,7 @@ function Landing() {
       <main id="main-content">
         <LandingHero />
         <ProductVisualSection />
+        <ProductTour />
         <ProblemStorySection />
         <CapabilitiesSection />
         <SolutionsSection />

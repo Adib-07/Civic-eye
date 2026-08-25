@@ -9,45 +9,46 @@ import {
   FiUser,
 } from "react-icons/fi";
 
+function ManageMock() {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <AssignMock />
+      <TrackMock />
+    </div>
+  );
+}
+
 const TOUR_STEPS = [
   {
-    key: "report",
+    key: "capture",
     number: "01",
-    label: "Report",
+    label: "Capture",
     description:
-      "A reporter submits an issue through a lightweight web form — no app install required. Photo evidence and GPS location are captured automatically.",
+      "Anyone reports an issue in seconds with a photo and auto-detected location — no app install required.",
     mock: ReportMock,
   },
   {
-    key: "assign",
+    key: "manage",
     number: "02",
-    label: "Assign",
+    label: "Manage",
     description:
-      "An administrator routes the issue to the responsible team based on category, location, and availability. Ownership is explicit and recorded.",
-    mock: AssignMock,
-  },
-  {
-    key: "track",
-    number: "03",
-    label: "Track",
-    description:
-      "SLA timers count down from assignment. Status changes are logged with timestamps. Overdue issues surface automatically.",
-    mock: TrackMock,
+      "Issues route to the right team and stay visible with live SLA timers and logged status changes.",
+    mock: ManageMock,
   },
   {
     key: "resolve",
-    number: "04",
+    number: "03",
     label: "Resolve",
     description:
-      "The assigned team uploads photo evidence and completion notes. The issue cannot be closed without proof of work done.",
+      "Field staff close issues only after uploading photo evidence and completion notes — proof of work done.",
     mock: ResolveMock,
   },
   {
     key: "verify",
-    number: "05",
+    number: "04",
     label: "Verify",
     description:
-      "A supervisor or the original reporter reviews the evidence and confirms or rejects the resolution — closing the accountability loop.",
+      "Reporters or supervisors confirm the fix before the ticket is closed, closing the accountability loop.",
     mock: VerifyMock,
   },
 ] as const;
@@ -299,9 +300,8 @@ function VerifyMock() {
 }
 
 const MOCKS: Record<string, React.FC> = {
-  report: ReportMock,
-  assign: AssignMock,
-  track: TrackMock,
+  capture: ReportMock,
+  manage: ManageMock,
   resolve: ResolveMock,
   verify: VerifyMock,
 };
@@ -311,13 +311,12 @@ export function ProductTour() {
     <section id="workflow" className="py-16 sm:py-20" aria-labelledby="tour-heading">
       <div className="page-container">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="section-label">Product Tour</p>
+          <p className="section-label">How It Works</p>
           <h2 id="tour-heading" className="mt-2 section-title text-2xl sm:text-3xl">
-            From report to verified resolution
+            Capture. Manage. Resolve. Verify.
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Every issue follows the same accountable workflow — no steps are skipped, no work goes
-            unverified.
+            One accountable workflow takes every issue from first report to verified resolution.
           </p>
         </div>
 

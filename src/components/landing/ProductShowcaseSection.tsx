@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { FiCamera, FiCheckCircle, FiEye, FiGrid, FiMapPin, FiUpload } from "react-icons/fi";
+import { FiCamera, FiCheckCircle, FiEye, FiGrid, FiMapPin, FiPlay, FiUpload } from "react-icons/fi";
 
 import { cn } from "@/lib/utils";
 
@@ -172,6 +172,36 @@ export function ProductShowcaseSection() {
           <p className="mt-3 text-muted-foreground text-base max-w-2xl mx-auto">
             A complete issue management interface — from reporting to verified resolution.
           </p>
+        </div>
+
+        {/* Screen recording placeholder — no real demo footage exists yet.
+            Do not substitute random stock video; a genuine CivicEye screen
+            recording will be added here when available. */}
+        <div
+          className="mt-12 product-frame overflow-hidden"
+          role="img"
+          aria-label="Placeholder for an upcoming CivicEye product screen recording"
+        >
+          <div className="product-frame-header">
+            <span className="product-frame-dot" />
+            <span className="product-frame-dot" />
+            <span className="product-frame-dot" />
+            <span className="ml-1 text-xs font-medium text-muted-foreground">
+              Product walkthrough — coming soon
+            </span>
+          </div>
+          <div className="relative flex aspect-video w-full items-center justify-center bg-gradient-to-br from-secondary/60 to-background">
+            <div className="flex flex-col items-center gap-3 text-center">
+              <span className="grid h-16 w-16 place-items-center rounded-full border border-border bg-background/80 text-primary shadow-sm">
+                <FiPlay className="h-6 w-6 translate-x-0.5" aria-hidden />
+              </span>
+              <p className="text-sm font-semibold text-foreground">Screen recording placeholder</p>
+              <p className="max-w-md px-6 text-xs leading-relaxed text-muted-foreground">
+                A real CivicEye screen recording will replace this placeholder. No demo video is
+                available yet, so no simulated footage is shown.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-5 gap-5">

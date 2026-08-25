@@ -9,6 +9,7 @@ const SOLUTIONS = [
     description:
       "Track vendor resolution times across client sites. Maintain digital audit trails for contractual SLA compliance.",
     color: "blue",
+    image: "/assets/facility-1600.jpg",
   },
   {
     title: "Corporate & Technology Campuses",
@@ -17,6 +18,7 @@ const SOLUTIONS = [
     description:
       "Keep multi-building office parks operational. Assign facility tickets instantly and monitor maintenance SLAs.",
     color: "indigo",
+    image: "/assets/corporate-1600.jpg",
   },
   {
     title: "Universities & Colleges",
@@ -25,6 +27,7 @@ const SOLUTIONS = [
     description:
       "Streamline campus maintenance across academic blocks, hostels, labs, and sports facilities.",
     color: "sky",
+    image: "/assets/university-1600.jpg",
   },
   {
     title: "Large Communities & Townships",
@@ -33,6 +36,7 @@ const SOLUTIONS = [
     description:
       "Centralize infrastructure maintenance across residential townships. Monitor problem hotspots on interactive maps.",
     color: "emerald",
+    image: "/assets/township-1600.jpg",
   },
 ] as const;
 
@@ -61,22 +65,38 @@ export function SolutionsSection() {
           {SOLUTIONS.map((solution) => {
             const Icon = solution.icon;
             return (
-              <article key={solution.title} className="solution-card p-6">
-                <span
-                  className={cn(
-                    "grid h-12 w-12 shrink-0 place-items-center rounded-xl border",
-                    ICON_STYLES[solution.color]
-                  )}
-                >
-                  <Icon className="h-5 w-5" aria-hidden />
-                </span>
-                <h3 className="text-lg font-semibold mt-4">{solution.title}</h3>
-                <p className="text-xs font-medium text-primary/70 mt-1">
-                  {solution.audience}
-                </p>
-                <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                  {solution.description}
-                </p>
+              <article
+                key={solution.title}
+                className="solution-card group flex flex-col overflow-hidden"
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={solution.image}
+                    alt={solution.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="aspect-[16/9] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                  />
+                  <div
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-border/40 via-transparent to-transparent"
+                    aria-hidden
+                  />
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <span
+                    className={cn(
+                      "grid h-12 w-12 shrink-0 place-items-center rounded-xl border",
+                      ICON_STYLES[solution.color],
+                    )}
+                  >
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </span>
+                  <h3 className="text-lg font-semibold mt-4">{solution.title}</h3>
+                  <p className="text-xs font-medium text-primary/70 mt-1">{solution.audience}</p>
+                  <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+                    {solution.description}
+                  </p>
+                </div>
               </article>
             );
           })}
