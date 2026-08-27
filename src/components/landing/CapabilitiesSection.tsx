@@ -11,20 +11,17 @@ const CAPABILITIES = [
   {
     icon: FiClock,
     title: "SLA Tracking",
-    description:
-      "Configurable resolution timelines per category with automatic breach alerts.",
+    description: "Configurable resolution timelines per category with automatic breach alerts.",
   },
   {
     icon: FiUserCheck,
     title: "Issue Assignment",
-    description:
-      "Route responsibility to the right team based on category and location.",
+    description: "Route responsibility to the right team based on category and location.",
   },
   {
     icon: FiCamera,
     title: "Evidence-Based Resolution",
-    description:
-      "Staff upload photo evidence and work notes before marking issues complete.",
+    description: "Staff upload photo evidence and work notes before marking issues complete.",
   },
   {
     icon: FiCheckCircle,
@@ -35,8 +32,7 @@ const CAPABILITIES = [
   {
     icon: FiMapPin,
     title: "Location-Aware Issues",
-    description:
-      "Geo-tagged reports with interactive map view for precise field navigation.",
+    description: "Geo-tagged reports with interactive map view for precise field navigation.",
   },
   {
     icon: FiBarChart2,
@@ -48,7 +44,7 @@ const CAPABILITIES = [
 
 export function CapabilitiesSection() {
   return (
-    <section className="bg-background py-12 lg:py-16">
+    <section className="bg-background py-16 lg:py-24">
       <div className="page-container">
         {/* Header — left-aligned to break center monotone */}
         <div className="max-w-2xl">
@@ -57,8 +53,8 @@ export function CapabilitiesSection() {
             Built for the people responsible for getting things done
           </h2>
           <p className="mt-3 text-base text-muted-foreground">
-            CivicEye covers the complete operational workflow — from first report to
-            verified resolution with evidence.
+            CivicEye covers the complete operational workflow — from first report to verified
+            resolution with evidence.
           </p>
         </div>
 

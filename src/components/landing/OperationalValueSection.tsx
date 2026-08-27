@@ -5,12 +5,16 @@ const valueProps = [
   { icon: FiEye, bold: "Know what is open.", desc: "Every issue in one queue." },
   { icon: FiUserCheck, bold: "Know who owns it.", desc: "Explicit assignment per issue." },
   { icon: FiClock, bold: "Know what is overdue.", desc: "SLA timers surface breaches." },
-  { icon: FiCheckCircle, bold: "Know what was resolved.", desc: "Evidence and verification required." },
+  {
+    icon: FiCheckCircle,
+    bold: "Know what was resolved.",
+    desc: "Evidence and verification required.",
+  },
 ];
 
 export function OperationalValueSection() {
   return (
-    <section className="bg-background py-14 lg:py-20">
+    <section className="bg-background py-16 lg:py-24">
       <div className="page-container">
         <div className="mx-auto max-w-2xl text-center">
           <span className="section-label">OPERATIONAL VALUE</span>

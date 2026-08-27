@@ -308,7 +308,7 @@ const MOCKS: Record<string, React.FC> = {
 
 export function ProductTour() {
   return (
-    <section id="workflow" className="py-16 sm:py-20" aria-labelledby="tour-heading">
+    <section id="workflow" className="py-16 lg:py-24" aria-labelledby="tour-heading">
       <div className="page-container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="section-label">How It Works</p>

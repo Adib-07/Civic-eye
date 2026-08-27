@@ -76,6 +76,14 @@
 
   --surface: oklch(1 0 0);
   --surface-border: oklch(0.91 0.006 260);
+
+  /* Cinematic (dark) surface tokens — derived from --primary hue 264 */
+  --hero-bg: oklch(0.15 0.028 264);
+  --hero-accent: oklch(0.62 0.15 264);
+  --hero-accent-strong: oklch(0.7 0.16 264);
+  --hero-muted: oklch(0.82 0.02 260);
+  --hero-border: oklch(1 0 0 / 10%);
+  --hero-surface: oklch(0.19 0.03 264);
   --gradient-hero: linear-gradient(180deg, oklch(0.985 0.004 260), oklch(0.995 0.001 260));
   --shadow-card: 0 1px 2px oklch(0.18 0.02 262 / 4%), 0 1px 3px oklch(0.18 0.02 262 / 6%);
   --shadow-card-hover: 0 2px 4px oklch(0.18 0.02 262 / 5%), 0 4px 12px oklch(0.18 0.02 262 / 8%);
@@ -114,6 +122,14 @@
 
   --surface: oklch(0.21 0.02 262);
   --surface-border: oklch(1 0 0 / 10%);
+
+  /* Cinematic (dark) surface tokens */
+  --hero-bg: oklch(0.14 0.026 264);
+  --hero-accent: oklch(0.66 0.15 264);
+  --hero-accent-strong: oklch(0.72 0.16 264);
+  --hero-muted: oklch(0.84 0.02 260);
+  --hero-border: oklch(1 0 0 / 12%);
+  --hero-surface: oklch(0.2 0.03 264);
   --gradient-hero: linear-gradient(180deg, oklch(0.19 0.022 262), oklch(0.17 0.018 262));
   --shadow-card: 0 1px 2px oklch(0 0 0 / 35%), 0 2px 8px oklch(0 0 0 / 25%);
   --shadow-card-hover: 0 2px 4px oklch(0 0 0 / 40%), 0 8px 20px oklch(0 0 0 / 35%);
@@ -160,6 +176,30 @@
 
 @utility bg-brand {
   background: var(--primary);
+}
+
+@utility text-hero-accent {
+  color: var(--hero-accent);
+}
+
+@utility bg-hero-accent {
+  background: var(--hero-accent);
+}
+
+@utility border-hero-accent {
+  border-color: color-mix(in oklab, var(--hero-accent) 35%, var(--hero-border));
+}
+
+@utility text-hero-muted {
+  color: var(--hero-muted);
+}
+
+@utility bg-hero-surface {
+  background: var(--hero-surface);
+}
+
+@utility border-hero {
+  border-color: var(--hero-border);
 }
 
 @utility page-container {
@@ -325,7 +365,7 @@
 /* ── Premium landing design system ── */
 
 .cinematic-hero {
-  background: #07111f;
+  background: var(--hero-bg);
   color: #fff;
 }
 
@@ -333,17 +373,17 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(29, 95, 233, 0.15), transparent 55%),
-    linear-gradient(180deg, #0b1728 0%, #07111f 45%, #07111f 100%);
+    radial-gradient(ellipse 80% 60% at 50% -10%, color-mix(in oklab, var(--hero-accent) 16%, transparent), transparent 55%),
+    linear-gradient(180deg, color-mix(in oklab, var(--hero-accent) 8%, var(--hero-bg)) 0%, var(--hero-bg) 45%, var(--hero-bg) 100%);
 }
 
 .cinematic-hero-grid {
   position: absolute;
   inset: 0;
-  opacity: 0.3;
+  opacity: 0.22;
   background-image:
-    linear-gradient(rgba(79, 140, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79, 140, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(color-mix(in oklab, var(--hero-accent) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--hero-accent) 10%, transparent) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
 }
@@ -353,8 +393,8 @@
   inset: 0;
   pointer-events: none;
   background-image:
-    radial-gradient(circle at 20% 80%, rgba(79, 140, 255, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 78% 22%, rgba(37, 99, 235, 0.05) 0%, transparent 35%);
+    radial-gradient(circle at 20% 80%, color-mix(in oklab, var(--hero-accent) 7%, transparent) 0%, transparent 40%),
+    radial-gradient(circle at 78% 22%, color-mix(in oklab, var(--hero-accent) 6%, transparent) 0%, transparent 35%);
 }
 
 .cinematic-eyebrow {
@@ -362,7 +402,7 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(79, 140, 255, 0.85);
+  color: var(--hero-accent);
 }
 
 .cinematic-btn-primary {
@@ -371,19 +411,19 @@
   justify-content: center;
   gap: 0.5rem;
   border-radius: 0.5rem;
-  background: #2563eb;
+  background: var(--hero-accent);
   padding: 0.75rem 1.25rem;
   font-size: 0.9375rem;
   font-weight: 600;
   color: #fff;
   transition: background-color 0.15s ease;
   box-shadow:
-    0 0 0 1px rgba(79, 140, 255, 0.25),
-    0 4px 14px rgba(29, 95, 233, 0.25);
+    0 0 0 1px color-mix(in oklab, var(--hero-accent) 35%, transparent),
+    0 4px 14px color-mix(in oklab, var(--hero-accent) 28%, transparent);
 }
 
 .cinematic-btn-primary:hover {
-  background: #1d5fe9;
+  background: var(--hero-accent-strong);
 }
 
 .cinematic-btn-secondary {
@@ -392,12 +432,12 @@
   justify-content: center;
   gap: 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--hero-border);
   background: rgba(255, 255, 255, 0.04);
   padding: 0.75rem 1.25rem;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--hero-muted);
   transition:
     background-color 0.15s ease,
     border-color 0.15s ease;
@@ -405,25 +445,25 @@
 
 .cinematic-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: color-mix(in oklab, var(--hero-accent) 30%, var(--hero-border));
 }
 
 .cinematic-product-shell {
   border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(11, 23, 40, 0.75);
+  border: 1px solid var(--hero-border);
+  background: color-mix(in oklab, var(--hero-surface) 75%, transparent);
   backdrop-filter: blur(12px);
   box-shadow:
-    0 0 0 1px rgba(79, 140, 255, 0.08),
+    0 0 0 1px color-mix(in oklab, var(--hero-accent) 10%, transparent),
     0 24px 48px rgba(0, 0, 0, 0.35),
-    0 8px 24px rgba(29, 95, 233, 0.12);
+    0 8px 24px color-mix(in oklab, var(--hero-accent) 14%, transparent);
   overflow: hidden;
 }
 
 .cinematic-map-canvas {
   background:
-    radial-gradient(ellipse at 40% 35%, rgba(29, 95, 233, 0.12), transparent 55%),
-    linear-gradient(165deg, #10233d 0%, #0b1728 100%);
+    radial-gradient(ellipse at 40% 35%, color-mix(in oklab, var(--hero-accent) 14%, transparent), transparent 55%),
+    linear-gradient(165deg, color-mix(in oklab, var(--hero-accent) 10%, var(--hero-bg)) 0%, var(--hero-bg) 100%);
 }
 
 .cinematic-marker {

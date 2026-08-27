@@ -1,13 +1,13 @@
-import { FiBookOpen, FiBriefcase, FiHome, FiMap } from "react-icons/fi";
+import { FiBookOpen, FiBriefcase, FiMap, FiTool } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 
 const SOLUTIONS = [
   {
     title: "Facility Management",
-    icon: FiHome,
+    icon: FiTool,
     audience: "Facility managers and operations teams",
     description:
-      "Track vendor resolution times across client sites. Maintain digital audit trails for contractual SLA compliance.",
+      "Manage resolution across every client site under contract. Keep a dated audit trail that proves each SLA was met at renewal.",
     color: "blue",
     image: "/assets/facility-1600.jpg",
   },
@@ -16,7 +16,7 @@ const SOLUTIONS = [
     icon: FiBriefcase,
     audience: "Campus operations and workplace teams",
     description:
-      "Keep multi-building office parks operational. Assign facility tickets instantly and monitor maintenance SLAs.",
+      "Employees report a broken HVAC or dead outlet from a single link. CivicEye routes it to the right vendor and shows every open ticket across all buildings.",
     color: "indigo",
     image: "/assets/corporate-1600.jpg",
   },
@@ -25,7 +25,7 @@ const SOLUTIONS = [
     icon: FiBookOpen,
     audience: "University administration and maintenance",
     description:
-      "Streamline campus maintenance across academic blocks, hostels, labs, and sports facilities.",
+      "Students and staff report issues with no app to install. Track them across academic blocks, hostels, labs, and sports facilities from one queue.",
     color: "sky",
     image: "/assets/university-1600.jpg",
   },
@@ -34,7 +34,7 @@ const SOLUTIONS = [
     icon: FiMap,
     audience: "RWA boards and township administrators",
     description:
-      "Centralize infrastructure maintenance across residential townships. Monitor problem hotspots on interactive maps.",
+      "Residents report potholes, outages, and water issues from their phones. See where problems cluster on a map and send the right crew.",
     color: "emerald",
     image: "/assets/township-1600.jpg",
   },
@@ -49,11 +49,11 @@ const ICON_STYLES: Record<string, string> = {
 
 export function SolutionsSection() {
   return (
-    <section id="solutions" className="py-20 lg:py-28 bg-secondary/30 border-y border-border">
+    <section id="solutions" className="py-16 lg:py-24 bg-secondary/30 border-y border-border">
       <div className="page-container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="section-label">SOLUTIONS</p>
-          <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold tracking-tight">
+          <h2 className="mt-4 font-display text-3xl sm:text-4xl font-bold tracking-tight">
             Designed for teams responsible for real-world spaces
           </h2>
           <p className="mt-3 text-muted-foreground text-base max-w-2xl mx-auto">
@@ -61,7 +61,7 @@ export function SolutionsSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-5">
           {SOLUTIONS.map((solution) => {
             const Icon = solution.icon;
             return (

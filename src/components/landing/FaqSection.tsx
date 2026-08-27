@@ -50,7 +50,7 @@ const FAQS = [
 
 export function FaqSection() {
   return (
-    <section className="bg-secondary/30 border-y border-border py-12 lg:py-16">
+    <section className="bg-secondary/30 border-y border-border py-16 lg:py-24">
       <div className="page-container">
         <p className="section-label centered">FAQ</p>
         <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold tracking-tight centered">

@@ -10,49 +10,48 @@ import {
 import { cn } from "@/lib/utils";
 
 const PROBLEM_STEPS = [
-  { icon: FiMessageSquare, label: "Message in a WhatsApp group" },
-  { icon: FiUserX, label: "Nobody is assigned" },
-  { icon: FiClock, label: "No SLA visibility" },
-  { icon: FiHelpCircle, label: "Is it actually fixed?" },
-  { icon: FiXCircle, label: "No verification" },
+  { icon: FiMessageSquare, label: "Reported in a WhatsApp group" },
+  { icon: FiUserX, label: "No one is assigned" },
+  { icon: FiClock, label: "No deadline is tracked" },
+  { icon: FiHelpCircle, label: "No one confirms it's fixed" },
+  { icon: FiXCircle, label: "Closed without proof" },
 ];
 
 export function ProblemStorySection() {
   return (
-    <section className="bg-secondary/30 py-14 lg:py-20">
+    <section className="bg-secondary/30 py-16 lg:py-24">
       <div className="page-container">
-        <div className="mx-auto max-w-xl">
-          <span className="section-label">THE PROBLEM</span>
-          <h2 className="mt-3 font-display text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-            Operational issues shouldn&apos;t disappear into WhatsApp, email and
-            spreadsheets.
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="section-label">The Problem</span>
+          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            An issue reported in a WhatsApp group rarely gets assigned, tracked, or closed with
+            proof.
           </h2>
+        </div>
 
-          <div className="mt-8 flex flex-col items-start gap-0">
-            {PROBLEM_STEPS.map((step, i) => {
-              const Icon = step.icon;
-              return (
-                <div key={step.label} className="flex flex-col items-start">
-                  <div
-                    className={cn(
-                      "flex items-center gap-3 w-full",
-                      "border border-red-200 dark:border-red-900/40",
-                      "bg-red-50/50 dark:bg-red-950/20",
-                      "rounded-lg p-3"
-                    )}
-                  >
-                    <Icon className="h-4 w-4 shrink-0 text-red-500" />
-                    <span className="text-sm text-muted-foreground">
-                      {step.label}
-                    </span>
-                  </div>
-                  {i < PROBLEM_STEPS.length - 1 && (
-                    <FiChevronDown className="h-5 w-5 text-red-300 dark:text-red-800 my-1" />
+        <div className="mx-auto mt-10 flex max-w-md flex-col items-start gap-0">
+          {PROBLEM_STEPS.map((step, i) => {
+            const Icon = step.icon;
+            return (
+              <div key={step.label} className="flex flex-col items-start">
+                <div
+                  className={cn(
+                    "flex w-full items-center gap-3 rounded-lg p-3",
+                    "border border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-950/20",
                   )}
+                >
+                  <Icon className="h-4 w-4 shrink-0 text-red-500" aria-hidden />
+                  <span className="text-sm text-muted-foreground">{step.label}</span>
                 </div>
-              );
-            })}
-          </div>
+                {i < PROBLEM_STEPS.length - 1 && (
+                  <FiChevronDown
+                    className="my-1 h-5 w-5 text-red-300 dark:text-red-800"
+                    aria-hidden
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

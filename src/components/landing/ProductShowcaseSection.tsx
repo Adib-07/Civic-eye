@@ -162,7 +162,7 @@ function ResolutionVerification() {
 
 export function ProductShowcaseSection() {
   return (
-    <section className="bg-secondary/30 border-y border-border py-14 lg:py-20">
+    <section className="bg-secondary/30 border-y border-border py-16 lg:py-24">
       <div className="page-container">
         <div className="text-center">
           <p className="section-label">PRODUCT</p>

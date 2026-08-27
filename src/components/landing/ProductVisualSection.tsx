@@ -54,7 +54,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export function ProductVisualSection() {
   return (
-    <section className="bg-background py-14 lg:py-20">
+    <section className="bg-background py-16 lg:py-24">
       <div className="page-container">
         {/* Header — left-aligned to break center monotone */}
         <div className="max-w-2xl">

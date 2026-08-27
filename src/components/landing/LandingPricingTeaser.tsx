@@ -7,7 +7,7 @@ const DISPLAYED_PLANS = PLANS.filter((p) => p.tier !== "enterprise").slice(0, 3)
 
 export function LandingPricingTeaser() {
   return (
-    <section className="bg-background py-20 lg:py-28">
+    <section className="bg-background py-16 lg:py-24">
       <div className="page-container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="section-label">Pricing</p>
