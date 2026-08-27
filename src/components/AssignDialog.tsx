@@ -39,7 +39,7 @@ export function AssignDialog({
               </span>
               <div>
                 <h3 className="text-lg font-bold">Assign issue</h3>
-                <p className="text-sm text-muted-foreground">Select a ward officer or admin</p>
+                <p className="text-sm text-muted-foreground">Select a staff member or admin</p>
               </div>
             </div>
 

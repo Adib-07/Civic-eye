@@ -63,7 +63,7 @@ export function ProblemSection() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold mt-0.5 shrink-0">&bull;</span>
-                <span>Staff sign-off plus citizen resolution verification.</span>
+                <span>Staff sign-off plus reporter resolution verification.</span>
               </li>
             </ul>
           </div>

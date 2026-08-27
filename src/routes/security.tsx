@@ -32,13 +32,13 @@ const SECURITY_SECTIONS = [
     icon: FiKey,
     title: "Authentication",
     description:
-      "Staff access is managed through Supabase Auth with email and password credentials. Authentication tokens are handled server-side and never exposed in the browser.",
+      "Staff access is protected with encrypted authentication and secure credential storage. Authentication tokens are handled server-side and never exposed in the browser.",
   },
   {
     icon: FiUsers,
     title: "Role-Based Access Control",
     description:
-      "Each staff member is assigned a role (administrator, ward officer, or reporter) that determines what they can view, edit, and resolve. Roles are enforced at the database level — not just the user interface.",
+      "Each staff member is assigned a role (administrator, staff member, or reporter) that determines what they can view, edit, and resolve. Roles are enforced at the database level — not just the user interface.",
   },
   {
     icon: FiDatabase,
@@ -50,7 +50,7 @@ const SECURITY_SECTIONS = [
     icon: FiLock,
     title: "Database Security",
     description:
-      "CivicEye uses Supabase (hosted PostgreSQL) with Row Level Security enforced at the database engine level. Queries that attempt to cross organization boundaries are rejected before data leaves the database.",
+      "CivicEye uses a hardened relational database with Row Level Security enforced at the database engine level. Queries that attempt to cross organization boundaries are rejected before data leaves the database.",
   },
   {
     icon: FiEye,
@@ -114,8 +114,8 @@ function SecurityPage() {
                 <span className="text-muted-foreground/50 mt-0.5 shrink-0">&bull;</span>
                 <span>
                   We do not claim &quot;bank-grade&quot; or &quot;military-grade&quot; security. Our
-                  security posture is based on proven Supabase/PostgreSQL infrastructure and
-                  standard best practices.
+                  security posture is based on proven managed database and authentication
+                  infrastructure and standard best practices.
                 </span>
               </li>
               <li className="flex items-start gap-2">

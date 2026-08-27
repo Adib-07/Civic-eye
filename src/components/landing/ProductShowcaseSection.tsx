@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { FiCamera, FiCheckCircle, FiEye, FiGrid, FiMapPin, FiPlay, FiUpload } from "react-icons/fi";
+import { useState, useEffect } from "react";
+import { FiCamera, FiCheckCircle, FiChevronLeft, FiChevronRight, FiEye, FiGrid, FiMapPin, FiUpload } from "react-icons/fi";
 
 import { cn } from "@/lib/utils";
 
@@ -174,56 +174,81 @@ export function ProductShowcaseSection() {
           </p>
         </div>
 
-        {/* Screen recording placeholder — no real demo footage exists yet.
-            Do not substitute random stock video; a genuine CivicEye screen
-            recording will be added here when available. */}
-        <div
-          className="mt-12 product-frame overflow-hidden"
-          role="img"
-          aria-label="Placeholder for an upcoming CivicEye product screen recording"
-        >
-          <div className="product-frame-header">
-            <span className="product-frame-dot" />
-            <span className="product-frame-dot" />
-            <span className="product-frame-dot" />
-            <span className="ml-1 text-xs font-medium text-muted-foreground">
-              Product walkthrough — coming soon
-            </span>
-          </div>
-          <div className="relative flex aspect-video w-full items-center justify-center bg-gradient-to-br from-secondary/60 to-background">
-            <div className="flex flex-col items-center gap-3 text-center">
-              <span className="grid h-16 w-16 place-items-center rounded-full border border-border bg-background/80 text-primary shadow-sm">
-                <FiPlay className="h-6 w-6 translate-x-0.5" aria-hidden />
-              </span>
-              <p className="text-sm font-semibold text-foreground">Screen recording placeholder</p>
-              <p className="max-w-md px-6 text-xs leading-relaxed text-muted-foreground">
-                A real CivicEye screen recording will replace this placeholder. No demo video is
-                available yet, so no simulated footage is shown.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-5 gap-5">
-          <div className="lg:col-span-3">
-            <IssueReportingForm />
-            <p className="mt-3 text-xs text-muted-foreground text-center">Citizen Reporting</p>
-          </div>
-
-          <div className="lg:col-span-2 grid grid-rows-2 gap-5">
-            <div>
-              <OperationsDashboard />
-              <p className="mt-3 text-xs text-muted-foreground text-center">Operations Dashboard</p>
-            </div>
-            <div>
-              <ResolutionVerification />
-              <p className="mt-3 text-xs text-muted-foreground text-center">
-                Resolution Verification
-              </p>
-            </div>
-          </div>
-        </div>
+        <ProductCarousel
+          screens={[
+            { label: "Citizen Reporting", node: <IssueReportingForm /> },
+            { label: "Operations Dashboard", node: <OperationsDashboard /> },
+            { label: "Resolution Verification", node: <ResolutionVerification /> },
+          ]}
+        />
       </div>
     </section>
+  );
+}
+
+function ProductCarousel({
+  screens,
+}: {
+  screens: { label: string; node: React.ReactNode }[];
+}) {
+  const [active, setActive] = useState(0);
+
+  const go = (next: number) => setActive((next + screens.length) % screens.length);
+
+  useEffect(() => {
+    const id = setInterval(() => setActive((i) => (i + 1) % screens.length), 5000);
+    return () => clearInterval(id);
+  }, [screens.length]);
+
+  return (
+    <div className="mt-12 product-frame overflow-hidden">
+      <div className="product-frame-header">
+        <span className="product-frame-dot" />
+        <span className="product-frame-dot" />
+        <span className="product-frame-dot" />
+        <span className="ml-1 text-xs font-medium text-muted-foreground">
+          {screens[active].label}
+        </span>
+      </div>
+
+      <div className="relative">
+        <div className="grid aspect-video w-full place-items-center bg-gradient-to-br from-secondary/60 to-background p-4 sm:p-8">
+          <div className="w-full max-w-md">{screens[active].node}</div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => go(active - 1)}
+          aria-label="Previous screen"
+          className="absolute left-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-border bg-background/80 text-foreground shadow-sm transition hover:bg-background"
+        >
+          <FiChevronLeft className="h-4 w-4" aria-hidden />
+        </button>
+        <button
+          type="button"
+          onClick={() => go(active + 1)}
+          aria-label="Next screen"
+          className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-border bg-background/80 text-foreground shadow-sm transition hover:bg-background"
+        >
+          <FiChevronRight className="h-4 w-4" aria-hidden />
+        </button>
+      </div>
+
+      <div className="flex items-center justify-center gap-2 py-3">
+        {screens.map((screen, i) => (
+          <button
+            key={screen.label}
+            type="button"
+            onClick={() => setActive(i)}
+            aria-label={`Show ${screen.label}`}
+            aria-current={i === active}
+            className={cn(
+              "h-2 rounded-full transition-all",
+              i === active ? "w-6 bg-primary" : "w-2 bg-border hover:bg-muted-foreground",
+            )}
+          />
+        ))}
+      </div>
+    </div>
   );
 }

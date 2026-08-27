@@ -122,7 +122,7 @@ const STAGE_DETAILS: Record<
   },
   assignment: {
     title: "Staff Assignment",
-    text: "Assign issues to designated ward officers or specialized maintenance crews based on category.",
+    text: "Assign issues to designated staff members or specialized maintenance crews based on category.",
     borderClass: "border-blue-500/20",
     bgClass: "bg-blue-500/5",
     titleClass: "text-blue-300",

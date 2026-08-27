@@ -63,7 +63,7 @@ export function ProductPreviewSection() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold mt-0.5">&bull;</span>
-                Staff sign-off plus citizen resolution verification.
+                Staff sign-off plus reporter resolution verification.
               </li>
             </ul>
           </div>

@@ -124,7 +124,7 @@ export function ResolveIssueDialog({
 
             <p className="mt-3 text-xs text-muted-foreground">
               Attach photo evidence demonstrating that <strong>"{report.title}"</strong> has been
-              repaired or cleaned. This evidence will be shown to citizens for verification.
+              repaired or cleaned. This evidence will be shown to reporters for verification.
             </p>
 
             <form onSubmit={handleSubmit} className="mt-4 space-y-4">

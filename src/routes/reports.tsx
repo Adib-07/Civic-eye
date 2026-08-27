@@ -668,7 +668,7 @@ function ReportsPage() {
           if (!resolveTarget) return;
           try {
             await resolveWithEvidence.mutateAsync({ reportId: resolveTarget.id, file, notes });
-            toast.success("Resolution submitted successfully — pending citizen verification");
+            toast.success("Resolution submitted successfully — pending reporter verification");
             setResolveTarget(null);
           } catch (e) {
             toast.error(e instanceof Error ? e.message : "Resolution submission failed");

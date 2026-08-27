@@ -243,7 +243,7 @@ export const FAQS = [
     a: "CivicEye serves facility management companies, corporate and technology campuses, universities and colleges, large residential communities and townships, and public-sector operations teams.",
   },
   {
-    q: "Do residents or citizens pay to report issues?",
+    q: "Do residents or reporters pay to report issues?",
     a: "No. Community members and residents report issues for free via a lightweight web form. Organizations subscribe to manage their staff operations queue, SLA compliance, and verification workflows.",
   },
   {

@@ -109,7 +109,7 @@ export function PrivacyPage() {
             <p>
               Uploaded issue images and GPS coordinates are stored in private, organization-scoped
               storage buckets. These are used exclusively for maintenance routing, staff dispatch,
-              and citizen resolution verification. Images are not publicly accessible.
+              and reporter resolution verification. Images are not publicly accessible.
             </p>
           </section>
 

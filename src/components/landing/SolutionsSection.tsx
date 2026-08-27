@@ -27,7 +27,7 @@ const SOLUTIONS = [
     description:
       "Students and staff report issues with no app to install. Track them across academic blocks, hostels, labs, and sports facilities from one queue.",
     color: "sky",
-    image: "/assets/university-1600.jpg",
+    image: "/assets/university-campus-india.svg",
   },
   {
     title: "Large Communities & Townships",

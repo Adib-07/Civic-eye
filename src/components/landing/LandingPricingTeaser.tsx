@@ -12,7 +12,7 @@ export function LandingPricingTeaser() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="section-label">Pricing</p>
           <h2 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Plans for organizations, not citizens
+            Plans for organizations, not reporters
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-base text-muted-foreground">
             Your organization subscribes. Staff operate the platform. Residents report issues for

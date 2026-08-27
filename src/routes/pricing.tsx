@@ -57,7 +57,7 @@ function PricingPage() {
         <div className="max-w-2xl">
           <p className="section-label">Pricing</p>
           <h1 className="mt-2 section-title text-3xl sm:text-4xl">
-            Plans for organizations, not citizens
+            Plans for organizations, not reporters
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
             Your organization subscribes. Staff operate the platform. Residents and community
@@ -82,7 +82,7 @@ function PricingPage() {
           <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
             <li className="flex items-start gap-2">
               <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-              Organizations subscribe; citizens and residents never pay to report an issue.
+              Organizations subscribe; end users never pay to report an issue.
             </li>
             <li className="flex items-start gap-2">
               <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
