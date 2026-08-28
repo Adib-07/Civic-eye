@@ -337,7 +337,7 @@ export function ForOrganizationsPage() {
                 </h3>
                 <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
                   Field staff cannot mark an issue resolved without attaching photo evidence.
-                  Citizens verify the work on-site, ensuring true operational accountability.
+                  Reporters verify the work on-site, ensuring true operational accountability.
                 </p>
               </div>
               <div className="surface-panel p-6 space-y-3">
@@ -346,7 +346,7 @@ export function ForOrganizationsPage() {
                   upload
                 </div>
                 <div className="flex items-center gap-3 text-sm font-semibold">
-                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> Citizen confirm / reopen
+                  <FiCheckCircle className="text-emerald-500 h-5 w-5" /> Reporter confirm / reopen
                   flow
                 </div>
                 <div className="flex items-center gap-3 text-sm font-semibold">

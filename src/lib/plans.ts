@@ -40,7 +40,7 @@ export const PLANS: PlanDefinition[] = [
     features: [
       "Up to 5 staff members",
       "100 issues per month",
-      "Citizen reporting & live map",
+      "Reporter access & live map",
       "Assignment & SLA tracking",
       "Before/After evidence capture",
       "30-day full feature pilot",
@@ -59,7 +59,7 @@ export const PLANS: PlanDefinition[] = [
       "1,000 issues per month",
       "8 departments/wards",
       "Operations dashboard",
-      "Citizen resolution verification",
+      "Resolution verification",
       "Organization data isolation",
     ],
     cta: "Start a Pilot",

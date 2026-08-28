@@ -185,6 +185,7 @@ export type Database = {
           role: UserRole;
           full_name: string | null;
           email: string | null;
+          categories: string[] | null;
           created_at: string;
         };
         Insert: {
@@ -194,6 +195,7 @@ export type Database = {
           role?: UserRole;
           full_name?: string | null;
           email?: string | null;
+          categories?: string[] | null;
           created_at?: string;
         };
         Update: {
@@ -202,6 +204,7 @@ export type Database = {
           role?: UserRole;
           full_name?: string | null;
           email?: string | null;
+          categories?: string[] | null;
         };
         Relationships: [];
       };

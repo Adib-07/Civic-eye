@@ -646,6 +646,7 @@ function ReportsPage() {
         open={!!assignTarget}
         staff={staff}
         loading={assign.isPending}
+        category={assignTarget?.category}
         onCancel={() => setAssignTarget(null)}
         onAssign={async (staffId) => {
           if (!assignTarget) return;

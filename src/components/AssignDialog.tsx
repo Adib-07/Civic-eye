@@ -1,21 +1,32 @@
+import { useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiUserCheck } from "react-icons/fi";
 
-import { roleLabel, type StaffMember } from "@/lib/types";
+import { roleLabel, type Category, type StaffMember } from "@/lib/types";
 
 export function AssignDialog({
   open,
   staff,
   loading,
+  category,
   onAssign,
   onCancel,
 }: {
   open: boolean;
   staff: StaffMember[];
   loading?: boolean;
+  /** Report category used to surface matching staff as suggestions. */
+  category?: Category;
   onAssign: (staffId: string) => void;
   onCancel: () => void;
 }) {
+  const sortedStaff = useMemo(() => {
+    if (!category) return staff;
+    const isSuggested = (m: StaffMember) =>
+      Array.isArray(m.categories) && m.categories.includes(category);
+    return [...staff].sort((a, b) => Number(isSuggested(b)) - Number(isSuggested(a)));
+  }, [staff, category]);
+
   return (
     <AnimatePresence>
       {open && (
@@ -49,21 +60,34 @@ export function AssignDialog({
                   No staff members found for this organization.
                 </li>
               )}
-              {staff.map((member) => (
-                <li key={member.id}>
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => onAssign(member.id)}
-                    className="flex w-full items-center justify-between rounded-xl border border-border px-4 py-3 text-left text-sm transition-colors hover:bg-secondary disabled:opacity-60"
-                  >
-                    <span className="font-semibold">{member.fullName ?? member.email}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {roleLabel(member.role)}
-                    </span>
-                  </button>
-                </li>
-              ))}
+              {sortedStaff.map((member) => {
+                const suggested =
+                  !!category &&
+                  Array.isArray(member.categories) &&
+                  member.categories.includes(category);
+                return (
+                  <li key={member.id}>
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => onAssign(member.id)}
+                      className="flex w-full items-center justify-between rounded-xl border border-border px-4 py-3 text-left text-sm transition-colors hover:bg-secondary disabled:opacity-60"
+                    >
+                      <span className="flex items-center gap-2 font-semibold">
+                        {member.fullName ?? member.email}
+                        {suggested && (
+                          <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                            Suggested
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {roleLabel(member.role)}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
 
             <div className="mt-5 flex justify-end">

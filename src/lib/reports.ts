@@ -426,7 +426,7 @@ export async function fetchStaffMembers(organizationId: string): Promise<StaffMe
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("profiles")
-    .select("id, full_name, email, role")
+    .select("id, full_name, email, role, categories")
     .eq("organization_id", organizationId)
     .in("role", ["ward_officer", "admin", "super_admin"]);
 
@@ -437,6 +437,7 @@ export async function fetchStaffMembers(organizationId: string): Promise<StaffMe
     fullName: p.full_name,
     email: p.email,
     role: p.role as UserRole,
+    categories: p.categories ?? [],
   }));
 }
 

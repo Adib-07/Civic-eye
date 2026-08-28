@@ -82,6 +82,8 @@ export interface StaffMember {
   fullName: string | null;
   email: string | null;
   role: UserRole;
+  /** Categories this staff member typically handles (category suggestions). */
+  categories?: string[] | null;
 }
 
 export interface SlaPolicy {
