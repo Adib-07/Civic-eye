@@ -26,6 +26,17 @@ export type Status = (typeof STATUSES)[number];
 export const USER_ROLES = ["citizen", "ward_officer", "admin", "super_admin"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
+const ROLE_LABELS: Record<UserRole, string> = {
+  citizen: "Reporter",
+  ward_officer: "Staff",
+  admin: "Admin",
+  super_admin: "Super Admin",
+};
+
+export function roleLabel(role: UserRole | string): string {
+  return ROLE_LABELS[role as UserRole] ?? role.replace(/_/g, " ");
+}
+
 export interface Report {
   id: string;
   organizationId: string;

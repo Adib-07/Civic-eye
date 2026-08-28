@@ -47,7 +47,7 @@ export function VerifyDialog({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
                 <span className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
-                  Citizen Verification
+                  Resolution Verification
                 </span>
                 <h3 id="verify-dialog-title" className="text-lg font-bold text-foreground">
                   Has this issue been resolved?

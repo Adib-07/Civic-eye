@@ -136,7 +136,7 @@ function DashboardPage() {
       ) : staffOrgMissing ? (
         <QueryError
           title="Staff profile not linked"
-          message="Your Supabase profile must have organization_id set to your municipality UUID before you can access the dashboard."
+          message="Your Supabase profile must have organization_id set to your organization's UUID before you can access the dashboard."
         />
       ) : orgMissing ? (
         <QueryError

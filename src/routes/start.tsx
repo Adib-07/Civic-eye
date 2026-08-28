@@ -31,12 +31,20 @@ export const Route = createFileRoute("/start")({
 });
 
 const ORG_TYPES = [
-  { value: "municipality", label: "Municipality / ward office" },
   { value: "campus", label: "Campus / institution" },
   { value: "housing", label: "Housing society / estate" },
   { value: "facility", label: "Facilities / operations team" },
+  { value: "municipality", label: "Municipality / ward office" },
   { value: "other", label: "Other" },
 ] as const;
+
+const ORG_NAME_PLACEHOLDERS: Record<(typeof ORG_TYPES)[number]["value"], string> = {
+  campus: "e.g. Sunrise Institute of Technology",
+  housing: "e.g. Greenview Residency",
+  facility: "e.g. Skyline Business Park Facilities",
+  municipality: "e.g. Ward 14 Municipal Office",
+  other: "e.g. Your organization name",
+};
 
 function StartPage() {
   const { plan: planParam } = Route.useSearch();
@@ -44,7 +52,7 @@ function StartPage() {
 
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>(planParam ?? "pilot");
   const [orgName, setOrgName] = useState("");
-  const [orgType, setOrgType] = useState<(typeof ORG_TYPES)[number]["value"]>("municipality");
+  const [orgType, setOrgType] = useState<(typeof ORG_TYPES)[number]["value"]>("campus");
   const [adminName, setAdminName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [teamSize, setTeamSize] = useState("");
@@ -168,7 +176,7 @@ function StartPage() {
               value={orgName}
               onChange={(e) => setOrgName(e.target.value)}
               required
-              placeholder="e.g. Ward 14 Municipal Office"
+              placeholder={ORG_NAME_PLACEHOLDERS[orgType]}
               className={field}
             />
           </label>

@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { signOut } from "@/lib/auth";
 import { useAuth, useOrganizationSubscription, useTheme } from "@/lib/hooks";
 import { useQueryClient } from "@tanstack/react-query";
-import { canManageReports, isStaffRole } from "@/lib/types";
+import { canManageReports, isStaffRole, roleLabel } from "@/lib/types";
 import { getDefaultOrganizationId, resolveOrganizationId } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import { Loader } from "./EmptyState";
@@ -148,7 +148,7 @@ export function AppShell({
 
           {profile && (
             <p className="mt-3 truncate px-2 text-xs text-muted-foreground">
-              {profile.fullName ?? profile.email} · {profile.role.replace("_", " ")}
+               {profile.fullName ?? profile.email} · {roleLabel(profile.role)}
             </p>
           )}
 

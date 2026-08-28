@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { FiUserCheck } from "react-icons/fi";
 
-import type { StaffMember } from "@/lib/types";
+import { roleLabel, type StaffMember } from "@/lib/types";
 
 export function AssignDialog({
   open,
@@ -58,8 +58,8 @@ export function AssignDialog({
                     className="flex w-full items-center justify-between rounded-xl border border-border px-4 py-3 text-left text-sm transition-colors hover:bg-secondary disabled:opacity-60"
                   >
                     <span className="font-semibold">{member.fullName ?? member.email}</span>
-                    <span className="text-xs capitalize text-muted-foreground">
-                      {member.role.replace("_", " ")}
+                    <span className="text-xs text-muted-foreground">
+                      {roleLabel(member.role)}
                     </span>
                   </button>
                 </li>

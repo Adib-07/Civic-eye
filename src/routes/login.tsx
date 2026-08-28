@@ -91,7 +91,7 @@ function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="officer@municipality.gov.in"
+                placeholder="you@yourorganization.com"
                 className="w-full bg-transparent py-2.5 text-sm outline-none"
                 required
                 autoComplete="email"
@@ -127,7 +127,7 @@ function LoginPage() {
         </form>
 
         <p className="mt-6 text-center text-xs leading-relaxed text-muted-foreground">
-          Ward officers and admins are provisioned by your organization administrator in Supabase
+          Staff and admins are provisioned by your organization administrator in Supabase
           Auth.
         </p>
       </div>

@@ -30,7 +30,7 @@ const steps = [
   {
     icon: FiUsers,
     title: "Staff assign and resolve",
-    text: "Ward officers sign in, assign issues from the queue, mark work complete, and verify fixes before closing.",
+    text: "Staff sign in, assign issues from the queue, mark work complete, and verify fixes before closing.",
     to: "/login" as const,
     cta: "Staff sign in",
   },
