@@ -3,6 +3,9 @@ import { useState } from "react";
 import { FiCheckCircle, FiSend, FiShield, FiClock, FiUsers, FiAlertCircle } from "react-icons/fi";
 import { toast } from "sonner";
 
+import { isSupabaseConfigured } from "@/lib/env";
+import { submitDemoRequest } from "@/lib/subscription";
+
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { cn } from "@/lib/utils";
@@ -128,7 +131,7 @@ export function BookDemoPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const validationErrors = validate(formData);
@@ -144,43 +147,21 @@ export function BookDemoPage() {
       return;
     }
 
+    if (!isSupabaseConfigured()) {
+      toast.error("Supabase is not configured — cannot submit request yet.");
+      return;
+    }
+
     setLoading(true);
 
-    // ── Integration point ──────────────────────────────────────────
-    // Replace this setTimeout with your actual backend call:
-    //
-    //   await fetch("/api/demo-requests", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({
-    //       ...formData,
-    //       submittedAt: new Date().toISOString(),
-    //     }),
-    //   });
-    //
-    // Or connect to your CRM/email service:
-    //   - Formspree, Resend, SendGrid, Loops, etc.
-    //   - Supabase Edge Function
-    //   - Webhook to Slack/Discord
-    // ────────────────────────────────────────────────────────────────
-
-    setTimeout(() => {
+    try {
+      await submitDemoRequest(formData.fullName, formData.workEmail, formData.organization);
       setLoading(false);
       setSubmitted(true);
       toast.success("Demo request submitted successfully.");
-
-      // ── Analytics integration point ─────────────────────────────
-      // Track this conversion event:
-      //
-      //   window.dispatchEvent(new CustomEvent("civiceye:demo-submitted", {
-      //     detail: { orgType: formData.orgType, siteCount: formData.siteCount }
-      //   }));
-      //
-      // Or call your analytics provider:
-      //   posthog?.capture("demo_form_submitted", { org_type: formData.orgType });
-      //   gtag?.("event", "generate_lead", { event_category: "demo" });
-      // ─────────────────────────────────────────────────────────────
-    }, 800);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Submission failed");
+    }
   };
 
   return (

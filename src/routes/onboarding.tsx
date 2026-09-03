@@ -16,7 +16,7 @@ const steps = [
   {
     icon: FiCamera,
     title: "Report with a photo",
-    text: "Open Report Issue, upload a photo, and confirm the suggested category. Your ward team receives a geo-tagged record instantly.",
+    text: "Open Report Issue, upload a photo, and confirm the suggested category. Your team receives a geo-tagged record instantly.",
     to: "/report" as const,
     cta: "Try reporting",
   },

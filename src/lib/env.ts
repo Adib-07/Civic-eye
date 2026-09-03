@@ -125,8 +125,7 @@ export function getSupabaseConfigSummary(): {
   orgRaw: string | undefined;
 } {
   const urlRaw = _env["VITE_SUPABASE_URL"]?.trim();
-  const keyRaw =
-    (_env["VITE_SUPABASE_ANON_KEY"] ?? _env["VITE_SUPABASE_PUBLISHABLE_KEY"])?.trim();
+  const keyRaw = (_env["VITE_SUPABASE_ANON_KEY"] ?? _env["VITE_SUPABASE_PUBLISHABLE_KEY"])?.trim();
   const orgRaw = _env["VITE_DEFAULT_ORGANIZATION_ID"]?.trim();
   return {
     configured: isSupabaseConfigured(),

@@ -113,6 +113,23 @@ export async function submitOnboardingRequest(input: OnboardingInput): Promise<v
   if (error) throw new Error(error.message);
 }
 
+export async function submitDemoRequest(
+  fullName: string,
+  workEmail: string,
+  organization: string,
+): Promise<void> {
+  const sb = requireSupabase();
+
+  const { error } = await sb.from("demo_requests").insert({
+    full_name: fullName.trim(),
+    work_email: workEmail.trim().toLowerCase(),
+    organization: organization.trim(),
+    submitted_at: new Date().toISOString(),
+  });
+
+  if (error) throw new Error(error.message);
+}
+
 export function subscriptionStatusLabel(sub: OrganizationSubscription): string {
   if (!sub.isActive) {
     if (sub.status === "expired" || sub.status === "cancelled") return "Subscription inactive";

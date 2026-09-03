@@ -127,8 +127,7 @@ function LoginPage() {
         </form>
 
         <p className="mt-6 text-center text-xs leading-relaxed text-muted-foreground">
-          Staff and admins are provisioned by your organization administrator in Supabase
-          Auth.
+          Staff and admins are provisioned by your organization administrator
         </p>
       </div>
     </main>

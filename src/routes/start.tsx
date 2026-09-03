@@ -39,11 +39,11 @@ const ORG_TYPES = [
 ] as const;
 
 const ORG_NAME_PLACEHOLDERS: Record<(typeof ORG_TYPES)[number]["value"], string> = {
-  campus: "e.g. Sunrise Institute of Technology",
-  housing: "e.g. Greenview Residency",
-  facility: "e.g. Skyline Business Park Facilities",
-  municipality: "e.g. Ward 14 Municipal Office",
-  other: "e.g. Your organization name",
+  campus: "Block A Hostel Wing",
+  housing: "Green Meadows RWA",
+  facility: "Tower 2 Facility Ops",
+  municipality: "Ward 14 Municipal Office",
+  other: "Your Organization Name",
 };
 
 function StartPage() {
@@ -176,7 +176,7 @@ function StartPage() {
               value={orgName}
               onChange={(e) => setOrgName(e.target.value)}
               required
-              placeholder={ORG_NAME_PLACEHOLDERS[orgType]}
+              placeholder={orgType ? ORG_NAME_PLACEHOLDERS[orgType] : ORG_NAME_PLACEHOLDERS.other}
               className={field}
             />
           </label>
