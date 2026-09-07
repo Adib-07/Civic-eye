@@ -19,7 +19,7 @@ export type DemoIssue = {
 export const DEMO_ISSUES: DemoIssue[] = [
   {
     id: "a4f2b891",
-    title: "Pothole — MG Road Junction",
+    title: "Pothole — Main Access Road, near Gate 2",
     category: "Pothole",
     location: "MG Road Junction, Ward 12",
     status: "Pending",

@@ -8,13 +8,13 @@ const STAGES = [
   {
     num: "01",
     name: "Report",
-    description: "Citizen or staff submits a geo-tagged photo report.",
+    description: "Anyone in the organization submits a geo-tagged photo report.",
     icon: FiCamera,
   },
   {
     num: "02",
     name: "Assign",
-    description: "Issue routes to the right team by category and zone.",
+    description: "Assign responsibility to the right team member — you choose who owns it.",
     icon: FiUserCheck,
   },
   {
@@ -54,7 +54,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export function ProductVisualSection() {
   return (
-    <section className="bg-background py-16 lg:py-24">
+    <section className="bg-background py-16 lg:py-24 pb-12">
       <div className="page-container">
         {/* Header — left-aligned to break center monotone */}
         <div className="max-w-2xl">
@@ -158,8 +158,8 @@ export function ProductVisualSection() {
               </span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+<div className="overflow-x-auto pb-2">
+  <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-border bg-secondary/50">
                     <th className="px-4 py-2.5 font-semibold text-muted-foreground">ID</th>

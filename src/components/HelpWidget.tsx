@@ -7,7 +7,7 @@ export function HelpWidget() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50" role="complementary" aria-label="Help and support">
+    <div className="fixed bottom-8 right-6 z-50" role="complementary" aria-label="Help and support">
       {open && (
         <div className="mb-3 surface-panel shadow-lg border border-border p-4 w-64 space-y-3">
           <div className="flex items-center justify-between">

@@ -111,6 +111,7 @@ export function BookDemoPage() {
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const updateField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -160,7 +161,9 @@ export function BookDemoPage() {
       setSubmitted(true);
       toast.success("Demo request submitted successfully.");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Submission failed");
+      setSubmitError("Something went wrong submitting your request — please try again or email us directly");
+      toast.error("Something went wrong submitting your request — please try again or email us directly");
+      setLoading(false);
     }
   };
 
@@ -271,12 +274,12 @@ export function BookDemoPage() {
                         onChange={(e) => updateField("fullName", e.target.value)}
                         onBlur={() => handleBlur("fullName")}
                         placeholder="e.g. Aditi Sharma"
-                        className={cn(
-                          "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary",
-                          touched.fullName && errors.fullName
-                            ? "border-destructive"
-                            : "border-border",
-                        )}
+className={cn(
+ "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary",
+ touched.fullName && errors.fullName
+   ? "border-destructive"
+   : "border-border",
+)}
                         autoComplete="name"
                         aria-invalid={!!(touched.fullName && errors.fullName)}
                         aria-describedby={
@@ -299,12 +302,12 @@ export function BookDemoPage() {
                         onChange={(e) => updateField("workEmail", e.target.value)}
                         onBlur={() => handleBlur("workEmail")}
                         placeholder="you@organization.com"
-                        className={cn(
-                          "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary",
-                          touched.workEmail && errors.workEmail
-                            ? "border-destructive"
-                            : "border-border",
-                        )}
+className={cn(
+ "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary",
+ touched.workEmail && errors.workEmail
+   ? "border-destructive"
+   : "border-border",
+)}
                         autoComplete="email"
                         aria-invalid={!!(touched.workEmail && errors.workEmail)}
                         aria-describedby={
@@ -328,12 +331,12 @@ export function BookDemoPage() {
                       onChange={(e) => updateField("organization", e.target.value)}
                       onBlur={() => handleBlur("organization")}
                       placeholder="e.g. Acme Facilities"
-                      className={cn(
-                        "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary",
-                        touched.organization && errors.organization
-                          ? "border-destructive"
-                          : "border-border",
-                      )}
+className={cn(
+ "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary",
+ touched.organization && errors.organization
+   ? "border-destructive"
+   : "border-border",
+)}
                       autoComplete="organization"
                       aria-invalid={!!(touched.organization && errors.organization)}
                       aria-describedby={
@@ -356,7 +359,7 @@ export function BookDemoPage() {
                         onChange={(e) =>
                           updateField("role", e.target.value as (typeof ROLE_OPTIONS)[number])
                         }
-                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary"
+                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary"
                       >
                         {ROLE_OPTIONS.map((r) => (
                           <option key={r} value={r}>
@@ -375,7 +378,7 @@ export function BookDemoPage() {
                         onChange={(e) =>
                           updateField("orgType", e.target.value as (typeof ORG_TYPES)[number])
                         }
-                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary"
+                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary"
                       >
                         {ORG_TYPES.map((t) => (
                           <option key={t} value={t}>
@@ -395,7 +398,7 @@ export function BookDemoPage() {
                       onChange={(e) =>
                         updateField("siteCount", e.target.value as (typeof SITE_COUNTS)[number])
                       }
-                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary"
+                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary"
                     >
                       {SITE_COUNTS.map((s) => (
                         <option key={s} value={s}>
@@ -415,15 +418,31 @@ export function BookDemoPage() {
                       value={formData.message}
                       onChange={(e) => updateField("message", e.target.value)}
                       placeholder="e.g. We manage 12 campus buildings and need SLA tracking for maintenance..."
-                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary"
+                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary"
                     />
                   </div>
 
                   <div className="pt-1">
+                    {submitError && (
+                      <div
+                        role="alert"
+                        className="mt-2 flex items-center gap-2 rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2 text-sm text-red-500"
+                      >
+                        <FiAlertCircle className="h-4 w-4 shrink-0" aria-hidden />
+                        <span>{submitError}</span>
+                        <button
+                          onClick={() => setSubmitError(null)}
+                          className="ml-2 hover:text-red-500"
+                          aria-label="Dismiss error"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-blue-500 disabled:opacity-60"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 min-h-[44px] text-sm font-bold text-white shadow-md transition-all hover:bg-blue-500 disabled:opacity-60"
                     >
                       {loading ? (
                         <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />

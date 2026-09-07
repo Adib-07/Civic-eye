@@ -112,7 +112,7 @@ function AssignMock() {
         </span>
       </div>
       <div className="rounded-lg border border-border bg-background p-3 mb-3">
-        <p className="text-[10px] font-semibold">Pothole — MG Road Junction</p>
+        <p className="text-[10px] font-semibold">Pothole — Main Access Road, near Gate 2</p>
         <p className="text-[9px] text-muted-foreground mt-0.5">
           Ward 12 · High priority · SLA: 24 hours
         </p>

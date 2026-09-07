@@ -126,7 +126,7 @@ export function LandingHero() {
               </div>
 
               {/* Live issues table */}
-              <div className="mt-4 overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02]">
+              <div className="mt-4 overflow-x-auto rounded-lg border border-white/[0.06] bg-white/[0.02]">
                 <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
                   <span className="text-xs font-semibold text-slate-200">Live Issues</span>
                   <span className="flex items-center gap-1.5 text-[10px] text-slate-500">
@@ -166,6 +166,15 @@ export function LandingHero() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div className="mt-2 flex items-center justify-center gap-2 text-[10px] text-slate-500/60">
+                <span className="flex items-center gap-1.5">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                    <path d="M19 9l-7 7-7-7" />
+                  </svg>
+                  Scroll
+                </span>
               </div>
 
               {/* Status bar (replaces self-referential caption) */}
