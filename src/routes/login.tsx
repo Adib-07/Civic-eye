@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { FiEye, FiLock, FiMail, FiArrowLeft } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiLock, FiMail, FiArrowLeft } from "react-icons/fi";
 import { toast } from "sonner";
 
 import { signIn } from "@/lib/auth";
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
   const { session, profile, loading, isConfigured } = useAuth();
@@ -102,15 +103,26 @@ function LoginPage() {
           <label className="block">
             <span className="text-xs font-medium text-muted-foreground">Password</span>
             <div className="mt-1.5 flex items-center gap-2 rounded-md border border-border bg-card px-3 focus-within:border-primary">
-              <FiLock className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-transparent py-2.5 text-sm outline-none"
                 required
                 autoComplete="current-password"
               />
+              <button
+                type="button"
+                className="rounded-md bg-transparent p-1 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? (
+                  <FiEyeOff className="h-4 w-4" aria-hidden />
+                ) : (
+                  <FiEye className="h-4 w-4" aria-hidden />
+                )}
+              </button>
             </div>
           </label>
 
@@ -128,6 +140,12 @@ function LoginPage() {
 
         <p className="mt-6 text-center text-xs leading-relaxed text-muted-foreground">
           Staff and admins are provisioned by your organization administrator
+        </p>
+
+        <p className="mt-4 text-center text-xs font-medium text-primary-foreground">
+          <Link to="/signup" className="transition-colors hover:text-primary">
+            Don't have an account? Sign up
+          </Link>
         </p>
       </div>
     </main>
