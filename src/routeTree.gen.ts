@@ -22,6 +22,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SecurityRouteImport } from './routes/security'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as TermsRouteImport } from './routes/terms'
 
@@ -90,6 +91,11 @@ const SecurityRoute = SecurityRouteImport.update({
   path: '/security',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StartRoute = StartRouteImport.update({
   id: '/start',
   path: '/start',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
   '/security': typeof SecurityRoute
+  '/signup': typeof SignupRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
 }
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
   '/security': typeof SecurityRoute
+  '/signup': typeof SignupRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
 }
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
   '/security': typeof SecurityRoute
+  '/signup': typeof SignupRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
 }
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/report'
     | '/reports'
     | '/security'
+    | '/signup'
     | '/start'
     | '/terms'
   fileRoutesByTo: FileRoutesByTo
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/report'
     | '/reports'
     | '/security'
+    | '/signup'
     | '/start'
     | '/terms'
   id:
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/report'
     | '/reports'
     | '/security'
+    | '/signup'
     | '/start'
     | '/terms'
   fileRoutesById: FileRoutesById
@@ -221,6 +233,7 @@ export interface RootRouteChildren {
   ReportRoute: typeof ReportRoute
   ReportsRoute: typeof ReportsRoute
   SecurityRoute: typeof SecurityRoute
+  SignupRoute: typeof SignupRoute
   StartRoute: typeof StartRoute
   TermsRoute: typeof TermsRoute
 }
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/start': {
       id: '/start'
       path: '/start'
@@ -349,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReportRoute: ReportRoute,
   ReportsRoute: ReportsRoute,
   SecurityRoute: SecurityRoute,
+  SignupRoute: SignupRoute,
   StartRoute: StartRoute,
   TermsRoute: TermsRoute,
 }

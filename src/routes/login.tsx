@@ -142,8 +142,8 @@ function LoginPage() {
           Staff and admins are provisioned by your organization administrator
         </p>
 
-        <p className="mt-4 text-center text-xs font-medium text-primary-foreground">
-          <Link to="/signup" className="transition-colors hover:text-primary">
+        <p className="mt-4 text-center text-xs font-medium text-primary">
+          <Link to="/signup" className="transition-colors hover:underline">
             Don't have an account? Sign up
           </Link>
         </p>
