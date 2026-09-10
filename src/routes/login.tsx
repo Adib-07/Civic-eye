@@ -47,8 +47,36 @@ function LoginPage() {
       const result = await signIn(email.trim(), password);
       toast.success("Signed in successfully");
       navigate({ to: isStaffRole(result.profile?.role) ? "/dashboard" : "/reports" });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Sign in failed";
+    } catch (err: any) {
+      const isEmailNotConfirmed =
+        err instanceof Error &&
+        (err.message.includes("Email not confirmed") ||
+          err.code === "email_not_confirmed");
+
+      if (isEmailNotConfirmed) {
+        setBusy(false);
+        const confirmResult = window.confirm(
+          "Please confirm your email before signing in. Resend confirmation email?",
+        );
+        if (confirmResult) {
+          const sb = requireSupabase();
+          sb.auth.resend({ type: "signup", email: email.trim() }).then(
+            () => toast.success("Confirmation email resent"),
+            (resendError: any) =>
+              toast.error(
+                resendError instanceof Error
+                  ? resendError.message
+                  : "Failed to resend confirmation email",
+              ),
+          );
+        } else {
+          toast.error("Sign in aborted");
+        }
+        return;
+      }
+
+      const message =
+        err instanceof Error ? err.message : "Sign in failed";
       toast.error(message);
     } finally {
       setBusy(false);

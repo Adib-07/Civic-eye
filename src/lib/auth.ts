@@ -56,6 +56,9 @@ export async function signUp(email: string, password: string, meta?: { fullName?
       data: {
         full_name: meta?.fullName,
       },
+      ...(typeof window !== "undefined" && {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      }),
     },
   });
   if (error) throw error;
