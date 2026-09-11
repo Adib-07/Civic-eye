@@ -1,0 +1,625 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "CivicEye home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e11]: CivicEye
+        - navigation "Main navigation" [ref=e12]:
+          - link "Product" [ref=e13] [cursor=pointer]:
+            - /url: /for-organizations
+          - link "Solutions" [ref=e14] [cursor=pointer]:
+            - /url: /for-organizations#solutions
+          - link "How It Works" [ref=e15] [cursor=pointer]:
+            - /url: /for-organizations#workflow
+          - link "Pricing" [ref=e16] [cursor=pointer]:
+            - /url: /pricing
+          - link "Security" [ref=e17] [cursor=pointer]:
+            - /url: /security
+        - generic [ref=e18]:
+          - button "Toggle dark mode" [ref=e19]
+          - link "Sign In" [ref=e22] [cursor=pointer]:
+            - /url: /login
+          - link "Book a Demo" [ref=e23] [cursor=pointer]:
+            - /url: /book-demo
+    - main [ref=e27]:
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - generic [ref=e34]: ISSUE OPERATIONS PLATFORM
+          - heading "Turn Every Operational Issue Into a Verified Resolution." [level=1] [ref=e36]
+          - paragraph [ref=e37]: CivicEye helps organizations receive, assign, track, resolve and verify operational issues across their physical sites.
+          - generic [ref=e38]:
+            - link "Book a Demo" [ref=e39] [cursor=pointer]:
+              - /url: /book-demo
+            - link "See How It Works" [ref=e42] [cursor=pointer]:
+              - /url: /for-organizations
+          - paragraph [ref=e43]: Built for facilities, campuses and operations teams.
+        - generic [ref=e44]:
+          - generic [ref=e45]: CivicEye Operations
+          - generic [ref=e50]:
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - paragraph [ref=e53]: Open Issues
+                - paragraph [ref=e54]: "24"
+              - generic [ref=e55]:
+                - paragraph [ref=e56]: SLA On Track
+                - paragraph [ref=e57]: 89%
+              - generic [ref=e58]:
+                - paragraph [ref=e59]: Overdue
+                - paragraph [ref=e60]: "4"
+              - generic [ref=e61]:
+                - paragraph [ref=e62]: Resolved
+                - paragraph [ref=e63]: "31"
+            - generic [ref=e64]:
+              - generic [ref=e65]:
+                - generic [ref=e66]: Live KPI Snapshot
+                - generic [ref=e67]: Live
+              - generic [ref=e69]:
+                - generic [ref=e70]:
+                  - generic [ref=e71]: CE-1042
+                  - generic [ref=e72]: HVAC Unit 3 — Filter replacement overdue
+                  - generic [ref=e73]: Open
+                - generic [ref=e74]:
+                  - generic [ref=e75]: CE-1038
+                  - generic [ref=e76]: Loading Dock B — Exterior light outage
+                  - generic [ref=e77]: In Progress
+                - generic [ref=e78]:
+                  - generic [ref=e79]: CE-1035
+                  - generic [ref=e80]: Parking Structure L2 — Water leak near Bay 14
+                  - generic [ref=e81]: In Review
+                - generic [ref=e82]:
+                  - generic [ref=e83]: CE-1031
+                  - generic [ref=e84]: Main Lobby — Access card reader malfunction
+                  - generic [ref=e85]: Resolved
+            - paragraph [ref=e86]: A real-time leadership view of KPIs and latest activity. The full triage and assignment console is shown in the Issues Workspace below.
+      - generic [ref=e88]:
+        - generic [ref=e89]:
+          - paragraph [ref=e90]: How It Works
+          - heading "One system for the complete issue lifecycle." [level=2] [ref=e91]
+          - paragraph [ref=e92]: From first report to verified resolution — every step is tracked, assigned, and accountable.
+        - generic [ref=e95]:
+          - generic [ref=e97]:
+            - generic [ref=e101]: "01"
+            - generic [ref=e102]: Report
+            - generic [ref=e103]: Citizen or staff submits a geo-tagged photo report.
+          - generic [ref=e104]:
+            - generic [ref=e109]: "02"
+            - generic [ref=e110]: Assign
+            - generic [ref=e111]: Issue routes to the right team by category and zone.
+          - generic [ref=e112]:
+            - generic [ref=e116]: "03"
+            - generic [ref=e117]: Track
+            - generic [ref=e118]: SLA timers and status updates keep work visible.
+          - generic [ref=e119]:
+            - generic [ref=e123]: "04"
+            - generic [ref=e124]: Resolve
+            - generic [ref=e125]: Staff upload photo evidence and completion notes.
+          - generic [ref=e126]:
+            - generic [ref=e130]: "05"
+            - generic [ref=e131]: Verify
+            - generic [ref=e132]: Reporter or supervisor confirms the fix is real.
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - paragraph [ref=e135]: The Issues Workspace
+            - paragraph [ref=e136]: The operational console where teams triage, filter, assign and track every report — with live SLA timers. This is the working tool staff use day to day, distinct from the high-level KPI snapshot in the hero above.
+          - generic [ref=e137]:
+            - generic [ref=e138]: app.civiceye.com/issues
+            - generic [ref=e143]:
+              - generic [ref=e144]: "Filter: All"
+              - generic [ref=e145]: "Sort: SLA"
+              - generic [ref=e146]: Assign
+            - table [ref=e148]:
+              - rowgroup [ref=e149]:
+                - row [ref=e150]:
+                  - columnheader "ID" [ref=e151]
+                  - columnheader "Title" [ref=e152]
+                  - columnheader "Category" [ref=e153]
+                  - columnheader "Status" [ref=e154]
+                  - columnheader "SLA" [ref=e155]
+              - rowgroup [ref=e156]:
+                - row [ref=e157]:
+                  - cell "a4f2b891" [ref=e158]
+                  - cell "Pothole — MG Road Junction" [ref=e159]
+                  - cell "Pothole" [ref=e160]
+                  - cell "Pending" [ref=e162]
+                  - cell "18h left" [ref=e164]
+                - row [ref=e165]:
+                  - cell "c91d004a" [ref=e166]
+                  - cell "Streetlight outage — North perimeter" [ref=e167]
+                  - cell "Broken Street Light" [ref=e168]
+                  - cell "In Progress" [ref=e170]
+                  - cell "2d left" [ref=e172]
+                - row [ref=e173]:
+                  - cell "e22b7710" [ref=e174]
+                  - cell "Overflowing waste bin — Ward 14" [ref=e175]
+                  - cell "Garbage" [ref=e176]
+                  - cell "In Progress" [ref=e178]
+                  - cell "1d left" [ref=e180]
+                - row [ref=e181]:
+                  - cell "b8c3e112" [ref=e182]
+                  - cell "Water leak — Pump Station" [ref=e183]
+                  - cell "Water Leakage" [ref=e184]
+                  - cell "Resolved" [ref=e186]
+                  - cell "On track" [ref=e188]
+                - row [ref=e189]:
+                  - cell "d4a901fc" [ref=e190]
+                  - cell "Road damage — Service lane" [ref=e191]
+                  - cell "Road Damage" [ref=e192]
+                  - cell "Verified" [ref=e194]
+                  - cell "Closed" [ref=e196]
+          - paragraph [ref=e197]:
+            - text: Illustrative interface —
+            - link "sign in" [ref=e198] [cursor=pointer]:
+              - /url: /book-demo
+            - text: for your organization's live workspace
+      - region [ref=e199]:
+        - generic [ref=e200]:
+          - generic [ref=e201]:
+            - paragraph [ref=e202]: How It Works
+            - heading "Capture. Manage. Resolve. Verify." [level=2] [ref=e203]
+            - paragraph [ref=e204]: One accountable workflow takes every issue from first report to verified resolution.
+          - generic [ref=e205]:
+            - generic [ref=e206]:
+              - generic [ref=e207]:
+                - generic [ref=e208]:
+                  - generic [ref=e209]: "01"
+                  - generic [ref=e210]: Capture
+                - 'heading "Step 01: Capture" [level=3] [ref=e211]'
+                - paragraph [ref=e212]: Anyone reports an issue in seconds with a photo and auto-detected location — no app install required.
+                - generic [ref=e213]:
+                  - generic [ref=e214]: "1"
+                  - generic [ref=e215]: Step 1 of 4
+              - generic [ref=e217]:
+                - generic [ref=e218]:
+                  - generic [ref=e219]: Report an Issue
+                  - generic [ref=e224]:
+                    - generic [ref=e225]:
+                      - text: Photo Evidence
+                      - generic [ref=e226]: Tap to capture or upload
+                    - generic [ref=e231]:
+                      - generic [ref=e232]:
+                        - text: Category
+                        - generic [ref=e233]: Pothole
+                      - generic [ref=e234]:
+                        - text: Location
+                        - generic [ref=e235]: Auto-detected
+                    - generic [ref=e240]:
+                      - text: Description
+                      - generic [ref=e241]: Large pothole near main gate entrance…
+                    - generic [ref=e242]: No app install required — works on any mobile browser
+                - paragraph [ref=e243]: Illustrative UI preview — sign in to access your organization's live workspace
+            - generic [ref=e244]:
+              - generic [ref=e245]:
+                - generic [ref=e246]:
+                  - generic [ref=e247]: "02"
+                  - generic [ref=e248]: Manage
+                - 'heading "Step 02: Manage" [level=3] [ref=e249]'
+                - paragraph [ref=e250]: Issues route to the right team and stay visible with live SLA timers and logged status changes.
+                - generic [ref=e251]:
+                  - generic [ref=e252]: "2"
+                  - generic [ref=e253]: Step 2 of 4
+              - generic [ref=e255]:
+                - generic [ref=e256]:
+                  - generic [ref=e257]:
+                    - generic [ref=e258]:
+                      - generic [ref=e259]: Assign Issue
+                      - generic [ref=e265]: Pending
+                    - generic [ref=e266]:
+                      - paragraph [ref=e267]: Pothole — MG Road Junction
+                      - paragraph [ref=e268]: "Ward 12 · High priority · SLA: 24 hours"
+                    - generic [ref=e269]:
+                      - text: Assign to team
+                      - generic [ref=e270]: Roads & Infrastructure
+                      - generic [ref=e274]: General Maintenance
+                    - generic [ref=e278]: Assignment creates SLA timer automatically
+                  - generic [ref=e282]:
+                    - generic [ref=e283]: SLA Tracking
+                    - generic [ref=e289]:
+                      - generic [ref=e290]:
+                        - generic [ref=e291]:
+                          - generic [ref=e292]:
+                            - paragraph [ref=e293]: Pothole — MG Road
+                            - paragraph [ref=e294]: CE-4821
+                          - generic [ref=e295]: In Progress
+                        - generic [ref=e296]: 6h left
+                      - generic [ref=e300]:
+                        - generic [ref=e301]:
+                          - generic [ref=e302]:
+                            - paragraph [ref=e303]: Streetlight outage
+                            - paragraph [ref=e304]: CE-4820
+                          - generic [ref=e305]: In Progress
+                        - generic [ref=e306]: 2d left
+                      - generic [ref=e310]:
+                        - generic [ref=e311]:
+                          - generic [ref=e312]:
+                            - paragraph [ref=e313]: Water leak — Block C
+                            - paragraph [ref=e314]: CE-4818
+                          - generic [ref=e315]: Escalated
+                        - generic [ref=e316]: Overdue
+                    - paragraph [ref=e320]: Overdue issues surface automatically in the attention queue
+                - paragraph [ref=e321]: Illustrative UI preview — sign in to access your organization's live workspace
+            - generic [ref=e322]:
+              - generic [ref=e323]:
+                - generic [ref=e324]:
+                  - generic [ref=e325]: "03"
+                  - generic [ref=e326]: Resolve
+                - 'heading "Step 03: Resolve" [level=3] [ref=e327]'
+                - paragraph [ref=e328]: Field staff close issues only after uploading photo evidence and completion notes — proof of work done.
+                - generic [ref=e329]:
+                  - generic [ref=e330]: "3"
+                  - generic [ref=e331]: Step 3 of 4
+              - generic [ref=e333]:
+                - generic [ref=e334]:
+                  - generic [ref=e335]:
+                    - generic [ref=e336]: Resolution Evidence
+                    - generic [ref=e341]: Resolved
+                  - generic [ref=e342]:
+                    - paragraph [ref=e343]: CE-4821 · Pothole — MG Road
+                    - paragraph [ref=e344]: "Assigned to: Roads & Infrastructure"
+                  - generic [ref=e345]:
+                    - generic [ref=e346]:
+                      - text: Evidence Photo
+                      - generic [ref=e347]: Resolution photo attached
+                    - generic [ref=e352]:
+                      - text: Completion Notes
+                      - generic [ref=e353]: Pothole filled and surface levelled. Work completed at 14:32 IST.
+                  - generic [ref=e354]: Photo evidence required before marking resolved
+                - paragraph [ref=e355]: Illustrative UI preview — sign in to access your organization's live workspace
+            - generic [ref=e356]:
+              - generic [ref=e357]:
+                - generic [ref=e358]:
+                  - generic [ref=e359]: "04"
+                  - generic [ref=e360]: Verify
+                - 'heading "Step 04: Verify" [level=3] [ref=e361]'
+                - paragraph [ref=e362]: Reporters or supervisors confirm the fix before the ticket is closed, closing the accountability loop.
+                - generic [ref=e363]:
+                  - generic [ref=e364]: "4"
+                  - generic [ref=e365]: Step 4 of 4
+              - generic [ref=e367]:
+                - generic [ref=e368]:
+                  - generic [ref=e369]:
+                    - generic [ref=e370]: Verification
+                    - generic [ref=e375]: Awaiting Review
+                  - generic [ref=e376]:
+                    - paragraph [ref=e377]: CE-4821 · Pothole — MG Road
+                    - paragraph [ref=e378]: "Resolved by: Rajesh M. · 14:32 IST"
+                  - generic [ref=e379]:
+                    - generic [ref=e380]: Before photo
+                    - generic [ref=e382]: After photo
+                  - generic [ref=e384]:
+                    - generic [ref=e385]: Confirm
+                    - generic [ref=e389]: Reopen
+                  - paragraph [ref=e390]: Reporter or supervisor confirms actual resolution
+                - paragraph [ref=e391]: Illustrative UI preview — sign in to access your organization's live workspace
+      - generic [ref=e394]:
+        - text: THE PROBLEM
+        - heading "Operational issues shouldn't disappear into WhatsApp, email and spreadsheets." [level=2] [ref=e395]
+        - generic [ref=e396]:
+          - generic [ref=e397]: Message in a WhatsApp group
+          - generic [ref=e404]: Nobody is assigned
+          - generic [ref=e414]: No SLA visibility
+          - generic [ref=e422]: Is it actually fixed?
+          - generic [ref=e430]: No verification
+      - generic [ref=e438]:
+        - generic [ref=e439]:
+          - paragraph [ref=e440]: CAPABILITIES
+          - heading "Built for the people responsible for getting things done" [level=2] [ref=e441]
+          - paragraph [ref=e442]: CivicEye covers the complete operational workflow — from first report to verified resolution with evidence.
+        - generic [ref=e443]:
+          - article [ref=e444]:
+            - heading "SLA Tracking" [level=3] [ref=e449]
+            - paragraph [ref=e450]: Configurable resolution timelines per category with automatic breach alerts.
+          - article [ref=e451]:
+            - heading "Issue Assignment" [level=3] [ref=e457]
+            - paragraph [ref=e458]: Route responsibility to the right team based on category and location.
+          - article [ref=e459]:
+            - heading "Evidence-Based Resolution" [level=3] [ref=e464]
+            - paragraph [ref=e465]: Staff upload photo evidence and work notes before marking issues complete.
+          - article [ref=e466]:
+            - heading "Resolution Verification" [level=3] [ref=e471]
+            - paragraph [ref=e472]: Reporters and supervisors confirm or reject completed work — closing the accountability loop.
+          - article [ref=e473]:
+            - heading "Location-Aware Issues" [level=3] [ref=e478]
+            - paragraph [ref=e479]: Geo-tagged reports with interactive map view for precise field navigation.
+          - article [ref=e480]:
+            - heading "Operational Analytics" [level=3] [ref=e483]
+            - paragraph [ref=e484]: Dashboard KPIs, category breakdowns, and compliance metrics for management visibility.
+      - generic [ref=e486]:
+        - generic [ref=e487]:
+          - paragraph [ref=e488]: SOLUTIONS
+          - heading "Designed for teams responsible for real-world spaces" [level=2] [ref=e489]
+          - paragraph [ref=e490]: CivicEye serves facility managers, campuses, communities, and operations teams.
+        - generic [ref=e491]:
+          - article [ref=e492]:
+            - img "Facility Management" [ref=e494]
+            - generic [ref=e495]:
+              - heading "Facility Management" [level=3] [ref=e500]
+              - paragraph [ref=e501]: Facility managers and operations teams
+              - paragraph [ref=e502]: Track vendor resolution times across client sites. Maintain digital audit trails for contractual SLA compliance.
+          - article [ref=e503]:
+            - img "Corporate & Technology Campuses" [ref=e505]
+            - generic [ref=e506]:
+              - heading "Corporate & Technology Campuses" [level=3] [ref=e511]
+              - paragraph [ref=e512]: Campus operations and workplace teams
+              - paragraph [ref=e513]: Keep multi-building office parks operational. Assign facility tickets instantly and monitor maintenance SLAs.
+          - article [ref=e514]:
+            - img "Universities & Colleges" [ref=e516]
+            - generic [ref=e517]:
+              - heading "Universities & Colleges" [level=3] [ref=e522]
+              - paragraph [ref=e523]: University administration and maintenance
+              - paragraph [ref=e524]: Streamline campus maintenance across academic blocks, hostels, labs, and sports facilities.
+          - article [ref=e525]:
+            - img "Large Communities & Townships" [ref=e527]
+            - generic [ref=e528]:
+              - heading "Large Communities & Townships" [level=3] [ref=e532]
+              - paragraph [ref=e533]: RWA boards and township administrators
+              - paragraph [ref=e534]: Centralize infrastructure maintenance across residential townships. Monitor problem hotspots on interactive maps.
+      - generic [ref=e536]:
+        - generic [ref=e537]:
+          - text: OPERATIONAL VALUE
+          - heading "Give your operations team visibility from report to resolution." [level=2] [ref=e538]
+        - generic [ref=e539]:
+          - generic [ref=e545]:
+            - paragraph [ref=e546]: Know what is open.
+            - paragraph [ref=e547]: Every issue in one queue.
+          - generic [ref=e554]:
+            - paragraph [ref=e555]: Know who owns it.
+            - paragraph [ref=e556]: Explicit assignment per issue.
+          - generic [ref=e562]:
+            - paragraph [ref=e563]: Know what is overdue.
+            - paragraph [ref=e564]: SLA timers surface breaches.
+          - generic [ref=e570]:
+            - paragraph [ref=e571]: Know what was resolved.
+            - paragraph [ref=e572]: Evidence and verification required.
+        - link "Book a Demo" [ref=e574] [cursor=pointer]:
+          - /url: /book-demo
+      - generic [ref=e578]:
+        - generic [ref=e579]:
+          - paragraph [ref=e580]: PRODUCT
+          - heading "See CivicEye in action" [level=2] [ref=e581]
+          - paragraph [ref=e582]: A complete issue management interface — from reporting to verified resolution.
+        - img "Placeholder for an upcoming CivicEye product screen recording" [ref=e583]:
+          - generic [ref=e584]: Product walkthrough — coming soon
+          - generic [ref=e590]:
+            - paragraph [ref=e594]: Screen recording placeholder
+            - paragraph [ref=e595]: A real CivicEye screen recording will replace this placeholder. No demo video is available yet, so no simulated footage is shown.
+        - generic [ref=e596]:
+          - generic [ref=e597]:
+            - generic [ref=e598]:
+              - generic [ref=e599]: Report an Issue
+              - generic [ref=e604]:
+                - paragraph [ref=e610]: Upload Photo
+                - generic [ref=e611]:
+                  - generic [ref=e612]: Category
+                  - generic [ref=e613]: Select category
+                - generic [ref=e620]:
+                  - generic [ref=e621]: Location
+                  - generic [ref=e622]: Enter location
+                - generic [ref=e627]:
+                  - generic [ref=e628]: Description
+                  - generic [ref=e629]: Describe the issue...
+                - button "Submit Report" [ref=e630]
+            - paragraph [ref=e631]: Citizen Reporting
+          - generic [ref=e632]:
+            - generic [ref=e633]:
+              - generic [ref=e634]:
+                - generic [ref=e635]: Operations Overview
+                - generic [ref=e640]:
+                  - generic [ref=e641]:
+                    - generic [ref=e642]:
+                      - paragraph [ref=e643]: Open
+                      - paragraph [ref=e644]: "24"
+                    - generic [ref=e645]:
+                      - paragraph [ref=e646]: In Progress
+                      - paragraph [ref=e647]: "12"
+                    - generic [ref=e648]:
+                      - paragraph [ref=e649]: Resolved
+                      - paragraph [ref=e650]: "89"
+                    - generic [ref=e651]:
+                      - paragraph [ref=e652]: Overdue
+                      - paragraph [ref=e653]: "4"
+                  - generic [ref=e654]:
+                    - generic [ref=e655]:
+                      - paragraph [ref=e658]: Pothole near main gate
+                      - generic [ref=e659]: In Progress
+                    - generic [ref=e660]:
+                      - paragraph [ref=e663]: Streetlight outage
+                      - generic [ref=e664]: Pending
+                    - generic [ref=e665]:
+                      - paragraph [ref=e668]: Water leak — pump room
+                      - generic [ref=e669]: Resolved
+              - paragraph [ref=e670]: Operations Dashboard
+            - generic [ref=e671]:
+              - generic [ref=e672]:
+                - generic [ref=e673]: Issue CE-4821
+                - generic [ref=e678]:
+                  - generic [ref=e679]: In Progress
+                  - generic [ref=e683]:
+                    - paragraph [ref=e688]: Before
+                    - paragraph [ref=e693]: After
+                  - generic [ref=e694]:
+                    - button "Confirm" [ref=e695]
+                    - button "Reopen" [ref=e696]
+              - paragraph [ref=e697]: Resolution Verification
+      - generic [ref=e700]:
+        - generic [ref=e701]:
+          - heading "Built for organizational trust" [level=2] [ref=e702]
+          - paragraph [ref=e703]: Database-level isolation and role-based access protect your data.
+        - generic [ref=e705]:
+          - generic [ref=e706]: Database-level data isolation between organizations
+          - generic [ref=e710]: Role-based access enforced at the database level
+          - generic [ref=e714]: Secure authentication flows for staff credentials
+          - generic [ref=e718]: Audit history for every status change and assignment
+          - generic [ref=e722]: Issues scoped to your organization and role only
+          - generic [ref=e726]: Organization-scoped file and image storage
+        - link "Security Details" [ref=e731] [cursor=pointer]:
+          - /url: /security
+      - generic [ref=e735]:
+        - generic [ref=e736]:
+          - paragraph [ref=e737]: Pricing
+          - heading "Plans for organizations, not citizens" [level=2] [ref=e738]
+          - paragraph [ref=e739]: Your organization subscribes. Staff operate the platform. Residents report issues for free.
+        - generic [ref=e740]:
+          - article [ref=e741]:
+            - heading "Free Pilot" [level=3] [ref=e742]
+            - paragraph [ref=e743]: 30-day trial for RWAs, campuses, and facility teams
+            - paragraph [ref=e744]: Free
+            - list [ref=e745]:
+              - listitem [ref=e746]: Up to 5 staff members
+              - listitem [ref=e749]: 100 issues per month
+              - listitem [ref=e752]: Citizen reporting & live map
+              - listitem [ref=e755]: Assignment & SLA tracking
+              - listitem [ref=e758]: Before/After evidence capture
+              - listitem [ref=e761]: 30-day full feature pilot
+            - link "Start Free Pilot" [ref=e765] [cursor=pointer]:
+              - /url: /pricing
+          - article [ref=e768]:
+            - generic [ref=e769]: Most Popular
+            - heading "Community" [level=3] [ref=e770]
+            - paragraph [ref=e771]: Proposed tier for RWAs, housing societies, and small campuses
+            - paragraph [ref=e772]: ₹3,999/mo
+            - list [ref=e773]:
+              - listitem [ref=e774]: Up to 15 staff members
+              - listitem [ref=e777]: 1,000 issues per month
+              - listitem [ref=e780]: 8 departments/wards
+              - listitem [ref=e783]: Operations dashboard
+              - listitem [ref=e786]: Citizen resolution verification
+              - listitem [ref=e789]: Organization data isolation
+            - link "Start a Pilot" [ref=e793] [cursor=pointer]:
+              - /url: /pricing
+          - article [ref=e796]:
+            - heading "Growth" [level=3] [ref=e797]
+            - paragraph [ref=e798]: Proposed tier for universities, large townships, and facility operators
+            - paragraph [ref=e799]: ₹9,999/mo
+            - list [ref=e800]:
+              - listitem [ref=e801]: Up to 50 staff members
+              - listitem [ref=e804]: 5,000 issues per month
+              - listitem [ref=e807]: 25 departments
+              - listitem [ref=e810]: Priority SLA tracking
+              - listitem [ref=e813]: Custom SLA rules
+              - listitem [ref=e816]: All Community features
+            - link "Start a Pilot" [ref=e820] [cursor=pointer]:
+              - /url: /pricing
+        - generic [ref=e823]:
+          - link "View all plans" [ref=e824] [cursor=pointer]:
+            - /url: /pricing
+          - paragraph [ref=e827]: Pricing reflects current commercial structure.
+      - generic [ref=e829]:
+        - paragraph [ref=e830]: FAQ
+        - heading "Frequently asked questions" [level=2] [ref=e831]
+        - generic [ref=e833]:
+          - generic [ref=e834]:
+            - heading [level=3] [ref=e835]:
+              - button "What is CivicEye?" [expanded] [ref=e836] [cursor=pointer]
+            - region "What is CivicEye?" [ref=e839]:
+              - paragraph [ref=e841]: CivicEye is an operational issue management platform designed for facility managers, campuses, townships, and residential communities to report, assign, track, and verify local physical issues from one accountable workflow.
+          - generic [ref=e842]:
+            - heading [level=3] [ref=e843]:
+              - button "Who is CivicEye for?" [expanded] [ref=e844] [cursor=pointer]
+            - region "Who is CivicEye for?" [ref=e847]:
+              - paragraph [ref=e849]: CivicEye serves facility management companies, corporate and technology campuses, universities and colleges, large residential communities and townships, and public-sector operations teams.
+          - generic [ref=e850]:
+            - heading [level=3] [ref=e851]:
+              - button "Can we start with one site?" [expanded] [ref=e852] [cursor=pointer]
+            - region "Can we start with one site?" [ref=e855]:
+              - paragraph [ref=e857]: Yes. Organizations typically begin with a single site or building during the pilot period and expand as the workflow matures.
+          - generic [ref=e858]:
+            - heading [level=3] [ref=e859]:
+              - button "How does issue assignment work?" [expanded] [ref=e860] [cursor=pointer]
+            - region "How does issue assignment work?" [ref=e863]:
+              - paragraph [ref=e865]: Administrators route issues to the appropriate team based on category, location, and availability. Ownership is explicit and recorded.
+          - generic [ref=e866]:
+            - heading [level=3] [ref=e867]:
+              - button "How does SLA tracking work?" [expanded] [ref=e868] [cursor=pointer]
+            - region "How does SLA tracking work?" [ref=e871]:
+              - paragraph [ref=e873]: Configurable resolution timelines per category with automatic breach alerts for overdue tasks.
+          - generic [ref=e874]:
+            - heading [level=3] [ref=e875]:
+              - button "Can issues include photos and location?" [expanded] [ref=e876] [cursor=pointer]
+            - region "Can issues include photos and location?" [ref=e879]:
+              - paragraph [ref=e881]: Yes. Reports include mandatory photo evidence and automatic GPS location capture via a lightweight web form.
+          - generic [ref=e882]:
+            - heading [level=3] [ref=e883]:
+              - button "How is resolution verified?" [expanded] [ref=e884] [cursor=pointer]
+            - region "How is resolution verified?" [ref=e887]:
+              - paragraph [ref=e889]: When staff resolve an issue, they upload photo evidence and completion notes. The reporter or supervisor then confirms or rejects the resolution.
+          - generic [ref=e890]:
+            - heading [level=3] [ref=e891]:
+              - button "How do we start a pilot?" [expanded] [ref=e892] [cursor=pointer]
+            - region "How do we start a pilot?" [ref=e895]:
+              - paragraph [ref=e897]: Book a demo or contact our team. The free pilot includes up to 5 staff members and 100 issues per month for 30 days.
+      - generic [ref=e901]:
+        - heading "Ready to bring accountability to your operations?" [level=2] [ref=e902]
+        - paragraph [ref=e903]: See how CivicEye can fit into your organization's existing issue-resolution workflow.
+        - generic [ref=e904]:
+          - link "Book a Demo" [ref=e905] [cursor=pointer]:
+            - /url: /book-demo
+          - link "Explore the Product" [ref=e908] [cursor=pointer]:
+            - /url: /for-organizations
+    - contentinfo [ref=e909]:
+      - generic [ref=e910]:
+        - generic [ref=e911]:
+          - generic [ref=e912]: CivicEye
+          - paragraph [ref=e918]: Operational issue management from report to verified resolution for facilities, campuses, and communities.
+        - generic [ref=e919]:
+          - heading "Product" [level=4] [ref=e920]
+          - list [ref=e921]:
+            - listitem [ref=e922]:
+              - link "Features" [ref=e923] [cursor=pointer]:
+                - /url: /for-organizations
+            - listitem [ref=e924]:
+              - link "How It Works" [ref=e925] [cursor=pointer]:
+                - /url: /for-organizations#workflow
+            - listitem [ref=e926]:
+              - link "Pricing" [ref=e927] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e928]:
+              - link "FAQ" [ref=e929] [cursor=pointer]:
+                - /url: /faq
+        - generic [ref=e930]:
+          - heading "Solutions" [level=4] [ref=e931]
+          - list [ref=e932]:
+            - listitem [ref=e933]:
+              - link "Facility Management" [ref=e934] [cursor=pointer]:
+                - /url: /for-organizations#solutions
+            - listitem [ref=e935]:
+              - link "Campuses" [ref=e936] [cursor=pointer]:
+                - /url: /for-organizations#solutions
+            - listitem [ref=e937]:
+              - link "Communities" [ref=e938] [cursor=pointer]:
+                - /url: /for-organizations#solutions
+        - generic [ref=e939]:
+          - heading "Company" [level=4] [ref=e940]
+          - list [ref=e941]:
+            - listitem [ref=e942]:
+              - link "Security" [ref=e943] [cursor=pointer]:
+                - /url: /security
+            - listitem [ref=e944]:
+              - link "Book a Demo" [ref=e945] [cursor=pointer]:
+                - /url: /book-demo
+            - listitem [ref=e946]:
+              - link "Contact" [ref=e947] [cursor=pointer]:
+                - /url: /book-demo
+        - generic [ref=e948]:
+          - heading "Legal" [level=4] [ref=e949]
+          - list [ref=e950]:
+            - listitem [ref=e951]:
+              - link "Privacy Policy" [ref=e952] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e953]:
+              - link "Terms of Service" [ref=e954] [cursor=pointer]:
+                - /url: /terms
+      - generic [ref=e956]:
+        - generic [ref=e957]: © 2026 CivicEye. Issue management from report to verified resolution.
+        - generic [ref=e958]:
+          - link "Privacy" [ref=e959] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e960] [cursor=pointer]:
+            - /url: /terms
+          - link "Security" [ref=e961] [cursor=pointer]:
+            - /url: /security
+  - region "Notifications alt+T"
+  - complementary "Help and support" [ref=e962]:
+    - button "Open help menu" [ref=e963]
