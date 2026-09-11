@@ -384,13 +384,8 @@
   position: absolute;
   inset: 0;
   background:
-<<<<<<< HEAD
     radial-gradient(ellipse 80% 60% at 50% -10%, color-mix(in oklab, var(--hero-accent) 16%, transparent), transparent 55%),
     linear-gradient(180deg, color-mix(in oklab, var(--hero-accent) 8%, var(--hero-bg)) 0%, var(--hero-bg) 45%, var(--hero-bg) 100%);
-=======
-    radial-gradient(ellipse 80% 60% at 50% -10%, oklch(0.55 0.2 264 / 0.16), transparent 55%),
-    linear-gradient(180deg, var(--hero-bg-top) 0%, var(--hero-bg) 45%, var(--hero-bg) 100%);
->>>>>>> 6f7926f (Update Ciyic-Eye edits)
 }
 
 .cinematic-hero-grid {
@@ -398,13 +393,8 @@
   inset: 0;
   opacity: 0.22;
   background-image:
-<<<<<<< HEAD
     linear-gradient(color-mix(in oklab, var(--hero-accent) 10%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in oklab, var(--hero-accent) 10%, transparent) 1px, transparent 1px);
-=======
-    linear-gradient(oklch(0.7 0.15 264 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.7 0.15 264 / 0.05) 1px, transparent 1px);
->>>>>>> 6f7926f (Update Ciyic-Eye edits)
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
 }
@@ -414,13 +404,8 @@
   inset: 0;
   pointer-events: none;
   background-image:
-<<<<<<< HEAD
     radial-gradient(circle at 20% 80%, color-mix(in oklab, var(--hero-accent) 7%, transparent) 0%, transparent 40%),
     radial-gradient(circle at 78% 22%, color-mix(in oklab, var(--hero-accent) 6%, transparent) 0%, transparent 35%);
-=======
-    radial-gradient(circle at 20% 80%, oklch(0.6 0.16 264 / 0.07) 0%, transparent 40%),
-    radial-gradient(circle at 78% 22%, oklch(0.55 0.2 264 / 0.06) 0%, transparent 35%);
->>>>>>> 6f7926f (Update Ciyic-Eye edits)
 }
 
 .cinematic-eyebrow {
@@ -444,21 +429,12 @@
   color: #fff;
   transition: background-color 0.15s ease;
   box-shadow:
-<<<<<<< HEAD
     0 0 0 1px color-mix(in oklab, var(--hero-accent) 35%, transparent),
     0 4px 14px color-mix(in oklab, var(--hero-accent) 28%, transparent);
 }
 
 .cinematic-btn-primary:hover {
   background: var(--hero-accent-strong);
-=======
-    0 0 0 1px oklch(0.7 0.15 264 / 0.25),
-    0 4px 14px oklch(0.55 0.2 264 / 0.25);
-}
-
-.cinematic-btn-primary:hover {
-  background: var(--hero-accent-hover);
->>>>>>> 6f7926f (Update Ciyic-Eye edits)
 }
 
 .cinematic-btn-secondary {
@@ -468,32 +444,19 @@
   gap: 0.5rem;
   border-radius: 0.5rem;
   border: 1px solid var(--hero-border);
-<<<<<<< HEAD
   background: rgba(255, 255, 255, 0.04);
   padding: 0.75rem 1.25rem;
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--hero-muted);
-=======
-  background: oklch(1 0 0 / 0.04);
-  padding: 0.75rem 1.25rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: oklch(1 0 0 / 0.85);
->>>>>>> 6f7926f (Update Ciyic-Eye edits)
   transition:
     background-color 0.15s ease,
     border-color 0.15s ease;
 }
 
 .cinematic-btn-secondary:hover {
-<<<<<<< HEAD
   background: rgba(255, 255, 255, 0.08);
   border-color: color-mix(in oklab, var(--hero-accent) 30%, var(--hero-border));
-=======
-  background: oklch(1 0 0 / 0.08);
-  border-color: oklch(1 0 0 / 0.22);
->>>>>>> 6f7926f (Update Ciyic-Eye edits)
 }
 
 .cinematic-product-shell {

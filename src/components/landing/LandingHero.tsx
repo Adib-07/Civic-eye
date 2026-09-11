@@ -3,17 +3,10 @@ import { FiArrowRight, FiSearch } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 
 const statCards = [
-<<<<<<< HEAD
-  { label: "Open", value: "24", color: "text-blue-400" },
-  { label: "On Track", value: "89%", color: "text-emerald-400" },
+  { label: "Open Issues", value: "24", color: "text-blue-400" },
+  { label: "SLA On Track", value: "89%", color: "text-emerald-400" },
   { label: "Overdue", value: "4", color: "text-amber-400" },
   { label: "Resolved", value: "31", color: "text-slate-200" },
-=======
-  { label: "Open Issues", value: "24", color: "text-white" },
-  { label: "SLA On Track", value: "89%", color: "text-[oklch(0.75_0.14_158)]" },
-  { label: "Overdue", value: "4", color: "text-[oklch(0.78_0.14_70)]" },
-  { label: "Resolved", value: "31", color: "text-slate-300" },
->>>>>>> 6f7926f (Update Ciyic-Eye edits)
 ];
 
 const issues = [
@@ -49,16 +42,11 @@ const issues = [
 
 export function LandingHero() {
   return (
-<<<<<<< HEAD
-    <section className="relative overflow-hidden bg-[var(--hero-bg)] pt-14 pb-20 lg:pt-24 lg:pb-28">
-=======
-    <section className="relative overflow-hidden cinematic-hero pt-14 pb-24 lg:pt-24 lg:pb-32">
->>>>>>> 6f7926f (Update Ciyic-Eye edits)
+    <section className="relative overflow-hidden cinematic-hero pt-14 pb-20 lg:pt-24 lg:pb-28">
       <div className="cinematic-hero-bg" aria-hidden />
       <div className="cinematic-hero-grid" aria-hidden />
 
       <div className="page-container relative z-10">
-<<<<<<< HEAD
         <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-10 lg:gap-16">
           {/* ─── Left: Copy ─── */}
           <div className="text-center lg:text-left">
@@ -73,22 +61,6 @@ export function LandingHero() {
             </h1>
 
             <p className="mt-4 max-w-xl text-[15px] sm:text-base lg:text-[17px] text-slate-400/80 mx-auto lg:mx-0">
-=======
-        <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-14 lg:gap-20">
-          {/* ─── Left: Copy ─── */}
-          <div className="text-center lg:text-left">
-            <span className="cinematic-eyebrow inline-flex items-center gap-2">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--hero-accent)]" />
-              ISSUE OPERATIONS PLATFORM
-            </span>
-
-            <h1 className="mt-6 font-display font-bold text-4xl sm:text-5xl lg:text-[3.5rem] leading-[1.08] tracking-tight text-white">
-              Turn Every Operational Issue Into a{" "}
-              <span className="text-[color:var(--hero-accent)]">Verified Resolution.</span>
-            </h1>
-
-            <p className="mt-6 max-w-lg text-base lg:text-lg text-slate-300/80 mx-auto lg:mx-0">
->>>>>>> 6f7926f (Update Ciyic-Eye edits)
               CivicEye helps organizations receive, assign, track, resolve and verify operational
               issues across their physical sites.
             </p>
