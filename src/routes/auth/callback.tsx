@@ -1,9 +1,13 @@
 import { useEffect } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { getSupabase } from "@/lib/supabase";
 
-export const Route = () => {
+export const Route = createFileRoute("/auth/callback")({
+  component: AuthCallback,
+});
+
+function AuthCallback() {
   const navigate = useNavigate();
   const sb = getSupabase();
 
@@ -25,7 +29,7 @@ export const Route = () => {
     }
 
     if (code) {
-      sb.auth.exchangeCodeForSession({ code }).then(
+      sb.auth.exchangeCodeForSession(code).then(
         ({ data, error }) => {
           if (error) {
             toast.error(`Session exchange failed: ${error.message}`);
@@ -47,4 +51,4 @@ export const Route = () => {
   }, [sb, navigate]);
 
   return null;
-};
+}

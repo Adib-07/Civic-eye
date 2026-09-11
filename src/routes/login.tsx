@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { signIn } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 import { useAuth } from "@/lib/hooks";
+import { getSupabase } from "@/lib/supabase";
 import { isStaffRole } from "@/lib/types";
 
 export const Route = createFileRoute("/login")({
@@ -49,9 +50,9 @@ function LoginPage() {
       navigate({ to: isStaffRole(result.profile?.role) ? "/dashboard" : "/reports" });
     } catch (err: any) {
       const isEmailNotConfirmed =
-        err instanceof Error &&
-        (err.message.includes("Email not confirmed") ||
-          err.code === "email_not_confirmed");
+        (err instanceof Error &&
+          err.message.includes("Email not confirmed")) ||
+        err?.code === "email_not_confirmed";
 
       if (isEmailNotConfirmed) {
         setBusy(false);
@@ -59,8 +60,8 @@ function LoginPage() {
           "Please confirm your email before signing in. Resend confirmation email?",
         );
         if (confirmResult) {
-          const sb = requireSupabase();
-          sb.auth.resend({ type: "signup", email: email.trim() }).then(
+          const sb = getSupabase();
+          sb?.auth.resend({ type: "signup", email: email.trim() }).then(
             () => toast.success("Confirmation email resent"),
             (resendError: any) =>
               toast.error(
