@@ -114,10 +114,10 @@ export function Navbar({ variant = "default" }: { variant?: "default" | "cinemat
           <Link
             to="/book-demo"
             className={cn(
-              "hidden items-center gap-1.5 rounded-md px-4 py-2 text-[13px] font-semibold shadow-sm transition-all sm:flex",
+              "hidden items-center gap-1.5 rounded-lg px-4 py-2 text-[13px] font-semibold shadow-sm transition-all sm:flex",
               cinematic
                 ? "bg-blue-600 text-white hover:bg-blue-500 shadow-blue-900/40"
-                : "bg-primary text-primary-foreground hover:bg-primary/90",
+                : "bg-blue-600 text-white hover:bg-blue-500 shadow-sm",
             )}
           >
             <span>Book a Demo</span>

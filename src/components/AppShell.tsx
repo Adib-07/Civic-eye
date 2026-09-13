@@ -148,7 +148,7 @@ export function AppShell({
 
           {profile && (
             <p className="mt-3 truncate px-2 text-xs text-muted-foreground">
-               {profile.fullName ?? profile.email} · {roleLabel(profile.role)}
+              {profile.fullName ?? profile.email} · {roleLabel(profile.role)}
             </p>
           )}
 

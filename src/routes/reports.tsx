@@ -1191,16 +1191,18 @@ function IssueDetailDialog({
                         >
                           <div className="flex items-center justify-between">
                             <p className="font-semibold text-foreground flex items-center gap-1.5">
-                              <span>{entry.fromStatus ? `${entry.fromStatus} → ` : "Status set: "}</span>
+                              <span>
+                                {entry.fromStatus ? `${entry.fromStatus} → ` : "Status set: "}
+                              </span>
                               <span
                                 className={
                                   entry.toStatus === "Verified"
                                     ? "text-emerald-500 font-bold"
                                     : entry.toStatus === "Reopened"
-                                    ? "text-rose-500 font-bold"
-                                    : entry.toStatus === "Resolved"
-                                    ? "text-amber-500 font-bold"
-                                    : ""
+                                      ? "text-rose-500 font-bold"
+                                      : entry.toStatus === "Resolved"
+                                        ? "text-amber-500 font-bold"
+                                        : ""
                                 }
                               >
                                 {entry.toStatus}
@@ -1212,7 +1214,10 @@ function IssueDetailDialog({
                           </div>
                           {entry.changedByName && (
                             <p className="text-xs text-muted-foreground">
-                              Actor: <span className="font-medium text-foreground">{entry.changedByName}</span>
+                              Actor:{" "}
+                              <span className="font-medium text-foreground">
+                                {entry.changedByName}
+                              </span>
                             </p>
                           )}
                           {entry.notes && (

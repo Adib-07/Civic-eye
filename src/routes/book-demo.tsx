@@ -1,11 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { FiCheckCircle, FiSend, FiShield, FiClock, FiUsers, FiAlertCircle } from "react-icons/fi";
-import { toast } from "sonner";
+import {
+  FiCheckCircle,
+  FiSend,
+  FiShield,
+  FiClock,
+  FiAlertCircle,
+  FiMail,
+  FiArrowLeft,
+} from "react-icons/fi";
 
 import { isSupabaseConfigured } from "@/lib/env";
 import { submitDemoRequest } from "@/lib/subscription";
-
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { cn } from "@/lib/utils";
@@ -98,15 +104,16 @@ function validate(form: FormData): FieldErrors {
 function FieldError({ message, id }: { message?: string; id?: string }) {
   if (!message) return null;
   return (
-    <p id={id} role="alert" className="mt-1 flex items-center gap-1 text-[11px] text-destructive">
-      <FiAlertCircle className="h-3 w-3 shrink-0" aria-hidden />
-      {message}
+    <p id={id} role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs text-destructive">
+      <FiAlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      <span>{message}</span>
     </p>
   );
 }
 
 export function BookDemoPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -144,25 +151,36 @@ export function BookDemoPage() {
     });
 
     if (Object.keys(validationErrors).length > 0) {
-      toast.error("Please fix the highlighted fields.");
       return;
     }
 
     if (!isSupabaseConfigured()) {
-      toast.error("Supabase is not configured — cannot submit request yet.");
+      setSubmitError(
+        "Database is not configured yet. Please configure your environment credentials or email us directly at demo@civiceye.com.",
+      );
       return;
     }
 
     setLoading(true);
+    setSubmitError(null);
 
     try {
-      await submitDemoRequest(formData.fullName, formData.workEmail, formData.organization);
+      await submitDemoRequest({
+        fullName: formData.fullName,
+        workEmail: formData.workEmail,
+        organization: formData.organization,
+        role: formData.role,
+        orgType: formData.orgType,
+        siteCount: formData.siteCount,
+        message: formData.message,
+      });
+      setSubmittedEmail(formData.workEmail);
       setLoading(false);
       setSubmitted(true);
-      toast.success("Demo request submitted successfully.");
-    } catch (err) {
-      setSubmitError("Something went wrong submitting your request — please try again or email us directly");
-      toast.error("Something went wrong submitting your request — please try again or email us directly");
+    } catch {
+      setSubmitError(
+        "We could not record your demo request online. You can retry in a moment, or reach our operations team directly at demo@civiceye.com.",
+      );
       setLoading(false);
     }
   };
@@ -172,70 +190,109 @@ export function BookDemoPage() {
       <Navbar variant="cinematic" />
 
       <main className="page-container py-12 sm:py-16">
-        <div className="max-w-4xl mx-auto grid gap-12 lg:grid-cols-12 items-start">
+        <div className="max-w-4xl mx-auto grid gap-10 lg:grid-cols-12 items-start">
+          {/* Left information column */}
           <div className="lg:col-span-5 space-y-6">
             <div>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors mb-4"
+              >
+                <FiArrowLeft className="h-3.5 w-3.5" />
+                Back to home
+              </Link>
               <p className="section-label">Schedule a Walkthrough</p>
-              <h1 className="mt-2 text-3xl font-bold sm:text-4xl text-foreground">
-                See how CivicEye works for your team
+              <h1 className="mt-2 text-2xl font-bold sm:text-3xl text-foreground tracking-tight">
+                See how CivicEye powers facilities & campuses
               </h1>
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                Request a 15-minute product demonstration. We will walk you through photo reporting,
-                staff dispatch, SLA tracking, and resolution verification for your organization.
+              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                Join operational leaders using CivicEye for verified incident resolution, SLA
+                tracking, and field staff dispatch.
               </p>
             </div>
 
             <div className="space-y-4 pt-4 border-t border-border">
-              <div className="flex items-start gap-3 text-xs sm:text-sm">
-                <FiCheckCircle className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 text-sm">
+                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-500 grid place-items-center shrink-0">
+                  <FiCheckCircle className="h-4 w-4" />
+                </div>
                 <div>
-                  <strong className="text-foreground">Tailored to your organization type</strong>
-                  <p className="text-muted-foreground">
-                    Campuses, communities, townships, and facility operations.
+                  <strong className="text-foreground text-sm font-semibold">
+                    Tailored to your organization
+                  </strong>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Campuses, communities, townships, and commercial facilities.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 text-xs sm:text-sm">
-                <FiShield className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 text-sm">
+                <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-blue-500 grid place-items-center shrink-0">
+                  <FiShield className="h-4 w-4" />
+                </div>
                 <div>
-                  <strong className="text-foreground">No-obligation free pilot</strong>
-                  <p className="text-muted-foreground">
-                    Test live workflows with up to 5 staff members at no cost.
+                  <strong className="text-foreground text-sm font-semibold">
+                    No-obligation pilot
+                  </strong>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Test live workflows with up to 5 staff members free for 30 days.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 text-xs sm:text-sm">
-                <FiClock className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 text-sm">
+                <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-500 grid place-items-center shrink-0">
+                  <FiClock className="h-4 w-4" />
+                </div>
                 <div>
-                  <strong className="text-foreground">Quick response</strong>
-                  <p className="text-muted-foreground">
-                    We will confirm your demonstration slot promptly.
+                  <strong className="text-foreground text-sm font-semibold">
+                    Prompt scheduling
+                  </strong>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Our team will confirm a 15-minute slot tailored to your schedule.
                   </p>
                 </div>
               </div>
             </div>
+
+            <div className="rounded-xl border border-border/70 bg-card/40 p-4 text-xs text-muted-foreground space-y-1.5">
+              <div className="flex items-center gap-2 text-foreground font-semibold">
+                <FiMail className="h-4 w-4 text-primary" />
+                <span>Need urgent assistance?</span>
+              </div>
+              <p>
+                For direct enterprise inquiries, email us at{" "}
+                <a
+                  href="mailto:demo@civiceye.com?subject=CivicEye%20Enterprise%20Inquiry"
+                  className="text-primary hover:underline font-medium"
+                >
+                  demo@civiceye.com
+                </a>
+                .
+              </p>
+            </div>
           </div>
 
+          {/* Right form card column */}
           <div className="lg:col-span-7">
-            <div className="surface-panel p-6 sm:p-8">
+            <div className="surface-panel p-6 sm:p-8 rounded-2xl shadow-sm border border-border/80">
               {submitted ? (
                 <div className="text-center py-8 space-y-4" role="status" aria-live="polite">
-                  <div className="h-14 w-14 rounded-full bg-emerald-500/15 text-emerald-500 grid place-items-center mx-auto">
+                  <div className="h-16 w-16 rounded-2xl bg-emerald-500/10 text-emerald-500 grid place-items-center mx-auto border border-emerald-500/20">
                     <FiCheckCircle className="h-8 w-8" />
                   </div>
-                  <h3 className="text-xl font-bold text-foreground">
-                    Thanks — your demo request has been received.
-                  </h3>
-                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    Our team will review your requirements and follow up to schedule a demonstration
-                    that fits your organization&apos;s workflow.
-                  </p>
-                  <div className="pt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground">Demo request received!</h3>
+                    <p className="text-sm text-muted-foreground max-w-md mx-auto mt-2 leading-relaxed">
+                      Thank you for your interest. We will review your requirements and reach out to{" "}
+                      <span className="font-semibold text-foreground">{submittedEmail}</span>{" "}
+                      shortly with schedule options.
+                    </p>
+                  </div>
+                  <div className="pt-6 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
                     <Link
                       to="/"
-                      className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+                      className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
                     >
                       Back to home
                     </Link>
@@ -245,8 +302,9 @@ export function BookDemoPage() {
                         setFormData(INITIAL_FORM);
                         setErrors({});
                         setTouched({});
+                        setSubmitError(null);
                       }}
-                      className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                      className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
                     >
                       Submit another request
                     </button>
@@ -255,31 +313,40 @@ export function BookDemoPage() {
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="space-y-5"
+                  className="space-y-4"
                   noValidate
                   aria-label="Book a Demo request form"
                 >
-                  <h3 className="text-lg font-bold text-foreground pb-2 border-b border-border">
-                    Book a Demo
-                  </h3>
+                  <div className="pb-3 border-b border-border">
+                    <h2 className="text-lg font-bold text-foreground">
+                      Request a 15-Minute Walkthrough
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Fill out the details below and our team will get in touch.
+                    </p>
+                  </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="block text-xs font-bold text-foreground mb-1">
+                      <label
+                        htmlFor="field-fullName"
+                        className="block text-xs font-semibold text-foreground mb-1.5"
+                      >
                         Full Name <span className="text-destructive">*</span>
                       </label>
                       <input
+                        id="field-fullName"
                         type="text"
                         value={formData.fullName}
                         onChange={(e) => updateField("fullName", e.target.value)}
                         onBlur={() => handleBlur("fullName")}
                         placeholder="e.g. Aditi Sharma"
-className={cn(
- "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary",
- touched.fullName && errors.fullName
-   ? "border-destructive"
-   : "border-border",
-)}
+                        className={cn(
+                          "w-full rounded-lg border bg-card px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20",
+                          touched.fullName && errors.fullName
+                            ? "border-destructive focus:ring-destructive/20"
+                            : "border-border",
+                        )}
                         autoComplete="name"
                         aria-invalid={!!(touched.fullName && errors.fullName)}
                         aria-describedby={
@@ -293,21 +360,25 @@ className={cn(
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-foreground mb-1">
+                      <label
+                        htmlFor="field-workEmail"
+                        className="block text-xs font-semibold text-foreground mb-1.5"
+                      >
                         Work Email <span className="text-destructive">*</span>
                       </label>
                       <input
+                        id="field-workEmail"
                         type="email"
                         value={formData.workEmail}
                         onChange={(e) => updateField("workEmail", e.target.value)}
                         onBlur={() => handleBlur("workEmail")}
                         placeholder="you@organization.com"
-className={cn(
- "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary",
- touched.workEmail && errors.workEmail
-   ? "border-destructive"
-   : "border-border",
-)}
+                        className={cn(
+                          "w-full rounded-lg border bg-card px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20",
+                          touched.workEmail && errors.workEmail
+                            ? "border-destructive focus:ring-destructive/20"
+                            : "border-border",
+                        )}
                         autoComplete="email"
                         aria-invalid={!!(touched.workEmail && errors.workEmail)}
                         aria-describedby={
@@ -322,21 +393,25 @@ className={cn(
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-foreground mb-1">
-                      Organization <span className="text-destructive">*</span>
+                    <label
+                      htmlFor="field-org"
+                      className="block text-xs font-semibold text-foreground mb-1.5"
+                    >
+                      Organization Name <span className="text-destructive">*</span>
                     </label>
                     <input
+                      id="field-org"
                       type="text"
                       value={formData.organization}
                       onChange={(e) => updateField("organization", e.target.value)}
                       onBlur={() => handleBlur("organization")}
-                      placeholder="e.g. Acme Facilities"
-className={cn(
- "w-full rounded-lg border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary",
- touched.organization && errors.organization
-   ? "border-destructive"
-   : "border-border",
-)}
+                      placeholder="e.g. Apex Facilities or Metro University"
+                      className={cn(
+                        "w-full rounded-lg border bg-card px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20",
+                        touched.organization && errors.organization
+                          ? "border-destructive focus:ring-destructive/20"
+                          : "border-border",
+                      )}
                       autoComplete="organization"
                       aria-invalid={!!(touched.organization && errors.organization)}
                       aria-describedby={
@@ -351,15 +426,19 @@ className={cn(
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="block text-xs font-bold text-foreground mb-1">
-                        Your Role <span className="text-destructive">*</span>
+                      <label
+                        htmlFor="field-role"
+                        className="block text-xs font-semibold text-foreground mb-1.5"
+                      >
+                        Your Role
                       </label>
                       <select
+                        id="field-role"
                         value={formData.role}
                         onChange={(e) =>
                           updateField("role", e.target.value as (typeof ROLE_OPTIONS)[number])
                         }
-                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary"
+                        className="w-full rounded-lg border border-border bg-card px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
                       >
                         {ROLE_OPTIONS.map((r) => (
                           <option key={r} value={r}>
@@ -370,15 +449,19 @@ className={cn(
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-foreground mb-1">
-                        Organization Type <span className="text-destructive">*</span>
+                      <label
+                        htmlFor="field-orgType"
+                        className="block text-xs font-semibold text-foreground mb-1.5"
+                      >
+                        Organization Type
                       </label>
                       <select
+                        id="field-orgType"
                         value={formData.orgType}
                         onChange={(e) =>
                           updateField("orgType", e.target.value as (typeof ORG_TYPES)[number])
                         }
-                        className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary"
+                        className="w-full rounded-lg border border-border bg-card px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
                       >
                         {ORG_TYPES.map((t) => (
                           <option key={t} value={t}>
@@ -390,15 +473,19 @@ className={cn(
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-foreground mb-1">
-                      Number of Sites
+                    <label
+                      htmlFor="field-siteCount"
+                      className="block text-xs font-semibold text-foreground mb-1.5"
+                    >
+                      Number of Sites Managed
                     </label>
                     <select
+                      id="field-siteCount"
                       value={formData.siteCount}
                       onChange={(e) =>
                         updateField("siteCount", e.target.value as (typeof SITE_COUNTS)[number])
                       }
-                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary"
+                      className="w-full rounded-lg border border-border bg-card px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
                     >
                       {SITE_COUNTS.map((s) => (
                         <option key={s} value={s}>
@@ -409,48 +496,64 @@ className={cn(
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-foreground mb-1">
-                      Current Challenge or Question{" "}
+                    <label
+                      htmlFor="field-message"
+                      className="block text-xs font-semibold text-foreground mb-1.5"
+                    >
+                      Current Operations Challenge{" "}
                       <span className="text-muted-foreground font-normal">(optional)</span>
                     </label>
                     <textarea
+                      id="field-message"
                       rows={3}
                       value={formData.message}
                       onChange={(e) => updateField("message", e.target.value)}
-                      placeholder="e.g. We manage 12 campus buildings and need SLA tracking for maintenance..."
-                      className="w-full rounded-lg border border-border bg-card/60 px-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-primary"
+                      placeholder="e.g. Managing 8 facility locations and need automated dispatch with resolution photos..."
+                      className="w-full rounded-lg border border-border bg-card px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
                     />
                   </div>
 
-                  <div className="pt-1">
-                    {submitError && (
-                      <div
-                        role="alert"
-                        className="mt-2 flex items-center gap-2 rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2 text-sm text-red-500"
-                      >
-                        <FiAlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                        <span>{submitError}</span>
-                        <button
-                          onClick={() => setSubmitError(null)}
-                          className="ml-2 hover:text-red-500"
-                          aria-label="Dismiss error"
-                        >
-                          ×
-                        </button>
+                  {submitError && (
+                    <div
+                      role="alert"
+                      className="rounded-xl bg-destructive/10 border border-destructive/20 p-4 text-xs text-foreground space-y-2"
+                    >
+                      <div className="flex items-start gap-2">
+                        <FiAlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{submitError}</span>
                       </div>
-                    )}
+                      <div className="flex items-center gap-3 pt-1">
+                        <a
+                          href={`mailto:demo@civiceye.com?subject=CivicEye%20Demo%20Request%20-%20${encodeURIComponent(formData.organization || "Inquiry")}`}
+                          className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
+                        >
+                          <FiMail className="h-3 w-3" /> Email demo@civiceye.com directly
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-2">
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 min-h-[44px] text-sm font-bold text-white shadow-md transition-all hover:bg-blue-500 disabled:opacity-60"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 min-h-[44px] text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {loading ? (
-                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                        <>
+                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                          <span>Submitting request...</span>
+                        </>
                       ) : (
-                        <FiSend className="h-4 w-4" />
+                        <>
+                          <FiSend className="h-4 w-4" />
+                          <span>Schedule Demo</span>
+                        </>
                       )}
-                      Book a Demo
                     </button>
+                    <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                      No credit card required. Free 30-day pilot included.
+                    </p>
                   </div>
                 </form>
               )}

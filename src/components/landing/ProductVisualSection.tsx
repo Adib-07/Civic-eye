@@ -158,8 +158,8 @@ export function ProductVisualSection() {
               </span>
             </div>
 
-<div className="overflow-x-auto pb-2">
-  <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto pb-2">
+              <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-border bg-secondary/50">
                     <th className="px-4 py-2.5 font-semibold text-muted-foreground">ID</th>

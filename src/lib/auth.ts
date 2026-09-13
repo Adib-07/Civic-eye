@@ -47,7 +47,18 @@ export async function signIn(email: string, password: string) {
   return { user: data.user, session: data.session, profile };
 }
 
-export async function signUp(email: string, password: string, meta?: { fullName?: string }) {
+export type SignUpResult = {
+  user: User | null;
+  session: Session | null;
+  profile: Profile | null;
+  requiresEmailConfirmation: boolean;
+};
+
+export async function signUp(
+  email: string,
+  password: string,
+  meta?: { fullName?: string },
+): Promise<SignUpResult> {
   const sb = requireSupabase();
   const { data, error } = await sb.auth.signUp({
     email,
@@ -63,8 +74,21 @@ export async function signUp(email: string, password: string, meta?: { fullName?
   });
   if (error) throw error;
 
-  const profile = data.user ? await fetchProfile(data.user.id) : null;
-  return { user: data.user, session: data.session, profile };
+  const requiresEmailConfirmation = Boolean(
+    data.user && (!data.session || !data.user.email_confirmed_at),
+  );
+
+  let profile: Profile | null = null;
+  if (data.session && data.user) {
+    profile = await fetchProfile(data.user.id);
+  }
+
+  return {
+    user: data.user,
+    session: data.session,
+    profile,
+    requiresEmailConfirmation,
+  };
 }
 
 export async function signOut() {

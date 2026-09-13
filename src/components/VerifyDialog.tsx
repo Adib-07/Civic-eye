@@ -68,7 +68,9 @@ export function VerifyDialog({
             </p>
 
             <label className="mt-4 block">
-              <span className="text-xs font-bold text-foreground">Verification Notes (optional)</span>
+              <span className="text-xs font-bold text-foreground">
+                Verification Notes (optional)
+              </span>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}

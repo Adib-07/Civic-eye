@@ -384,8 +384,17 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, color-mix(in oklab, var(--hero-accent) 16%, transparent), transparent 55%),
-    linear-gradient(180deg, color-mix(in oklab, var(--hero-accent) 8%, var(--hero-bg)) 0%, var(--hero-bg) 45%, var(--hero-bg) 100%);
+    radial-gradient(
+      ellipse 80% 60% at 50% -10%,
+      color-mix(in oklab, var(--hero-accent) 16%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--hero-accent) 8%, var(--hero-bg)) 0%,
+      var(--hero-bg) 45%,
+      var(--hero-bg) 100%
+    );
 }
 
 .cinematic-hero-grid {
@@ -394,7 +403,11 @@
   opacity: 0.22;
   background-image:
     linear-gradient(color-mix(in oklab, var(--hero-accent) 10%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in oklab, var(--hero-accent) 10%, transparent) 1px, transparent 1px);
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--hero-accent) 10%, transparent) 1px,
+      transparent 1px
+    );
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
 }
@@ -404,8 +417,16 @@
   inset: 0;
   pointer-events: none;
   background-image:
-    radial-gradient(circle at 20% 80%, color-mix(in oklab, var(--hero-accent) 7%, transparent) 0%, transparent 40%),
-    radial-gradient(circle at 78% 22%, color-mix(in oklab, var(--hero-accent) 6%, transparent) 0%, transparent 35%);
+    radial-gradient(
+      circle at 20% 80%,
+      color-mix(in oklab, var(--hero-accent) 7%, transparent) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 78% 22%,
+      color-mix(in oklab, var(--hero-accent) 6%, transparent) 0%,
+      transparent 35%
+    );
 }
 
 .cinematic-eyebrow {
@@ -473,8 +494,16 @@
 
 .cinematic-map-canvas {
   background:
-    radial-gradient(ellipse at 40% 35%, color-mix(in oklab, var(--hero-accent) 14%, transparent), transparent 55%),
-    linear-gradient(165deg, color-mix(in oklab, var(--hero-accent) 10%, var(--hero-bg)) 0%, var(--hero-bg) 100%);
+    radial-gradient(
+      ellipse at 40% 35%,
+      color-mix(in oklab, var(--hero-accent) 14%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      165deg,
+      color-mix(in oklab, var(--hero-accent) 10%, var(--hero-bg)) 0%,
+      var(--hero-bg) 100%
+    );
 }
 
 .cinematic-marker {

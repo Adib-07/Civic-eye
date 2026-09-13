@@ -138,6 +138,10 @@ export type Database = {
           full_name: string;
           work_email: string;
           organization: string;
+          role: string | null;
+          org_type: string | null;
+          site_count: string | null;
+          message: string | null;
           submitted_at: string;
         };
         Insert: {
@@ -145,6 +149,10 @@ export type Database = {
           full_name: string;
           work_email: string;
           organization: string;
+          role?: string | null;
+          org_type?: string | null;
+          site_count?: string | null;
+          message?: string | null;
           submitted_at?: string;
         };
         Update: {

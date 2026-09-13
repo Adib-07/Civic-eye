@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
-import { FiCamera, FiCheckCircle, FiChevronLeft, FiChevronRight, FiEye, FiGrid, FiMapPin, FiUpload } from "react-icons/fi";
+import {
+  FiCamera,
+  FiCheckCircle,
+  FiChevronLeft,
+  FiChevronRight,
+  FiEye,
+  FiGrid,
+  FiMapPin,
+  FiUpload,
+} from "react-icons/fi";
 
 import { cn } from "@/lib/utils";
 
@@ -186,11 +195,7 @@ export function ProductShowcaseSection() {
   );
 }
 
-function ProductCarousel({
-  screens,
-}: {
-  screens: { label: string; node: React.ReactNode }[];
-}) {
+function ProductCarousel({ screens }: { screens: { label: string; node: React.ReactNode }[] }) {
   const [active, setActive] = useState(0);
 
   const go = (next: number) => setActive((next + screens.length) % screens.length);

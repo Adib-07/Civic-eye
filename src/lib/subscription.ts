@@ -113,21 +113,47 @@ export async function submitOnboardingRequest(input: OnboardingInput): Promise<v
   if (error) throw new Error(error.message);
 }
 
+export type DemoRequestInput = {
+  fullName: string;
+  workEmail: string;
+  organization: string;
+  role?: string;
+  orgType?: string;
+  siteCount?: string;
+  message?: string;
+};
+
 export async function submitDemoRequest(
-  fullName: string,
-  workEmail: string,
-  organization: string,
+  inputOrFullName: string | DemoRequestInput,
+  workEmail?: string,
+  organization?: string,
 ): Promise<void> {
   const sb = requireSupabase();
 
-  const { error } = await sb.from("demo_requests").insert({
-    full_name: fullName.trim(),
-    work_email: workEmail.trim().toLowerCase(),
-    organization: organization.trim(),
+  const data: DemoRequestInput =
+    typeof inputOrFullName === "string"
+      ? {
+          fullName: inputOrFullName,
+          workEmail: workEmail ?? "",
+          organization: organization ?? "",
+        }
+      : inputOrFullName;
+
+  // Attempt insertion into public.demo_requests
+  const { error: demoError } = await sb.from("demo_requests").insert({
+    full_name: data.fullName.trim(),
+    work_email: data.workEmail.trim().toLowerCase(),
+    organization: data.organization.trim(),
+    role: data.role?.trim() || null,
+    org_type: data.orgType?.trim() || null,
+    site_count: data.siteCount?.trim() || null,
+    message: data.message?.trim() || null,
     submitted_at: new Date().toISOString(),
   });
 
-  if (error) throw new Error(error.message);
+  if (demoError) {
+    throw new Error(demoError.message);
+  }
 }
 
 export function subscriptionStatusLabel(sub: OrganizationSubscription): string {

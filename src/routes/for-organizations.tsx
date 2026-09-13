@@ -213,8 +213,8 @@ export function ForOrganizationsPage() {
               </span>
             </h1>
             <p className="mt-6 text-slate-300 text-base sm:text-xl max-w-2xl mx-auto leading-relaxed">
-              Give organizations and communities one accountable workflow to report issues,
-              assign responsibility, track progress, and verify completed work.
+              Give organizations and communities one accountable workflow to report issues, assign
+              responsibility, track progress, and verify completed work.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Link

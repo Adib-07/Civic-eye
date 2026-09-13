@@ -376,10 +376,7 @@ export async function verifyResolution(
         .limit(1)
         .maybeSingle();
       if (history?.id) {
-        await sb
-          .from("issue_status_history")
-          .update({ notes: notes.trim() })
-          .eq("id", history.id);
+        await sb.from("issue_status_history").update({ notes: notes.trim() }).eq("id", history.id);
       }
     } catch {
       /* non-critical notes update */
@@ -569,10 +566,7 @@ export async function resolveReportWithEvidence({
         .limit(1)
         .maybeSingle();
       if (history?.id) {
-        await sb
-          .from("issue_status_history")
-          .update({ notes: notes.trim() })
-          .eq("id", history.id);
+        await sb.from("issue_status_history").update({ notes: notes.trim() }).eq("id", history.id);
       }
     } catch {
       /* non-critical notes update */

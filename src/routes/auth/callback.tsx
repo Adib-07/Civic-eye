@@ -29,21 +29,19 @@ function AuthCallback() {
     }
 
     if (code) {
-      sb.auth.exchangeCodeForSession(code).then(
-        ({ data, error }) => {
-          if (error) {
-            toast.error(`Session exchange failed: ${error.message}`);
-            navigate({ to: "/" });
-            return;
-          }
-          if (data?.session?.user) {
-            navigate({ to: "/dashboard" });
-          } else {
-            toast.error("No session obtained");
-            navigate({ to: "/" });
-          }
+      sb.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+        if (error) {
+          toast.error(`Session exchange failed: ${error.message}`);
+          navigate({ to: "/" });
+          return;
         }
-      );
+        if (data?.session?.user) {
+          navigate({ to: "/dashboard" });
+        } else {
+          toast.error("No session obtained");
+          navigate({ to: "/" });
+        }
+      });
     } else {
       toast.error("No auth code found in callback URL");
       navigate({ to: "/" });
