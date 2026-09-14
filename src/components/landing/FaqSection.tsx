@@ -4,6 +4,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { FiChevronDown } from "react-icons/fi";
 
 const FAQS = [
   {
@@ -46,26 +47,29 @@ const FAQS = [
     answer:
       "Book a demo or contact our team. The free pilot includes up to 5 staff members and 100 issues per month for 30 days.",
   },
-];
+] as const;
 
 export function FaqSection() {
   return (
-    <section className="bg-secondary/30 border-y border-border py-16 lg:py-24">
-      <div className="page-container">
-        <p className="section-label centered">FAQ</p>
-        <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold tracking-tight centered">
-          Frequently asked questions
-        </h2>
+    <section className="page-section bg-secondary/30 border-y border-border">
+      <div className="container">
+        <div className="section-header-center animate-slide-up">
+          <p className="caption">FAQ</p>
+          <h2 className="mt-3 headline-2">
+            Frequently asked questions
+          </h2>
+        </div>
 
-        <div className="max-w-3xl mx-auto mt-10">
-          <Accordion type="multiple" defaultValue={FAQS.map((_, index) => `faq-${index}`)}>
+        <div className="mt-12 max-w-3xl mx-auto animate-slide-up stagger-1">
+          <Accordion type="multiple" className="space-y-3">
             {FAQS.map((faq, index) => (
               <AccordionItem key={index} value={`faq-${index}`}>
-                <AccordionTrigger className="text-sm font-semibold">
+                <AccordionTrigger className="text-base font-semibold py-4 focus:ring-0">
                   {faq.question}
+                  <FiChevronDown className="h-4 w-4" />
                 </AccordionTrigger>
-                <AccordionContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed pb-4">{faq.answer}</p>
+                <AccordionContent className="pb-4">
+                  <p className="body-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
                 </AccordionContent>
               </AccordionItem>
             ))}

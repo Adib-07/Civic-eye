@@ -128,7 +128,7 @@ function SignupPage() {
 
   return (
     <main className="hero-bg grid min-h-screen place-items-center p-4">
-      <div className="surface-panel w-full max-w-md p-6 sm:p-8 rounded-2xl border border-border/80 shadow-md">
+      <div className="card w-full max-w-md p-6 sm:p-8 animate-scale-in">
         <Link
           to="/login"
           className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground mb-6"
@@ -138,33 +138,33 @@ function SignupPage() {
         </Link>
 
         {needsEmailConfirmation ? (
-          <div className="text-center py-4 space-y-4" role="status" aria-live="polite">
-            <div className="h-14 w-14 rounded-2xl bg-blue-500/10 text-blue-500 grid place-items-center mx-auto border border-blue-500/20">
+          <div className="text-center py-4 space-y-6 animate-scale-in" role="status" aria-live="polite">
+            <div className="icon-wrapper-xl icon-wrapper-primary mx-auto">
               <FiMail className="h-7 w-7" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-foreground">Confirm your email address</h2>
-              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+              <h2 className="headline-3">Confirm your email address</h2>
+              <p className="mt-2 body-sm text-muted-foreground leading-relaxed">
                 We sent a verification link to{" "}
                 <span className="font-semibold text-foreground">{registeredEmail}</span>. Click the
                 link to confirm your account and sign in.
               </p>
             </div>
 
-            <div className="rounded-xl border border-border/70 bg-card/40 p-4 text-xs text-muted-foreground text-left space-y-1">
+            <div className="card p-4 text-left space-y-1">
               <div className="flex items-center gap-1.5 font-semibold text-foreground">
-                <FiCheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+                <FiCheckCircle className="h-4 w-4 text-emerald-500" />
                 <span>Next steps:</span>
               </div>
-              <p>1. Check your email inbox (and spam folder if not visible).</p>
-              <p>2. Open the CivicEye confirmation message.</p>
-              <p>3. Once confirmed, sign in to your dashboard.</p>
+              <p className="body-sm text-muted-foreground">1. Check your email inbox (and spam folder if not visible).</p>
+              <p className="body-sm text-muted-foreground">2. Open the CivicEye confirmation message.</p>
+              <p className="body-sm text-muted-foreground">3. Once confirmed, sign in to your dashboard.</p>
             </div>
 
-            <div className="pt-3 flex flex-col gap-2">
+            <div className="pt-4 flex flex-col gap-3">
               <Link
                 to="/login"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-500"
+                className="btn-primary w-full py-3"
               >
                 Go to sign in
               </Link>
@@ -174,7 +174,7 @@ function SignupPage() {
                   setNeedsEmailConfirmation(false);
                   setSubmitError(null);
                 }}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Need to change your email?
               </button>
@@ -182,50 +182,47 @@ function SignupPage() {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600/10 text-blue-600 border border-blue-600/20 shadow-sm">
+            <div className="text-center mb-8">
+              <div className="icon-wrapper-lg icon-wrapper-primary mx-auto mb-4">
                 <FiLock className="h-5 w-5" aria-hidden />
-              </span>
-              <div>
-                <h1 className="font-display text-xl font-bold tracking-tight text-foreground">
-                  Create an account
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  Sign up for CivicEye organization access
-                </p>
               </div>
+              <h1 className="headline-3">Create an account</h1>
+              <p className="mt-2 body-sm text-muted-foreground">
+                Sign up for CivicEye organization access
+              </p>
             </div>
 
             {!isConfigured && (
-              <div className="mt-5 rounded-xl border border-warning/30 bg-warning/10 p-3.5 text-xs text-muted-foreground space-y-1">
-                <div className="flex items-center gap-1.5 font-semibold text-foreground">
-                  <FiAlertCircle className="h-4 w-4 text-warning shrink-0" />
-                  <span>Backend Not Configured</span>
+              <div className="mb-6 card p-4 border-warning/30 bg-warning/10">
+                <div className="flex items-start gap-2.5">
+                  <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+                  <div>
+                    <p className="font-bold text-foreground">Backend Not Configured</p>
+                    <p className="mt-1 body-sm text-muted-foreground">
+                      Copy <code className="font-mono text-[11px]">.env.example</code> to{" "}
+                      <code className="font-mono text-[11px]">.env</code> and configure your Supabase
+                      credentials.
+                    </p>
+                  </div>
                 </div>
-                <p>
-                  Copy <code className="font-mono text-[11px]">.env.example</code> to{" "}
-                  <code className="font-mono text-[11px]">.env</code> and configure your Supabase
-                  credentials.
-                </p>
               </div>
             )}
 
             {submitError && (
               <div
                 role="alert"
-                className="mt-4 flex items-start gap-2.5 rounded-xl bg-destructive/10 border border-destructive/20 p-3.5 text-xs text-foreground"
+                className="mb-6 card p-4 border-destructive/30 bg-destructive/10"
               >
-                <FiAlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-                <span className="leading-relaxed">{submitError}</span>
+                <div className="flex items-start gap-2">
+                  <FiAlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                  <span className="body-sm leading-relaxed">{submitError}</span>
+                </div>
               </div>
             )}
 
-            <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
-              <div>
-                <label
-                  htmlFor="signup-fullName"
-                  className="block text-xs font-semibold text-foreground mb-1"
-                >
+            <form onSubmit={submit} className="space-y-4" noValidate>
+              <div className="form-field">
+                <label htmlFor="signup-fullName" className="label">
                   Full Name <span className="text-destructive">*</span>
                 </label>
                 <div className="relative flex items-center">
@@ -237,24 +234,21 @@ function SignupPage() {
                     value={form.fullName}
                     onChange={handleChange}
                     placeholder="e.g. Aditi Sharma"
-                    className="w-full rounded-lg border border-border bg-card pl-10 pr-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="input pl-10"
                     required
                     autoComplete="name"
                   />
                 </div>
                 {fieldErrors.fullName && (
-                  <p className="mt-1 flex items-center gap-1 text-[11px] text-destructive">
-                    <FiAlertCircle className="h-3 w-3 shrink-0" />
+                  <p className="form-error">
+                    <FiAlertCircle className="h-3.5 w-3.5" />
                     <span>{fieldErrors.fullName}</span>
                   </p>
                 )}
               </div>
 
-              <div>
-                <label
-                  htmlFor="signup-email"
-                  className="block text-xs font-semibold text-foreground mb-1"
-                >
+              <div className="form-field">
+                <label htmlFor="signup-email" className="label">
                   Work Email <span className="text-destructive">*</span>
                 </label>
                 <div className="relative flex items-center">
@@ -266,24 +260,21 @@ function SignupPage() {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="you@yourorganization.com"
-                    className="w-full rounded-lg border border-border bg-card pl-10 pr-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="input pl-10"
                     required
                     autoComplete="email"
                   />
                 </div>
                 {fieldErrors.email && (
-                  <p className="mt-1 flex items-center gap-1 text-[11px] text-destructive">
-                    <FiAlertCircle className="h-3 w-3 shrink-0" />
+                  <p className="form-error">
+                    <FiAlertCircle className="h-3.5 w-3.5" />
                     <span>{fieldErrors.email}</span>
                   </p>
                 )}
               </div>
 
-              <div>
-                <label
-                  htmlFor="signup-password"
-                  className="block text-xs font-semibold text-foreground mb-1"
-                >
+              <div className="form-field">
+                <label htmlFor="signup-password" className="label">
                   Password <span className="text-destructive">*</span>
                 </label>
                 <div className="relative flex items-center">
@@ -295,7 +286,7 @@ function SignupPage() {
                     value={form.password}
                     onChange={handleChange}
                     placeholder="At least 6 characters"
-                    className="w-full rounded-lg border border-border bg-card pl-10 pr-10 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="input pl-10 pr-12"
                     required
                     autoComplete="new-password"
                   />
@@ -305,26 +296,19 @@ function SignupPage() {
                     className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors p-1"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? (
-                      <FiEyeOff className="h-4 w-4" />
-                    ) : (
-                      <FiEye className="h-4 w-4" />
-                    )}
+                    {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
                   </button>
                 </div>
                 {fieldErrors.password && (
-                  <p className="mt-1 flex items-center gap-1 text-[11px] text-destructive">
-                    <FiAlertCircle className="h-3 w-3 shrink-0" />
+                  <p className="form-error">
+                    <FiAlertCircle className="h-3.5 w-3.5" />
                     <span>{fieldErrors.password}</span>
                   </p>
                 )}
               </div>
 
-              <div>
-                <label
-                  htmlFor="signup-confirmPassword"
-                  className="block text-xs font-semibold text-foreground mb-1"
-                >
+              <div className="form-field">
+                <label htmlFor="signup-confirmPassword" className="label">
                   Confirm Password <span className="text-destructive">*</span>
                 </label>
                 <div className="relative flex items-center">
@@ -336,7 +320,7 @@ function SignupPage() {
                     value={form.confirmPassword}
                     onChange={handleChange}
                     placeholder="Re-enter your password"
-                    className="w-full rounded-lg border border-border bg-card pl-10 pr-10 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="input pl-10 pr-12"
                     required
                     autoComplete="new-password"
                   />
@@ -346,16 +330,12 @@ function SignupPage() {
                     className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors p-1"
                     aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   >
-                    {showConfirmPassword ? (
-                      <FiEyeOff className="h-4 w-4" />
-                    ) : (
-                      <FiEye className="h-4 w-4" />
-                    )}
+                    {showConfirmPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
                   </button>
                 </div>
                 {fieldErrors.confirmPassword && (
-                  <p className="mt-1 flex items-center gap-1 text-[11px] text-destructive">
-                    <FiAlertCircle className="h-3 w-3 shrink-0" />
+                  <p className="form-error">
+                    <FiAlertCircle className="h-3.5 w-3.5" />
                     <span>{fieldErrors.confirmPassword}</span>
                   </p>
                 )}
@@ -365,11 +345,11 @@ function SignupPage() {
                 <button
                   type="submit"
                   disabled={busy || !isConfigured}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 min-h-[44px] text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="btn-primary w-full py-3"
                 >
                   {busy ? (
                     <>
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      <span className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
                       <span>Creating account...</span>
                     </>
                   ) : (
@@ -379,7 +359,7 @@ function SignupPage() {
               </div>
             </form>
 
-            <p className="mt-6 text-center text-xs text-muted-foreground">
+            <p className="mt-6 text-center body-sm text-muted-foreground">
               Already have an account?{" "}
               <Link
                 to="/login"

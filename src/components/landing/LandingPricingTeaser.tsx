@@ -7,45 +7,46 @@ const DISPLAYED_PLANS = PLANS.filter((p) => p.tier !== "enterprise").slice(0, 3)
 
 export function LandingPricingTeaser() {
   return (
-    <section className="bg-background py-16 lg:py-24">
-      <div className="page-container">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="section-label">Pricing</p>
-          <h2 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+    <section className="page-section bg-background">
+      <div className="container">
+        <div className="section-header-center animate-slide-up">
+          <p className="caption">Pricing</p>
+          <h2 className="mt-3 headline-2">
             Plans for organizations, not reporters
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-base text-muted-foreground">
+          <p className="mt-4 body-lg text-muted-foreground max-w-2xl mx-auto">
             Your organization subscribes. Staff operate the platform. Residents report issues for
             free.
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {DISPLAYED_PLANS.map((plan) => (
+        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
+          {DISPLAYED_PLANS.map((plan, index) => (
             <article
               key={plan.tier}
-              className={`landing-feature-card flex flex-col p-6 ${
-                plan.highlighted ? "ring-1 ring-primary/25" : ""
-              }`}
+              className={`card card-hover-elevated flex flex-col p-6 ${plan.highlighted ? "ring-1 ring-primary/25" : ""} animate-slide-up`}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               {plan.highlighted && (
-                <span className="mb-2 inline-block w-fit rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">
+                <span className="mb-3 inline-block w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                   Most Popular
                 </span>
               )}
-              <h3 className="text-lg font-semibold">{plan.name}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{plan.tagline}</p>
-              <p className="mt-4 font-display text-3xl font-bold">
-                {plan.monthlyPriceInr === 0 ? "Free" : formatInr(plan.monthlyPriceInr)}
+              <h3 className="headline-4">{plan.name}</h3>
+              <p className="mt-2 body-sm text-muted-foreground">{plan.tagline}</p>
+              <div className="mt-5 flex items-baseline gap-1">
+                <span className="font-display text-4xl font-bold">
+                  {plan.monthlyPriceInr === 0 ? "Free" : formatInr(plan.monthlyPriceInr)}
+                </span>
                 {plan.monthlyPriceInr !== null && plan.monthlyPriceInr !== 0 && (
-                  <span className="text-sm font-medium text-muted-foreground">/mo</span>
+                  <span className="body-sm text-muted-foreground">/month</span>
                 )}
-              </p>
-              <ul className="mt-4 flex-1 space-y-2 text-sm text-muted-foreground">
+              </div>
+              <ul className="mt-6 flex-1 space-y-3 text-sm text-muted-foreground">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-                    {f}
+                  <li key={f} className="flex items-start gap-3">
+                    <FiCheck className="mt-0.5 h-5 w-5 shrink-0 text-success" aria-hidden />
+                    <span className="body-sm">{f}</span>
                   </li>
                 ))}
               </ul>
@@ -61,7 +62,7 @@ export function LandingPricingTeaser() {
           ))}
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="mt-10 text-center animate-slide-up stagger-3">
           <Link to="/pricing" className="btn-secondary inline-flex items-center gap-2 px-5 py-2.5">
             View all plans <FiArrowRight aria-hidden />
           </Link>

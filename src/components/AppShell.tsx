@@ -119,29 +119,29 @@ export function AppShell({
       search={item.search}
       onClick={() => setOpen(false)}
       className={cn(
-        "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
         isActive(item) && "bg-secondary font-medium text-foreground ring-1 ring-inset ring-border",
       )}
     >
-      <item.icon className="h-4 w-4 shrink-0 opacity-70" aria-hidden />
+      <item.icon className="h-5 w-5 shrink-0 opacity-70" aria-hidden />
       <span className="truncate">{item.label}</span>
     </Link>
   );
 
   return (
     <div className="hero-bg min-h-screen">
-      <div className="mx-auto flex w-[min(1280px,96vw)] gap-5 py-4">
+      <div className="container flex gap-5 py-4">
         <aside
           className={cn(
-            "surface-panel fixed inset-y-0 left-0 z-[900] flex w-60 shrink-0 flex-col p-3 transition-transform lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:translate-x-0",
+            "card fixed inset-y-0 left-0 z-[900] flex w-64 shrink-0 flex-col p-3 transition-transform lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:translate-x-0",
             open ? "translate-x-0" : "-translate-x-full",
           )}
         >
           <Link to="/" className="flex items-center gap-2.5 px-2 py-1">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground">
-              <FiEye className="h-4 w-4" />
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground">
+              <FiEye className="h-4.5 w-4.5" />
             </span>
-            <span className="font-display text-base font-semibold">
+            <span className="font-display text-lg font-semibold">
               Civic<span className="text-primary">Eye</span>
             </span>
           </Link>
@@ -155,13 +155,13 @@ export function AppShell({
           <nav className="mt-5 flex flex-1 flex-col gap-0.5">
             {staffNav.length > 0 && (
               <>
-                <p className="px-3 py-1.5 section-label">Operations</p>
+                <p className="px-3 py-1.5 caption">Operations</p>
                 {staffNav.map((item) => (
                   <NavLink key={`${item.to}-${item.label}`} item={item} />
                 ))}
               </>
             )}
-            <p className="mt-3 px-3 py-1.5 section-label">Public</p>
+            <p className="mt-3 px-3 py-1.5 caption">Public</p>
             {publicNav.map((item) => (
               <NavLink key={item.to} item={item} />
             ))}
@@ -199,14 +199,14 @@ export function AppShell({
         )}
 
         <main className="min-w-0 flex-1">
-          <header className="surface-panel flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
+          <header className="card flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
             <div className="flex min-w-0 items-center gap-3">
               <button
                 onClick={() => setOpen((o) => !o)}
                 aria-label="Toggle sidebar"
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-border lg:hidden"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-border lg:hidden"
               >
-                {open ? <FiX className="h-4 w-4" /> : <FiMenu className="h-4 w-4" />}
+                {open ? <FiX className="h-4.5 w-4.5" /> : <FiMenu className="h-4.5 w-4.5" />}
               </button>
               <div className="min-w-0">
                 <h1 className="truncate font-display text-lg font-semibold sm:text-xl">{title}</h1>
@@ -219,12 +219,12 @@ export function AppShell({
               <button
                 onClick={toggle}
                 aria-label="Toggle dark mode"
-                className="grid h-8 w-8 place-items-center rounded-md border border-border hover:bg-secondary"
+                className="grid h-9 w-9 place-items-center rounded-md border border-border hover:bg-secondary"
               >
-                {dark ? <FiSun className="h-4 w-4" /> : <FiMoon className="h-4 w-4" />}
+                {dark ? <FiSun className="h-4.5 w-4.5" /> : <FiMoon className="h-4.5 w-4.5" />}
               </button>
-              <Link to="/report" className="btn-primary hidden px-3 py-1.5 text-sm sm:inline-flex">
-                New report
+              <Link to="/report" className="btn-primary hidden sm:inline-flex">
+                <FiPlusCircle className="h-4 w-4" /> New report
               </Link>
             </div>
           </header>
@@ -264,31 +264,31 @@ function SubscriptionPaywall({
     (subscription.trialEndsAt && new Date(subscription.trialEndsAt).getTime() < Date.now());
 
   return (
-    <div className="surface-panel mx-auto max-w-lg p-8 text-center">
-      <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-destructive/10 text-destructive">
+    <div className="card mx-auto max-w-lg p-8 text-center animate-scale-in">
+      <div className="icon-wrapper-xl bg-destructive/10 text-destructive border-destructive/20 mx-auto mb-4">
         <FiLock className="h-7 w-7" />
       </div>
-      <h2 className="mt-4 font-display text-xl font-bold">Subscription inactive</h2>
-      <p className="mt-2 text-sm text-muted-foreground">
+      <h2 className="headline-3">Subscription inactive</h2>
+      <p className="mt-3 body-sm text-muted-foreground">
         {isExpired
           ? `Your ${subscription.planName} plan has expired. Contact your organization administrator to renew.`
           : `Your ${subscription.planName} plan is not currently active. Staff actions are restricted until the subscription is restored.`}
       </p>
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <Link
           to="/pricing"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
+          className="btn-primary inline-flex items-center justify-center gap-2 px-6 py-3"
         >
           View plans <FiArrowRight className="h-4 w-4" />
         </Link>
         <Link
           to="/"
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold"
+          className="btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3"
         >
           Back to home
         </Link>
       </div>
-      <p className="mt-4 text-xs text-muted-foreground">
+      <p className="mt-5 text-xs text-muted-foreground">
         Read-only access may still be available. Contact support if you believe this is an error.
       </p>
     </div>

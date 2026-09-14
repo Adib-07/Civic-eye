@@ -5,53 +5,57 @@ import {
   FiMessageSquare,
   FiUserX,
   FiXCircle,
+  FiAlertCircle,
+  FiSlack,
 } from "react-icons/fi";
 
-import { cn } from "@/lib/utils";
-
 const PROBLEM_STEPS = [
-  { icon: FiMessageSquare, label: "Reported in a WhatsApp group" },
-  { icon: FiUserX, label: "No one is assigned" },
-  { icon: FiClock, label: "No deadline is tracked" },
-  { icon: FiHelpCircle, label: "No one confirms it's fixed" },
-  { icon: FiXCircle, label: "Closed without proof" },
-];
+  { icon: FiMessageSquare, label: "Reported in a WhatsApp group or Slack", desc: "No structured intake — context gets lost in chat" },
+  { icon: FiUserX, label: "No one is assigned", desc: "Responsibility is unclear — issues fall through cracks" },
+  { icon: FiClock, label: "No deadline is tracked", desc: "No SLA — resolution timing is arbitrary" },
+  { icon: FiHelpCircle, label: "No one confirms it's fixed", desc: "Reporter never knows if work was actually done" },
+  { icon: FiXCircle, label: "Closed without proof", desc: "No evidence, no audit trail — accountability broken" },
+] as const;
 
 export function ProblemStorySection() {
   return (
-    <section className="bg-secondary/30 py-16 lg:py-24">
-      <div className="page-container">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="section-label">The Problem</span>
-          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+    <section className="page-section bg-secondary/30">
+      <div className="container">
+        <div className="section-header-center animate-slide-up">
+          <p className="caption">The Problem</p>
+          <h2 className="mt-3 headline-2">
             An issue reported in a WhatsApp group rarely gets assigned, tracked, or closed with
             proof.
           </h2>
         </div>
 
-        <div className="mx-auto mt-10 flex max-w-md flex-col items-start gap-0">
-          {PROBLEM_STEPS.map((step, i) => {
-            const Icon = step.icon;
-            return (
-              <div key={step.label} className="flex flex-col items-start">
+        <div className="mt-14 animate-slide-up stagger-1">
+          <div className="mx-auto max-w-xl flex flex-col gap-4">
+            {PROBLEM_STEPS.map((step, i) => {
+              const Icon = step.icon;
+              return (
                 <div
-                  className={cn(
-                    "flex w-full items-center gap-3 rounded-lg p-3",
-                    "border border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-950/20",
-                  )}
+                  key={step.label}
+                  className="card p-4 flex items-center gap-4 animate-slide-up"
+                  style={{ animationDelay: `${i * 80}ms` }}
                 >
-                  <Icon className="h-4 w-4 shrink-0 text-red-500" aria-hidden />
-                  <span className="text-sm text-muted-foreground">{step.label}</span>
+                  <div className="icon-wrapper-md bg-destructive/10 text-destructive border-destructive/20 shrink-0">
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-foreground">{step.label}</p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                  {i < PROBLEM_STEPS.length - 1 && (
+                    <FiChevronDown
+                      className="h-5 w-5 text-muted-foreground/40 shrink-0"
+                      aria-hidden
+                    />
+                  )}
                 </div>
-                {i < PROBLEM_STEPS.length - 1 && (
-                  <FiChevronDown
-                    className="my-1 h-5 w-5 text-red-300 dark:text-red-800"
-                    aria-hidden
-                  />
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

@@ -4,25 +4,25 @@ import { FiEye } from "react-icons/fi";
 export function Footer() {
   return (
     <footer className="border-t border-border bg-secondary/40">
-      <div className="page-container grid grid-cols-2 gap-x-8 gap-y-10 py-14 md:grid-cols-4 lg:grid-cols-5">
+      <div className="container grid grid-cols-2 gap-x-8 gap-y-10 py-14 md:grid-cols-4 lg:grid-cols-5">
         {/* Brand */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 animate-slide-up">
           <div className="flex items-center gap-2.5">
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground">
-              <FiEye className="h-4 w-4" />
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground">
+              <FiEye className="h-4.5 w-4.5" />
             </span>
-            <span className="font-display text-base font-semibold">CivicEye</span>
+            <span className="font-display text-lg font-semibold">CivicEye</span>
           </div>
-          <p className="mt-4 max-w-xs text-sm text-muted-foreground">
+          <p className="mt-5 max-w-xs text-sm text-muted-foreground leading-relaxed">
             Operational issue management from report to verified resolution for facilities,
             campuses, and communities.
           </p>
         </div>
 
         {/* Product */}
-        <div>
-          <h4 className="text-sm font-semibold text-foreground">Product</h4>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+        <div className="animate-slide-up stagger-1">
+          <h4 className="caption">Product</h4>
+          <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
             <li>
               <Link to="/for-organizations" className="transition-colors hover:text-foreground">
                 Features
@@ -51,9 +51,9 @@ export function Footer() {
         </div>
 
         {/* Company */}
-        <div>
-          <h4 className="text-sm font-semibold text-foreground">Company</h4>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+        <div className="animate-slide-up stagger-2">
+          <h4 className="caption">Company</h4>
+          <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
             <li>
               <Link to="/security" className="transition-colors hover:text-foreground">
                 Security
@@ -68,9 +68,9 @@ export function Footer() {
         </div>
 
         {/* Legal */}
-        <div>
-          <h4 className="text-sm font-semibold text-foreground">Legal</h4>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+        <div className="animate-slide-up stagger-3">
+          <h4 className="caption">Legal</h4>
+          <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
             <li>
               <Link to="/privacy" className="transition-colors hover:text-foreground">
                 Privacy Policy
@@ -86,11 +86,16 @@ export function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-border py-5">
-        <div className="page-container">
+      <div className="border-t border-border py-6">
+        <div className="container flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-xs text-muted-foreground">
             © 2026 CivicEye. Issue management from report to verified resolution.
           </span>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span>India</span>
+            <span>•</span>
+            <span>Made with care</span>
+          </div>
         </div>
       </div>
     </footer>

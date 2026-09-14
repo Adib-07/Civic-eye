@@ -34,32 +34,38 @@ const TRUST_GROUPS: { title: string; icon: IconType; items: string[] }[] = [
 
 export function TrustSection() {
   return (
-    <section className="border-y border-border bg-background py-16 lg:py-24">
-      <div className="page-container">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="section-label">Trust &amp; Security</p>
-          <h2 className="mt-4 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+    <section className="page-section border-y border-border bg-background">
+      <div className="container">
+        <div className="section-header-center animate-slide-up">
+          <p className="caption">Trust & Security</p>
+          <h2 className="mt-3 headline-2">
             Security and accountability are built into the platform
           </h2>
-          <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+          <p className="mt-4 body-lg text-muted-foreground max-w-2xl mx-auto">
             Your data is isolated, scoped, and auditable by design — not added as an afterthought.
           </p>
         </div>
 
-        <div className="mt-10 grid gap-8 sm:grid-cols-3">
-          {TRUST_GROUPS.map((group) => {
+        <div className="mt-14 grid gap-8 sm:grid-cols-3">
+          {TRUST_GROUPS.map((group, index) => {
             const Icon = group.icon;
             return (
-              <div key={group.title}>
-                <div className="flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-primary" aria-hidden />
-                  <h3 className="text-sm font-semibold text-foreground">{group.title}</h3>
+              <div
+                key={group.title}
+                className="card p-6 animate-slide-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="icon-wrapper-md icon-wrapper-primary">
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </div>
+                  <h3 className="headline-4">{group.title}</h3>
                 </div>
-                <ul className="mt-3 space-y-2">
+                <ul className="space-y-3">
                   {group.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <FiCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
-                      <span className="text-sm text-muted-foreground">{item}</span>
+                    <li key={item} className="flex items-start gap-3">
+                      <FiCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+                      <span className="body-sm text-muted-foreground">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -68,12 +74,13 @@ export function TrustSection() {
           })}
         </div>
 
-        <div className="mt-10 text-center">
+        <div className="mt-12 text-center animate-slide-up stagger-3">
           <Link
             to="/security"
-            className="btn-secondary inline-flex items-center gap-2 px-4 py-2 text-sm"
+            className="btn-secondary inline-flex items-center gap-2 px-5 py-2.5 text-sm"
           >
-            Security Details <FiArrowRight aria-hidden />
+            Security Details
+            <FiArrowRight aria-hidden />
           </Link>
         </div>
       </div>

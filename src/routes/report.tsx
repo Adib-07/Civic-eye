@@ -50,8 +50,7 @@ export const Route = createFileRoute("/report")({
       { title: "Report a Civic Issue — CivicEye" },
       {
         name: "description",
-        content:
-          "Report a city issue with photo evidence, GPS pin location, and category suggestion.",
+        content: "Report a city issue with photo evidence, GPS pin location, and category suggestion.",
       },
     ],
   }),
@@ -257,11 +256,8 @@ export function ReportPage() {
     uploadPhase === "uploading"
       ? "Uploading photo evidence…"
       : uploadPhase === "saving"
-        ? "Submitting report…"
-        : "Submit report to operations";
-
-  const fieldClass =
-    "mt-1.5 w-full rounded-lg border border-border bg-card px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary";
+      ? "Submitting report…"
+      : "Submit report to operations";
 
   return (
     <AppShell
@@ -270,18 +266,16 @@ export function ReportPage() {
     >
       <div className="mx-auto max-w-3xl">
         {!configured && (
-          <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
+          <div className="mb-6 card p-4 border-warning/30 bg-warning/10 animate-slide-up">
             <div className="flex items-start gap-3">
-              <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+              <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
               <div>
-                <p className="font-bold text-amber-600 dark:text-amber-400">
-                  Database Not Configured
-                </p>
-                <p className="mt-1 text-muted-foreground">
+                <p className="font-bold text-foreground">Database Not Configured</p>
+                <p className="mt-1 body-sm text-muted-foreground">
                   Supabase environment variables are not set for this deployment. Report submission
                   requires database access.
                 </p>
-                <div className="mt-2 rounded-lg border border-amber-500/20 bg-background/50 p-3 text-xs font-mono space-y-1">
+                <div className="mt-2 card p-3 text-xs font-mono space-y-1">
                   {(() => {
                     const s = getSupabaseConfigSummary();
                     return (
@@ -313,11 +307,11 @@ export function ReportPage() {
         )}
 
         {orgMissing && (
-          <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
-            <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
-            <div>
-              <p className="font-bold text-amber-500">Configuration Required</p>
-              <p className="mt-1 text-muted-foreground">
+          <div className="mb-6 card p-4 border-warning/30 bg-warning/10 animate-slide-up">
+            <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+            <div className="ml-3">
+              <p className="font-bold text-foreground">Configuration Required</p>
+              <p className="mt-1 body-sm text-muted-foreground">
                 The default organization is not configured. Please contact your administrator to
                 complete environment setup before submitting reports.
               </p>
@@ -326,42 +320,42 @@ export function ReportPage() {
         )}
 
         {error && (
-          <div className="mb-6 flex items-center justify-between rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-            <div className="flex items-center gap-2">
-              <FiAlertCircle className="h-4 w-4 shrink-0" />
-              <span>{error}</span>
+          <div className="mb-6 card p-4 border-destructive/30 bg-destructive/10 animate-slide-up">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FiAlertCircle className="h-4 w-4 shrink-0 text-destructive" />
+                <span className="body-sm text-destructive">{error}</span>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                className="text-xs font-semibold hover:underline text-muted-foreground"
+              >
+                Dismiss
+              </button>
             </div>
-            <button
-              onClick={() => setError(null)}
-              className="text-xs font-semibold hover:underline"
-            >
-              Dismiss
-            </button>
           </div>
         )}
 
         {/* Step 5 Confirmation Screen */}
         {step === 5 && submittedReportId ? (
-          <div className="surface-panel p-6 sm:p-8 text-center space-y-6 cinematic-reveal">
-            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-500">
+          <div className="card p-6 sm:p-8 text-center space-y-6 animate-scale-in">
+            <div className="icon-wrapper-xl bg-emerald-500/10 text-emerald-500 border-emerald-500/30 mx-auto">
               <FiCheckCircle className="h-8 w-8" />
             </div>
 
             <div>
-              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-emerald-500">
-                Intake Confirmed
-              </span>
-              <h2 className="mt-2 text-2xl font-bold">Report Submitted Successfully</h2>
-              <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
+              <span className="caption text-emerald-500">Intake Confirmed</span>
+              <h2 className="mt-2 headline-3">Report Submitted Successfully</h2>
+              <p className="mt-2 body-sm text-muted-foreground max-w-md mx-auto">
                 Your report has been received and routed to your organization's operations dashboard
                 for staff assignment and SLA tracking.
               </p>
             </div>
 
             {/* Reference Card */}
-            <div className="mx-auto max-w-md rounded-xl border border-border bg-secondary/50 p-4 text-left space-y-3">
+            <div className="card mx-auto max-w-md p-4 text-left space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground font-medium">Reference ID</span>
+                <span className="caption">Reference ID</span>
                 <button
                   type="button"
                   onClick={() => void copyRef()}
@@ -370,18 +364,18 @@ export function ReportPage() {
                   <FiClipboard /> Copy ID
                 </button>
               </div>
-              <p className="font-mono text-lg font-bold text-foreground tracking-wide">
+              <p className="font-mono text-2xl font-bold text-foreground tracking-wide">
                 #{submittedReportId.slice(0, 8).toUpperCase()}
               </p>
               <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-border">
                 <div>
-                  <span className="text-muted-foreground block">Category</span>
+                  <span className="text-muted-foreground block caption">Category</span>
                   <span className="font-semibold">
                     {category === OTHER_CATEGORY ? customCategory.trim() || "Other" : category}
                   </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground block">Status</span>
+                  <span className="text-muted-foreground block caption">Status</span>
                   <span className="font-semibold text-amber-500">Pending Intake</span>
                 </div>
               </div>
@@ -400,14 +394,14 @@ export function ReportPage() {
                   setCustomCategory("");
                   setSubmittedReportId(null);
                 }}
-                className="btn-secondary px-5 py-2.5"
+                className="btn-secondary px-6 py-3"
               >
                 <FiRefreshCw /> Submit another report
               </button>
               <Link
                 to="/reports"
                 search={{ submitted: submittedReportId }}
-                className="btn-primary px-6 py-2.5"
+                className="btn-primary px-7 py-3"
               >
                 View in reports queue <FiArrowRight />
               </Link>
@@ -416,7 +410,7 @@ export function ReportPage() {
         ) : (
           <form onSubmit={submit} className="pb-24 lg:pb-0">
             {/* Step Wizard Navigation Header */}
-            <nav aria-label="Report wizard steps" className="mb-6 grid grid-cols-4 gap-2">
+            <nav aria-label="Report wizard steps" className="mb-6 grid grid-cols-4 gap-2 animate-slide-up">
               {(
                 [
                   { n: 1, label: "Evidence", desc: "Photo" },
@@ -430,48 +424,46 @@ export function ReportPage() {
                   type="button"
                   onClick={() => setStep(n)}
                   className={cn(
-                    "flex flex-col items-center gap-1 rounded-xl border p-3 text-center transition-all duration-150",
+                    "flex flex-col items-center gap-1.5 rounded-xl border p-3 text-center transition-all duration-150",
                     step === n
                       ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary/30"
                       : step > n
-                        ? "border-emerald-500/30 bg-emerald-500/5 text-foreground"
-                        : "border-border bg-card text-muted-foreground hover:bg-secondary",
+                      ? "border-emerald-500/30 bg-emerald-500/5 text-foreground"
+                      : "border-border bg-card text-muted-foreground hover:bg-secondary",
                   )}
                 >
                   <span
                     className={cn(
-                      "grid h-6 w-6 place-items-center rounded-full text-xs font-semibold transition-colors",
+                      "grid h-7 w-7 place-items-center rounded-full text-xs font-semibold transition-colors",
                       step === n
                         ? "bg-primary text-primary-foreground"
                         : step > n
-                          ? "bg-emerald-500 text-white"
-                          : "bg-secondary text-muted-foreground",
+                        ? "bg-emerald-500 text-white"
+                        : "bg-secondary text-muted-foreground",
                     )}
                   >
-                    {step > n ? <FiCheck className="h-3.5 w-3.5" /> : n}
+                    {step > n ? <FiCheck className="h-4 w-4" /> : n}
                   </span>
-                  <span className="text-xs font-semibold">{label}</span>
+                  <span className="caption">{label}</span>
                   <span className="hidden text-[10px] text-muted-foreground sm:inline">{desc}</span>
                 </button>
               ))}
             </nav>
 
             {/* STEP 1: Photo Evidence */}
-            <section className={cn("surface-panel p-5 sm:p-6", step !== 1 && "hidden lg:block")}>
-              <div className="flex items-center justify-between">
+            <section className={cn("card p-5 sm:p-6 animate-slide-up", step !== 1 && "hidden lg:block")}>
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
-                    Step 1 of 4
-                  </p>
-                  <h2 className="text-lg font-bold">Photo Evidence</h2>
+                  <p className="caption text-primary">Step 1 of 4</p>
+                  <h2 className="headline-4">Photo Evidence</h2>
                 </div>
                 {imagePreview && (
-                  <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-500 border border-emerald-500/20">
+                  <span className="badge badge-success">
                     Photo Attached
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="body-sm text-muted-foreground mb-4">
                 Attach a clear photo of the issue. Camera capture recommended on mobile devices.
               </p>
 
@@ -485,7 +477,7 @@ export function ReportPage() {
               />
 
               {imagePreview ? (
-                <div className="mt-4 space-y-3">
+                <div className="space-y-3">
                   <div className="relative overflow-hidden rounded-xl border border-border group">
                     <img
                       src={imagePreview}
@@ -508,14 +500,14 @@ export function ReportPage() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                      className="text-sm font-semibold text-primary hover:underline flex items-center gap-1"
                     >
-                      <FiRefreshCw className="h-3 w-3" /> Change Photo
+                      <FiRefreshCw className="h-3.5 w-3.5" /> Change Photo
                     </button>
                     <button
                       type="button"
                       onClick={clearImage}
-                      className="text-xs font-semibold text-destructive hover:underline flex items-center gap-1"
+                      className="text-sm font-semibold text-destructive hover:underline flex items-center gap-1"
                     >
                       <FiX className="h-3.5 w-3.5" /> Remove Photo
                     </button>
@@ -525,13 +517,13 @@ export function ReportPage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="mt-4 flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-secondary/40 px-4 py-12 transition-all hover:border-primary/50 hover:bg-secondary"
+                  className="mt-4 flex w-full flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border bg-secondary/40 px-4 py-12 transition-all hover:border-primary/50 hover:bg-secondary"
                 >
-                  <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-md">
+                  <span className="icon-wrapper-xl bg-primary text-primary-foreground shadow-md">
                     <FiCamera className="h-7 w-7" />
                   </span>
                   <div className="text-center">
-                    <span className="text-sm font-bold">Snap or Upload Photo Evidence</span>
+                    <span className="font-semibold">Snap or Upload Photo Evidence</span>
                     <p className="mt-1 text-xs text-muted-foreground">
                       JPG, PNG, or WebP up to 8MB
                     </p>
@@ -553,19 +545,17 @@ export function ReportPage() {
             {/* STEP 2: Issue Category */}
             <section
               className={cn(
-                "surface-panel mt-5 p-5 sm:p-6",
+                "card mt-5 p-5 sm:p-6 animate-slide-up",
                 step !== 2 && step !== 1 && "hidden lg:block",
               )}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
-                    Step 2 of 4
-                  </p>
-                  <h2 className="text-lg font-bold">Select Category</h2>
+                  <p className="caption text-primary">Step 2 of 4</p>
+                  <h2 className="headline-4">Select Category</h2>
                 </div>
                 {ai && (
-                  <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-500/20">
+                  <span className="badge badge-primary">
                     Suggested: {ai.category} ({ai.confidence}%)
                   </span>
                 )}
@@ -598,18 +588,16 @@ export function ReportPage() {
 
               {category === OTHER_CATEGORY && (
                 <div className="mt-4 space-y-2">
-                  <label className="block text-sm font-semibold text-foreground">
-                    Describe the issue category
-                  </label>
+                  <label className="label">Describe the issue category</label>
                   <textarea
                     value={customCategory}
                     onChange={(e) => setCustomCategory(e.target.value)}
                     placeholder="e.g. Broken water pipeline, Park bench vandalism, Noise complaint…"
                     rows={3}
-                    className={fieldClass}
+                    className="input min-h-[80px] resize-none"
                     autoFocus
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="form-hint">
                     Type a short description of the issue category so staff can triage it correctly.
                   </p>
                 </div>
@@ -629,16 +617,14 @@ export function ReportPage() {
             {/* STEP 3: Location Pin & GPS */}
             <section
               className={cn(
-                "surface-panel mt-5 p-5 sm:p-6",
+                "card mt-5 p-5 sm:p-6 animate-slide-up",
                 step !== 3 && step < 3 && "hidden lg:block",
               )}
             >
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div>
-                  <p className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
-                    Step 3 of 4
-                  </p>
-                  <h2 className="text-lg font-bold">Issue Location</h2>
+                  <p className="caption text-primary">Step 3 of 4</p>
+                  <h2 className="headline-4">Issue Location</h2>
                 </div>
                 <button
                   type="button"
@@ -650,10 +636,10 @@ export function ReportPage() {
               </div>
 
               {/* Status Banner */}
-              <div className="mt-3 flex items-center gap-2 text-xs">
+              <div className="mb-4 flex items-center gap-2 text-xs">
                 {geoStatus === "loading" && (
                   <span className="text-muted-foreground flex items-center gap-1.5">
-                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                     Fetching GPS location…
                   </span>
                 )}
@@ -672,7 +658,7 @@ export function ReportPage() {
 
               {/* Leaflet Location Picker */}
               {lat !== null && lng !== null && hydrated && (
-                <div className="mt-4 space-y-2">
+                <div className="space-y-2">
                   <Suspense fallback={<Loader label="Loading interactive map" />}>
                     <LocationPicker
                       lat={lat}
@@ -693,7 +679,7 @@ export function ReportPage() {
                   onClick={() => setStep(4)}
                   className="btn-primary mt-6 w-full lg:hidden"
                 >
-                  Review &amp; Submit <FiArrowRight />
+                  Review & Submit <FiArrowRight />
                 </button>
               )}
             </section>
@@ -701,14 +687,12 @@ export function ReportPage() {
             {/* STEP 4: Review & Additional Details */}
             {(step === 4 || step === 3) && (
               <section
-                className={cn("surface-panel mt-5 p-5 sm:p-6", step !== 4 && "hidden lg:block")}
+                className={cn("card mt-5 p-5 sm:p-6 animate-slide-up", step !== 4 && "hidden lg:block")}
               >
-                <p className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
-                  Step 4 of 4
-                </p>
-                <h2 className="text-lg font-bold">Review Report</h2>
+                <p className="caption text-primary">Step 4 of 4</p>
+                <h2 className="headline-4 mb-4">Review Report</h2>
 
-                <div className="mt-4 rounded-xl border border-border bg-secondary/40 p-4 space-y-3 text-xs sm:text-sm">
+                <div className="card p-4 space-y-3 text-xs sm:text-sm mb-6">
                   <div className="flex justify-between border-b border-border pb-2">
                     <span className="text-muted-foreground">Category</span>
                     <span className="font-semibold">
@@ -730,7 +714,7 @@ export function ReportPage() {
                 </div>
 
                 {/* Collapsible Details */}
-                <div className="mt-5 border-t border-border pt-4">
+                <div className="border-t border-border pt-4">
                   <button
                     type="button"
                     onClick={() => setShowDetails((v) => !v)}
@@ -750,40 +734,34 @@ export function ReportPage() {
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden space-y-3 pt-3"
                       >
-                        <label className="block">
-                          <span className="text-xs font-semibold text-muted-foreground">
-                            Report Title
-                          </span>
+                        <div className="form-field">
+                          <label className="label">Report Title</label>
                           <input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder={suggestTitle(category)}
-                            className={fieldClass}
+                            className="input"
                           />
-                        </label>
-                        <label className="block">
-                          <span className="text-xs font-semibold text-muted-foreground">
-                            Detailed Description
-                          </span>
+                        </div>
+                        <div className="form-field">
+                          <label className="label">Detailed Description</label>
                           <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
                             placeholder={suggestDescription(category)}
-                            className={fieldClass}
+                            className="input min-h-[80px] resize-none"
                           />
-                        </label>
-                        <label className="block">
-                          <span className="text-xs font-semibold text-muted-foreground">
-                            Landmark / Place Name
-                          </span>
+                        </div>
+                        <div className="form-field">
+                          <label className="label">Landmark / Place Name</label>
                           <input
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                             placeholder="e.g. Near Main Gate entrance"
-                            className={fieldClass}
+                            className="input"
                           />
-                        </label>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -806,26 +784,27 @@ export function ReportPage() {
             </button>
           </form>
         )}
-      </div>
 
-      {/* Mobile Sticky Submit Footer */}
-      {step !== 5 && (
-        <div className="fixed inset-x-0 bottom-0 z-[850] border-t border-border bg-background/95 p-4 backdrop-blur-lg lg:hidden">
-          <button
-            type="button"
-            disabled={!readyToSubmit}
-            onClick={() => void submit()}
-            className="btn-primary w-full shadow-lg py-3 text-sm"
-          >
-            {submitting ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
-            ) : (
-              <FiSend />
-            )}
-            {submitLabel}
-          </button>
-        </div>
-      )}
+        {/* Mobile Sticky Submit Footer */}
+        {step !== 5 && (
+          <div className="fixed inset-x-0 bottom-0 z-[850] border-t border-border bg-background/95 p-4 backdrop-blur-lg lg:hidden animate-slide-up">
+            <button
+              type="button"
+              disabled={!readyToSubmit}
+              onClick={() => void submit()}
+              className="btn-primary w-full shadow-lg py-3 text-sm"
+            >
+              {submitting ? (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+              ) : (
+                <FiSend />
+              )}
+              {submitLabel}
+            </button>
+          </div>
+        )}
+
+      </div>
 
       <ImageModal src={zoom} onClose={() => setZoom(null)} />
     </AppShell>

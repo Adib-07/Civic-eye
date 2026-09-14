@@ -44,28 +44,32 @@ const CAPABILITIES = [
 
 export function CapabilitiesSection() {
   return (
-    <section className="bg-background py-16 lg:py-24">
-      <div className="page-container">
-        {/* Header — left-aligned to break center monotone */}
-        <div className="max-w-2xl">
-          <p className="section-label">CAPABILITIES</p>
-          <h2 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+    <section className="page-section bg-background">
+      <div className="container">
+        {/* Header */}
+        <div className="section-header-center animate-slide-up">
+          <p className="caption">CAPABILITIES</p>
+          <h2 className="mt-3 headline-2">
             Built for the people responsible for getting things done
           </h2>
-          <p className="mt-3 text-base text-muted-foreground">
+          <p className="mt-4 body-lg text-muted-foreground max-w-2xl mx-auto">
             CivicEye covers the complete operational workflow — from first report to verified
             resolution with evidence.
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {CAPABILITIES.map((capability) => (
-            <article key={capability.title} className="landing-feature-card p-6">
-              <span className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-background text-primary">
-                <capability.icon className="h-4 w-4" aria-hidden />
-              </span>
-              <h3 className="mt-4 text-base font-semibold">{capability.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        <div className="mt-14 grid-auto-fit">
+          {CAPABILITIES.map((capability, index) => (
+            <article
+              key={capability.title}
+              className="card card-hover-elevated p-6 animate-slide-up"
+              style={{ animationDelay: `${index * 80}ms` }}
+            >
+              <div className="icon-wrapper-md icon-wrapper-primary mb-4">
+                <capability.icon className="h-5 w-5" aria-hidden />
+              </div>
+              <h3 className="headline-4">{capability.title}</h3>
+              <p className="mt-3 body-sm text-muted-foreground leading-relaxed">
                 {capability.description}
               </p>
             </article>

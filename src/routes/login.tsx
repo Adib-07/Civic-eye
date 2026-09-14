@@ -8,6 +8,7 @@ import {
   FiArrowLeft,
   FiAlertCircle,
   FiCheckCircle,
+  FiShield,
 } from "react-icons/fi";
 import { toast } from "sonner";
 
@@ -152,7 +153,7 @@ export function LoginPage() {
 
   return (
     <main className="hero-bg grid min-h-screen place-items-center p-4">
-      <div className="surface-panel w-full max-w-md p-6 sm:p-8 rounded-2xl border border-border/80 shadow-md">
+      <div className="card w-full max-w-md p-6 sm:p-8 animate-scale-in">
         <Link
           to="/"
           className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground mb-6"
@@ -161,57 +162,55 @@ export function LoginPage() {
           <span>Back to home</span>
         </Link>
 
-        <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600/10 text-blue-600 border border-blue-600/20 shadow-sm">
+        <div className="text-center mb-8">
+          <div className="icon-wrapper-lg icon-wrapper-primary mx-auto mb-4">
             <FiLock className="h-5 w-5" aria-hidden />
-          </span>
-          <div>
-            <h1 className="font-display text-xl font-bold tracking-tight text-foreground">
-              Sign in to CivicEye
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              Organization and incident management portal
-            </p>
           </div>
+          <h1 className="headline-3">Sign in to CivicEye</h1>
+          <p className="mt-2 body-sm text-muted-foreground">
+            Organization and incident management portal
+          </p>
         </div>
 
         {!isConfigured && (
-          <div className="mt-5 rounded-xl border border-warning/30 bg-warning/10 p-3.5 text-xs text-muted-foreground space-y-1">
-            <div className="flex items-center gap-1.5 font-semibold text-foreground">
-              <FiAlertCircle className="h-4 w-4 text-warning shrink-0" />
-              <span>Backend Not Configured</span>
+          <div className="mb-6 card p-4 border-warning/30 bg-warning/10">
+            <div className="flex items-start gap-2.5">
+              <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+              <div>
+                <p className="font-bold text-foreground">Backend Not Configured</p>
+                <p className="mt-1 body-sm text-muted-foreground">
+                  Copy <code className="font-mono text-[11px]">.env.example</code> to{" "}
+                  <code className="font-mono text-[11px]">.env</code> and set your Supabase credentials.
+                </p>
+              </div>
             </div>
-            <p>
-              Copy <code className="font-mono text-[11px]">.env.example</code> to{" "}
-              <code className="font-mono text-[11px]">.env</code> and set your Supabase credentials.
-            </p>
           </div>
         )}
 
         {loginError && (
           <div
             role="alert"
-            className="mt-4 rounded-xl bg-destructive/10 border border-destructive/20 p-3.5 text-xs text-foreground space-y-2"
+            className="mb-6 card p-4 border-destructive/30 bg-destructive/10 space-y-3"
           >
             <div className="flex items-start gap-2">
-              <FiAlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-              <span className="leading-relaxed">{loginError}</span>
+              <FiAlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+              <span className="body-sm leading-relaxed">{loginError}</span>
             </div>
 
             {unconfirmedEmail && (
-              <div className="pt-1 flex items-center gap-2">
+              <div className="pt-2 flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleResendConfirmation}
                   disabled={resendCooldown > 0 || resending}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline disabled:opacity-50 disabled:no-underline"
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline disabled:opacity-50 disabled:no-underline"
                 >
-                  <FiMail className="h-3.5 w-3.5" />
+                  <FiMail className="h-4 w-4" />
                   {resending
                     ? "Sending..."
                     : resendCooldown > 0
-                      ? `Resend in ${resendCooldown}s`
-                      : "Resend confirmation email"}
+                    ? `Resend in ${resendCooldown}s`
+                    : "Resend confirmation email"}
                 </button>
               </div>
             )}
@@ -221,22 +220,21 @@ export function LoginPage() {
         {resendSuccess && (
           <div
             role="status"
-            className="mt-4 flex items-start gap-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3.5 text-xs text-foreground"
+            className="mb-6 card p-4 border-emerald-500/30 bg-emerald-500/10"
           >
-            <FiCheckCircle className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-            <span className="leading-relaxed">
-              Confirmation email sent to <strong>{unconfirmedEmail || email}</strong>. Please check
-              your inbox (and spam folder).
-            </span>
+            <div className="flex items-start gap-2">
+              <FiCheckCircle className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+              <span className="body-sm leading-relaxed">
+                Confirmation email sent to <strong>{unconfirmedEmail || email}</strong>. Please check
+                your inbox (and spam folder).
+              </span>
+            </div>
           </div>
         )}
 
-        <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
-          <div>
-            <label
-              htmlFor="login-email"
-              className="block text-xs font-semibold text-foreground mb-1"
-            >
+        <form onSubmit={submit} className="space-y-4" noValidate>
+          <div className="form-field">
+            <label htmlFor="login-email" className="label">
               Email Address
             </label>
             <div className="relative flex items-center">
@@ -247,16 +245,16 @@ export function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@yourorganization.com"
-                className="w-full rounded-lg border border-border bg-card pl-10 pr-3.5 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input pl-10 pr-3.5"
                 required
                 autoComplete="email"
               />
             </div>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label htmlFor="login-password" className="text-xs font-semibold text-foreground">
+          <div className="form-field">
+            <div className="flex items-center justify-between mb-1.5">
+              <label htmlFor="login-password" className="label mb-0">
                 Password
               </label>
             </div>
@@ -268,7 +266,7 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-border bg-card pl-10 pr-10 py-2.5 min-h-[44px] text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input pl-10 pr-12"
                 required
                 autoComplete="current-password"
               />
@@ -287,11 +285,11 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={busy || !isConfigured}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 min-h-[44px] text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="btn-primary w-full py-3"
             >
               {busy ? (
                 <>
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
                   <span>Signing in...</span>
                 </>
               ) : (
@@ -301,7 +299,7 @@ export function LoginPage() {
           </div>
         </form>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
+        <p className="mt-6 text-center body-sm text-muted-foreground">
           Don't have an account?{" "}
           <Link
             to="/signup"
@@ -311,7 +309,7 @@ export function LoginPage() {
           </Link>
         </p>
 
-        <p className="mt-2 text-center text-[11px] text-muted-foreground/80">
+        <p className="mt-2 text-center text-xs text-muted-foreground/80">
           Staff and officer roles are assigned by your organization administrator.
         </p>
       </div>
