@@ -18,7 +18,7 @@ function ProductFrameHeader({ title }: { title: string }) {
       <span className="product-frame-dot" />
       <span className="product-frame-dot" />
       <span className="product-frame-dot" />
-      <span className="ml-1 text-xs font-medium text-muted-foreground">{title}</span>
+      <span className="ml-1 text-xs font-semibold text-muted-foreground">{title}</span>
     </div>
   );
 }
@@ -31,13 +31,15 @@ function IssueReportingForm() {
         <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-border p-8">
           <div className="text-center">
             <FiUpload className="mx-auto h-8 w-8 text-muted-foreground" aria-hidden />
-            <p className="mt-2 text-sm text-muted-foreground">Upload Photo Evidence</p>
+            <p className="mt-2 text-sm font-semibold text-muted-foreground">
+              Upload Photo Evidence
+            </p>
           </div>
         </div>
 
         <div className="form-field">
           <label className="label">Category</label>
-          <div className="input-field flex items-center justify-between px-3 py-2 text-sm text-muted-foreground">
+          <div className="input-field flex items-center justify-between px-3 py-2.5 text-sm text-muted-foreground">
             <span>Select category</span>
             <FiGrid className="h-4 w-4" aria-hidden />
           </div>
@@ -45,7 +47,7 @@ function IssueReportingForm() {
 
         <div className="form-field">
           <label className="label">Location</label>
-          <div className="input-field flex items-center gap-2 px-3 py-2">
+          <div className="input-field flex items-center gap-2 px-3 py-2.5">
             <FiMapPin className="h-4 w-4 text-muted-foreground" aria-hidden />
             <span className="text-sm text-muted-foreground">Enter location or use GPS</span>
           </div>
@@ -60,10 +62,7 @@ function IssueReportingForm() {
           />
         </div>
 
-        <button
-          type="button"
-          className="btn-primary w-full py-2.5"
-        >
+        <button type="button" className="btn-primary w-full py-2.5">
           Submit Report
         </button>
       </div>
@@ -106,7 +105,10 @@ function OperationsDashboard() {
 
         <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
           {issues.map((issue) => (
-            <div key={issue.id} className="flex items-center gap-3 px-4 py-3 hover:bg-secondary/30 transition-colors">
+            <div
+              key={issue.id}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-secondary/30 transition-colors"
+            >
               <span
                 className={cn(
                   "h-2.5 w-2.5 shrink-0 rounded-full",
@@ -114,9 +116,11 @@ function OperationsDashboard() {
                 )}
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{issue.title}</p>
+                <p className="truncate text-sm font-semibold">{issue.title}</p>
               </div>
-              <span className="shrink-0 text-xs text-muted-foreground capitalize">{issue.status.toLowerCase()}</span>
+              <span className="shrink-0 text-xs text-muted-foreground capitalize font-medium">
+                {issue.status.toLowerCase()}
+              </span>
             </div>
           ))}
         </div>
@@ -147,16 +151,10 @@ function ResolutionVerification() {
         </div>
 
         <div className="flex gap-3">
-          <button
-            type="button"
-            className="btn-success flex-1 py-2"
-          >
+          <button type="button" className="btn-success flex-1 py-2">
             Confirm Resolution
           </button>
-          <button
-            type="button"
-            className="btn-secondary flex-1 py-2"
-          >
+          <button type="button" className="btn-secondary flex-1 py-2">
             Reopen
           </button>
         </div>
@@ -171,10 +169,8 @@ export function ProductShowcaseSection() {
       <div className="container">
         <div className="section-header-center animate-slide-up">
           <p className="caption">PRODUCT</p>
-          <h2 className="mt-3 headline-2">
-            See CivicEye in action
-          </h2>
-          <p className="mt-4 body-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="mt-4 headline-2">See CivicEye in action</h2>
+          <p className="mt-5 body-lg text-muted-foreground max-w-2xl mx-auto">
             A complete issue management interface — from reporting to verified resolution.
           </p>
         </div>
@@ -202,12 +198,12 @@ function ProductCarousel({ screens }: { screens: { label: string; node: React.Re
   }, [screens.length]);
 
   return (
-    <div className="mt-14 product-frame overflow-hidden animate-slide-up">
+    <div className="mt-16 product-frame overflow-hidden animate-slide-up">
       <div className="product-frame-header">
         <span className="product-frame-dot" />
         <span className="product-frame-dot" />
         <span className="product-frame-dot" />
-        <span className="ml-1 text-xs font-medium text-muted-foreground">
+        <span className="ml-1 text-xs font-semibold text-muted-foreground">
           {screens[active].label}
         </span>
       </div>

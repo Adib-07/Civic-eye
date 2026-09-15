@@ -55,20 +55,22 @@ export function FaqSection() {
       <div className="container">
         <div className="section-header-center animate-slide-up">
           <p className="caption">FAQ</p>
-          <h2 className="mt-3 headline-2">
-            Frequently asked questions
-          </h2>
+          <h2 className="mt-4 headline-2">Frequently asked questions</h2>
         </div>
 
-        <div className="mt-12 max-w-3xl mx-auto animate-slide-up stagger-1">
+        <div className="mt-14 max-w-3xl mx-auto animate-slide-up stagger-1">
           <Accordion type="multiple" className="space-y-3">
             {FAQS.map((faq, index) => (
-              <AccordionItem key={index} value={`faq-${index}`}>
-                <AccordionTrigger className="text-base font-semibold py-4 focus:ring-0">
+              <AccordionItem
+                key={index}
+                value={`faq-${index}`}
+                className="border border-border rounded-xl px-5 bg-card"
+              >
+                <AccordionTrigger className="text-base font-bold py-5 focus:ring-0">
                   {faq.question}
                   <FiChevronDown className="h-4 w-4" />
                 </AccordionTrigger>
-                <AccordionContent className="pb-4">
+                <AccordionContent className="pb-5">
                   <p className="body-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
                 </AccordionContent>
               </AccordionItem>

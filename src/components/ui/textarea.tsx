@@ -5,11 +5,7 @@ import { cn } from "@/lib/utils";
 const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<"textarea">>(
   ({ className, ...props }, ref) => {
     return (
-      <textarea
-        className={cn("input min-h-[60px] resize-y", className)}
-        ref={ref}
-        {...props}
-      />
+      <textarea className={cn("input min-h-[60px] resize-y", className)} ref={ref} {...props} />
     );
   },
 );

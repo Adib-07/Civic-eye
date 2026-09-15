@@ -18,31 +18,31 @@ export function OperationalValueSection() {
       <div className="container">
         <div className="section-header-center animate-slide-up">
           <p className="caption">OPERATIONAL VALUE</p>
-          <h2 className="mt-3 headline-2">
+          <h2 className="mt-4 headline-2">
             Give your operations team visibility from report to resolution.
           </h2>
         </div>
 
-        <div className="mt-14 grid-auto-fit">
+        <div className="mt-16 grid-auto-fit">
           {valueProps.map((v, index) => (
             <div
               key={v.bold}
-              className="card p-5 flex items-start gap-4 animate-slide-up"
+              className="card p-6 flex items-start gap-5 animate-slide-up"
               style={{ animationDelay: `${index * 80}ms` }}
             >
-              <div className="icon-wrapper-md icon-wrapper-primary shrink-0">
+              <div className="icon-wrapper-lg icon-wrapper-primary shrink-0">
                 <v.icon className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-foreground">{v.bold}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{v.desc}</p>
+                <p className="headline-4">{v.bold}</p>
+                <p className="mt-1.5 text-sm text-muted-foreground">{v.desc}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-12 text-center animate-slide-up stagger-3">
-          <Link to="/book-demo" className="btn-primary inline-flex items-center gap-2 px-6 py-3">
+        <div className="mt-14 text-center animate-slide-up stagger-3">
+          <Link to="/book-demo" className="btn-primary inline-flex items-center gap-2 px-7 py-3.5">
             Book a Demo
             <FiArrowRight className="h-4 w-4" />
           </Link>

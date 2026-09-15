@@ -153,34 +153,35 @@ export function LoginPage() {
 
   return (
     <main className="hero-bg grid min-h-screen place-items-center p-4">
-      <div className="card w-full max-w-md p-6 sm:p-8 animate-scale-in">
+      <div className="card w-full max-w-md p-8 sm:p-10 animate-scale-in shadow-lg">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground mb-6"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground mb-8"
         >
           <FiArrowLeft className="h-3.5 w-3.5" aria-hidden />
           <span>Back to home</span>
         </Link>
 
-        <div className="text-center mb-8">
-          <div className="icon-wrapper-lg icon-wrapper-primary mx-auto mb-4">
-            <FiLock className="h-5 w-5" aria-hidden />
+        <div className="text-center mb-10">
+          <div className="icon-wrapper-xl icon-wrapper-primary mx-auto mb-5">
+            <FiLock className="h-6 w-6" aria-hidden />
           </div>
-          <h1 className="headline-3">Sign in to CivicEye</h1>
-          <p className="mt-2 body-sm text-muted-foreground">
+          <h1 className="headline-2">Sign in to CivicEye</h1>
+          <p className="mt-3 body-sm text-muted-foreground">
             Organization and incident management portal
           </p>
         </div>
 
         {!isConfigured && (
-          <div className="mb-6 card p-4 border-warning/30 bg-warning/10">
-            <div className="flex items-start gap-2.5">
+          <div className="mb-6 card p-5 border-warning/30 bg-warning/10">
+            <div className="flex items-start gap-3">
               <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
               <div>
                 <p className="font-bold text-foreground">Backend Not Configured</p>
                 <p className="mt-1 body-sm text-muted-foreground">
                   Copy <code className="font-mono text-[11px]">.env.example</code> to{" "}
-                  <code className="font-mono text-[11px]">.env</code> and set your Supabase credentials.
+                  <code className="font-mono text-[11px]">.env</code> and set your Supabase
+                  credentials.
                 </p>
               </div>
             </div>
@@ -190,9 +191,9 @@ export function LoginPage() {
         {loginError && (
           <div
             role="alert"
-            className="mb-6 card p-4 border-destructive/30 bg-destructive/10 space-y-3"
+            className="mb-6 card p-5 border-destructive/30 bg-destructive/10 space-y-3"
           >
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2.5">
               <FiAlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
               <span className="body-sm leading-relaxed">{loginError}</span>
             </div>
@@ -203,14 +204,14 @@ export function LoginPage() {
                   type="button"
                   onClick={handleResendConfirmation}
                   disabled={resendCooldown > 0 || resending}
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline disabled:opacity-50 disabled:no-underline"
+                  className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline disabled:opacity-50 disabled:no-underline"
                 >
                   <FiMail className="h-4 w-4" />
                   {resending
                     ? "Sending..."
                     : resendCooldown > 0
-                    ? `Resend in ${resendCooldown}s`
-                    : "Resend confirmation email"}
+                      ? `Resend in ${resendCooldown}s`
+                      : "Resend confirmation email"}
                 </button>
               </div>
             )}
@@ -218,34 +219,31 @@ export function LoginPage() {
         )}
 
         {resendSuccess && (
-          <div
-            role="status"
-            className="mb-6 card p-4 border-emerald-500/30 bg-emerald-500/10"
-          >
-            <div className="flex items-start gap-2">
+          <div role="status" className="mb-6 card p-5 border-emerald-500/30 bg-emerald-500/10">
+            <div className="flex items-start gap-2.5">
               <FiCheckCircle className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
               <span className="body-sm leading-relaxed">
-                Confirmation email sent to <strong>{unconfirmedEmail || email}</strong>. Please check
-                your inbox (and spam folder).
+                Confirmation email sent to <strong>{unconfirmedEmail || email}</strong>. Please
+                check your inbox (and spam folder).
               </span>
             </div>
           </div>
         )}
 
-        <form onSubmit={submit} className="space-y-4" noValidate>
+        <form onSubmit={submit} className="space-y-5" noValidate>
           <div className="form-field">
             <label htmlFor="login-email" className="label">
               Email Address
             </label>
             <div className="relative flex items-center">
-              <FiMail className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <FiMail className="absolute left-4 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
                 id="login-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@yourorganization.com"
-                className="input pl-10 pr-3.5"
+                className="input-lg pl-11 pr-3.5"
                 required
                 autoComplete="email"
               />
@@ -259,14 +257,14 @@ export function LoginPage() {
               </label>
             </div>
             <div className="relative flex items-center">
-              <FiLock className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <FiLock className="absolute left-4 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
                 id="login-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="input pl-10 pr-12"
+                className="input-lg pl-11 pr-12"
                 required
                 autoComplete="current-password"
               />
@@ -281,11 +279,11 @@ export function LoginPage() {
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-3">
             <button
               type="submit"
               disabled={busy || !isConfigured}
-              className="btn-primary w-full py-3"
+              className="btn-primary w-full py-3.5 text-base font-bold"
             >
               {busy ? (
                 <>
@@ -299,12 +297,9 @@ export function LoginPage() {
           </div>
         </form>
 
-        <p className="mt-6 text-center body-sm text-muted-foreground">
+        <p className="mt-8 text-center body-sm text-muted-foreground">
           Don't have an account?{" "}
-          <Link
-            to="/signup"
-            className="font-semibold text-primary hover:underline transition-colors"
-          >
+          <Link to="/signup" className="font-bold text-primary hover:underline transition-colors">
             Create account
           </Link>
         </p>

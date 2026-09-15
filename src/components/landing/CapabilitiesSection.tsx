@@ -46,26 +46,25 @@ export function CapabilitiesSection() {
   return (
     <section className="page-section bg-background">
       <div className="container">
-        {/* Header */}
         <div className="section-header-center animate-slide-up">
           <p className="caption">CAPABILITIES</p>
-          <h2 className="mt-3 headline-2">
+          <h2 className="mt-4 headline-2">
             Built for the people responsible for getting things done
           </h2>
-          <p className="mt-4 body-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="mt-5 body-lg text-muted-foreground max-w-2xl mx-auto">
             CivicEye covers the complete operational workflow — from first report to verified
             resolution with evidence.
           </p>
         </div>
 
-        <div className="mt-14 grid-auto-fit">
+        <div className="mt-16 grid-auto-fit">
           {CAPABILITIES.map((capability, index) => (
             <article
               key={capability.title}
-              className="card card-hover-elevated p-6 animate-slide-up"
+              className="card card-hover-elevated p-7 animate-slide-up"
               style={{ animationDelay: `${index * 80}ms` }}
             >
-              <div className="icon-wrapper-md icon-wrapper-primary mb-4">
+              <div className="icon-wrapper-lg icon-wrapper-primary mb-5">
                 <capability.icon className="h-5 w-5" aria-hidden />
               </div>
               <h3 className="headline-4">{capability.title}</h3>

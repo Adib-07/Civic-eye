@@ -54,15 +54,13 @@ export function SolutionsSection() {
       <div className="container">
         <div className="section-header-center animate-slide-up">
           <p className="caption">SOLUTIONS</p>
-          <h2 className="mt-3 headline-2">
-            Designed for teams responsible for real-world spaces
-          </h2>
-          <p className="mt-4 body-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="mt-4 headline-2">Designed for teams responsible for real-world spaces</h2>
+          <p className="mt-5 body-lg text-muted-foreground max-w-2xl mx-auto">
             CivicEye serves facility managers, campuses, communities, and operations teams.
           </p>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-6">
           {SOLUTIONS.map((solution, index) => {
             const Icon = solution.icon;
             return (
@@ -77,25 +75,27 @@ export function SolutionsSection() {
                     alt={solution.title}
                     loading="lazy"
                     decoding="async"
-                    className="aspect-[16/9] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                    className="aspect-[16/9] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                   />
                   <div
-                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-border/40 via-transparent to-transparent"
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-border/50 via-transparent to-transparent"
                     aria-hidden
                   />
                 </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <div className={cn("icon-wrapper-md mb-4", ICON_STYLES[solution.color])}>
+                <div className="flex flex-1 flex-col p-7">
+                  <div className={cn("icon-wrapper-lg mb-4", ICON_STYLES[solution.color])}>
                     <Icon className="h-5 w-5" aria-hidden />
                   </div>
                   <h3 className="headline-4">{solution.title}</h3>
-                  <p className="mt-1.5 text-xs font-medium text-primary/70">{solution.audience}</p>
+                  <p className="mt-1.5 text-xs font-semibold text-primary/70">
+                    {solution.audience}
+                  </p>
                   <p className="mt-3 body-sm text-muted-foreground leading-relaxed flex-1">
                     {solution.description}
                   </p>
                   <Link
                     to="/book-demo"
-                    className="mt-auto inline-flex items-center gap-2 pt-4 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                    className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-bold text-primary transition-colors hover:text-primary/80"
                   >
                     Explore solution
                     <FiArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />

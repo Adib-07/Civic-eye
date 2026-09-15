@@ -57,11 +57,11 @@ function Landing() {
 
       <main id="main-content">
         <LandingHero />
-        <ProductVisualSection />
-        <ProductTour />
-        <ProblemStorySection />
-        <CapabilitiesSection />
         <SolutionsSection />
+        <ProductVisualSection />
+        <ProblemStorySection />
+        <ProductTour />
+        <CapabilitiesSection />
         <OperationalValueSection />
         <ProductShowcaseSection />
         <TrustSection />

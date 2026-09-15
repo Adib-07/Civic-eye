@@ -50,7 +50,8 @@ export const Route = createFileRoute("/report")({
       { title: "Report a Civic Issue — CivicEye" },
       {
         name: "description",
-        content: "Report a city issue with photo evidence, GPS pin location, and category suggestion.",
+        content:
+          "Report a city issue with photo evidence, GPS pin location, and category suggestion.",
       },
     ],
   }),
@@ -256,8 +257,8 @@ export function ReportPage() {
     uploadPhase === "uploading"
       ? "Uploading photo evidence…"
       : uploadPhase === "saving"
-      ? "Submitting report…"
-      : "Submit report to operations";
+        ? "Submitting report…"
+        : "Submit report to operations";
 
   return (
     <AppShell
@@ -410,7 +411,10 @@ export function ReportPage() {
         ) : (
           <form onSubmit={submit} className="pb-24 lg:pb-0">
             {/* Step Wizard Navigation Header */}
-            <nav aria-label="Report wizard steps" className="mb-6 grid grid-cols-4 gap-2 animate-slide-up">
+            <nav
+              aria-label="Report wizard steps"
+              className="mb-6 grid grid-cols-4 gap-2 animate-slide-up"
+            >
               {(
                 [
                   { n: 1, label: "Evidence", desc: "Photo" },
@@ -428,8 +432,8 @@ export function ReportPage() {
                     step === n
                       ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary/30"
                       : step > n
-                      ? "border-emerald-500/30 bg-emerald-500/5 text-foreground"
-                      : "border-border bg-card text-muted-foreground hover:bg-secondary",
+                        ? "border-emerald-500/30 bg-emerald-500/5 text-foreground"
+                        : "border-border bg-card text-muted-foreground hover:bg-secondary",
                   )}
                 >
                   <span
@@ -438,8 +442,8 @@ export function ReportPage() {
                       step === n
                         ? "bg-primary text-primary-foreground"
                         : step > n
-                        ? "bg-emerald-500 text-white"
-                        : "bg-secondary text-muted-foreground",
+                          ? "bg-emerald-500 text-white"
+                          : "bg-secondary text-muted-foreground",
                     )}
                   >
                     {step > n ? <FiCheck className="h-4 w-4" /> : n}
@@ -451,17 +455,15 @@ export function ReportPage() {
             </nav>
 
             {/* STEP 1: Photo Evidence */}
-            <section className={cn("card p-5 sm:p-6 animate-slide-up", step !== 1 && "hidden lg:block")}>
+            <section
+              className={cn("card p-5 sm:p-6 animate-slide-up", step !== 1 && "hidden lg:block")}
+            >
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="caption text-primary">Step 1 of 4</p>
                   <h2 className="headline-4">Photo Evidence</h2>
                 </div>
-                {imagePreview && (
-                  <span className="badge badge-success">
-                    Photo Attached
-                  </span>
-                )}
+                {imagePreview && <span className="badge badge-success">Photo Attached</span>}
               </div>
               <p className="body-sm text-muted-foreground mb-4">
                 Attach a clear photo of the issue. Camera capture recommended on mobile devices.
@@ -687,7 +689,10 @@ export function ReportPage() {
             {/* STEP 4: Review & Additional Details */}
             {(step === 4 || step === 3) && (
               <section
-                className={cn("card mt-5 p-5 sm:p-6 animate-slide-up", step !== 4 && "hidden lg:block")}
+                className={cn(
+                  "card mt-5 p-5 sm:p-6 animate-slide-up",
+                  step !== 4 && "hidden lg:block",
+                )}
               >
                 <p className="caption text-primary">Step 4 of 4</p>
                 <h2 className="headline-4 mb-4">Review Report</h2>
@@ -803,7 +808,6 @@ export function ReportPage() {
             </button>
           </div>
         )}
-
       </div>
 
       <ImageModal src={zoom} onClose={() => setZoom(null)} />

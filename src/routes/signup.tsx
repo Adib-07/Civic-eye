@@ -128,44 +128,51 @@ function SignupPage() {
 
   return (
     <main className="hero-bg grid min-h-screen place-items-center p-4">
-      <div className="card w-full max-w-md p-6 sm:p-8 animate-scale-in">
+      <div className="card w-full max-w-md p-8 sm:p-10 animate-scale-in shadow-lg">
         <Link
           to="/login"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground mb-6"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground mb-8"
         >
           <FiArrowLeft className="h-3.5 w-3.5" aria-hidden />
           <span>Back to sign in</span>
         </Link>
 
         {needsEmailConfirmation ? (
-          <div className="text-center py-4 space-y-6 animate-scale-in" role="status" aria-live="polite">
+          <div
+            className="text-center py-4 space-y-6 animate-scale-in"
+            role="status"
+            aria-live="polite"
+          >
             <div className="icon-wrapper-xl icon-wrapper-primary mx-auto">
               <FiMail className="h-7 w-7" />
             </div>
             <div>
-              <h2 className="headline-3">Confirm your email address</h2>
-              <p className="mt-2 body-sm text-muted-foreground leading-relaxed">
+              <h2 className="headline-2">Confirm your email address</h2>
+              <p className="mt-3 body-sm text-muted-foreground leading-relaxed">
                 We sent a verification link to{" "}
-                <span className="font-semibold text-foreground">{registeredEmail}</span>. Click the
-                link to confirm your account and sign in.
+                <span className="font-bold text-foreground">{registeredEmail}</span>. Click the link
+                to confirm your account and sign in.
               </p>
             </div>
 
-            <div className="card p-4 text-left space-y-1">
-              <div className="flex items-center gap-1.5 font-semibold text-foreground">
+            <div className="card p-5 text-left space-y-1.5">
+              <div className="flex items-center gap-1.5 font-bold text-foreground">
                 <FiCheckCircle className="h-4 w-4 text-emerald-500" />
                 <span>Next steps:</span>
               </div>
-              <p className="body-sm text-muted-foreground">1. Check your email inbox (and spam folder if not visible).</p>
-              <p className="body-sm text-muted-foreground">2. Open the CivicEye confirmation message.</p>
-              <p className="body-sm text-muted-foreground">3. Once confirmed, sign in to your dashboard.</p>
+              <p className="body-sm text-muted-foreground">
+                1. Check your email inbox (and spam folder if not visible).
+              </p>
+              <p className="body-sm text-muted-foreground">
+                2. Open the CivicEye confirmation message.
+              </p>
+              <p className="body-sm text-muted-foreground">
+                3. Once confirmed, sign in to your dashboard.
+              </p>
             </div>
 
             <div className="pt-4 flex flex-col gap-3">
-              <Link
-                to="/login"
-                className="btn-primary w-full py-3"
-              >
+              <Link to="/login" className="btn-primary w-full py-3.5 text-base font-bold">
                 Go to sign in
               </Link>
               <button
@@ -174,7 +181,7 @@ function SignupPage() {
                   setNeedsEmailConfirmation(false);
                   setSubmitError(null);
                 }}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
               >
                 Need to change your email?
               </button>
@@ -182,26 +189,26 @@ function SignupPage() {
           </div>
         ) : (
           <>
-            <div className="text-center mb-8">
-              <div className="icon-wrapper-lg icon-wrapper-primary mx-auto mb-4">
-                <FiLock className="h-5 w-5" aria-hidden />
+            <div className="text-center mb-10">
+              <div className="icon-wrapper-xl icon-wrapper-primary mx-auto mb-5">
+                <FiLock className="h-6 w-6" aria-hidden />
               </div>
-              <h1 className="headline-3">Create an account</h1>
-              <p className="mt-2 body-sm text-muted-foreground">
+              <h1 className="headline-2">Create an account</h1>
+              <p className="mt-3 body-sm text-muted-foreground">
                 Sign up for CivicEye organization access
               </p>
             </div>
 
             {!isConfigured && (
-              <div className="mb-6 card p-4 border-warning/30 bg-warning/10">
-                <div className="flex items-start gap-2.5">
+              <div className="mb-6 card p-5 border-warning/30 bg-warning/10">
+                <div className="flex items-start gap-3">
                   <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
                   <div>
                     <p className="font-bold text-foreground">Backend Not Configured</p>
                     <p className="mt-1 body-sm text-muted-foreground">
                       Copy <code className="font-mono text-[11px]">.env.example</code> to{" "}
-                      <code className="font-mono text-[11px]">.env</code> and configure your Supabase
-                      credentials.
+                      <code className="font-mono text-[11px]">.env</code> and configure your
+                      Supabase credentials.
                     </p>
                   </div>
                 </div>
@@ -209,24 +216,21 @@ function SignupPage() {
             )}
 
             {submitError && (
-              <div
-                role="alert"
-                className="mb-6 card p-4 border-destructive/30 bg-destructive/10"
-              >
-                <div className="flex items-start gap-2">
+              <div role="alert" className="mb-6 card p-5 border-destructive/30 bg-destructive/10">
+                <div className="flex items-start gap-2.5">
                   <FiAlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                   <span className="body-sm leading-relaxed">{submitError}</span>
                 </div>
               </div>
             )}
 
-            <form onSubmit={submit} className="space-y-4" noValidate>
+            <form onSubmit={submit} className="space-y-5" noValidate>
               <div className="form-field">
                 <label htmlFor="signup-fullName" className="label">
                   Full Name <span className="text-destructive">*</span>
                 </label>
                 <div className="relative flex items-center">
-                  <FiUser className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <FiUser className="absolute left-4 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <input
                     id="signup-fullName"
                     type="text"
@@ -234,7 +238,7 @@ function SignupPage() {
                     value={form.fullName}
                     onChange={handleChange}
                     placeholder="e.g. Aditi Sharma"
-                    className="input pl-10"
+                    className="input-lg pl-11"
                     required
                     autoComplete="name"
                   />
@@ -252,7 +256,7 @@ function SignupPage() {
                   Work Email <span className="text-destructive">*</span>
                 </label>
                 <div className="relative flex items-center">
-                  <FiMail className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <FiMail className="absolute left-4 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <input
                     id="signup-email"
                     type="email"
@@ -260,7 +264,7 @@ function SignupPage() {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="you@yourorganization.com"
-                    className="input pl-10"
+                    className="input-lg pl-11"
                     required
                     autoComplete="email"
                   />
@@ -278,7 +282,7 @@ function SignupPage() {
                   Password <span className="text-destructive">*</span>
                 </label>
                 <div className="relative flex items-center">
-                  <FiLock className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <FiLock className="absolute left-4 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <input
                     id="signup-password"
                     type={showPassword ? "text" : "password"}
@@ -286,7 +290,7 @@ function SignupPage() {
                     value={form.password}
                     onChange={handleChange}
                     placeholder="At least 6 characters"
-                    className="input pl-10 pr-12"
+                    className="input-lg pl-11 pr-12"
                     required
                     autoComplete="new-password"
                   />
@@ -296,7 +300,11 @@ function SignupPage() {
                     className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors p-1"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <FiEyeOff className="h-4 w-4" />
+                    ) : (
+                      <FiEye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 {fieldErrors.password && (
@@ -312,7 +320,7 @@ function SignupPage() {
                   Confirm Password <span className="text-destructive">*</span>
                 </label>
                 <div className="relative flex items-center">
-                  <FiLock className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <FiLock className="absolute left-4 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <input
                     id="signup-confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
@@ -320,7 +328,7 @@ function SignupPage() {
                     value={form.confirmPassword}
                     onChange={handleChange}
                     placeholder="Re-enter your password"
-                    className="input pl-10 pr-12"
+                    className="input-lg pl-11 pr-12"
                     required
                     autoComplete="new-password"
                   />
@@ -330,7 +338,11 @@ function SignupPage() {
                     className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors p-1"
                     aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   >
-                    {showConfirmPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
+                    {showConfirmPassword ? (
+                      <FiEyeOff className="h-4 w-4" />
+                    ) : (
+                      <FiEye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 {fieldErrors.confirmPassword && (
@@ -341,11 +353,11 @@ function SignupPage() {
                 )}
               </div>
 
-              <div className="pt-2">
+              <div className="pt-3">
                 <button
                   type="submit"
                   disabled={busy || !isConfigured}
-                  className="btn-primary w-full py-3"
+                  className="btn-primary w-full py-3.5 text-base font-bold"
                 >
                   {busy ? (
                     <>
@@ -359,11 +371,11 @@ function SignupPage() {
               </div>
             </form>
 
-            <p className="mt-6 text-center body-sm text-muted-foreground">
+            <p className="mt-8 text-center body-sm text-muted-foreground">
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="font-semibold text-primary hover:underline transition-colors"
+                className="font-bold text-primary hover:underline transition-colors"
               >
                 Sign in
               </Link>
