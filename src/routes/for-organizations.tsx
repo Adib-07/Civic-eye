@@ -18,6 +18,8 @@ import {
 } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { Footer } from "@/components/Footer";
+import { Navbar } from "@/components/Navbar";
 
 function RevealBlock({
   children,
@@ -188,6 +190,8 @@ export const Route = createFileRoute("/for-organizations")({
 function ProductPage() {
   return (
     <div className="min-h-screen bg-background">
+      <Navbar variant="cinematic" />
+
       {/* ─── Hero ─── */}
       <section className="page-hero">
         <div className="page-hero-grid" aria-hidden />
@@ -746,6 +750,8 @@ function ProductPage() {
           </RevealBlock>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

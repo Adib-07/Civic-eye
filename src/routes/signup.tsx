@@ -130,11 +130,16 @@ function SignupPage() {
     <main className="hero-bg grid min-h-screen place-items-center p-4">
       <div className="card w-full max-w-md p-8 sm:p-10 animate-scale-in shadow-lg">
         <Link
-          to="/login"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground mb-8"
+          to="/"
+          className="inline-flex items-center gap-2.5 mb-8 group"
+          aria-label="CivicEye home"
         >
-          <FiArrowLeft className="h-3.5 w-3.5" aria-hidden />
-          <span>Back to sign in</span>
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <FiLock className="h-4.5 w-4.5" aria-hidden />
+          </span>
+          <span className="font-display text-lg font-extrabold tracking-tight text-foreground">
+            Civic<span className="text-primary">Eye</span>
+          </span>
         </Link>
 
         {needsEmailConfirmation ? (

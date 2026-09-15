@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { FiChevronDown, FiHelpCircle } from "react-icons/fi";
+import { FiChevronDown, FiHelpCircle, FiArrowRight } from "react-icons/fi";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
@@ -122,16 +122,33 @@ export function FaqPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="page-container py-12 max-w-3xl">
-        <div className="text-center space-y-3">
-          <span className="section-label">Help & Answers</span>
-          <h1 className="text-3xl font-bold sm:text-4xl text-foreground">
+      {/* ─── Hero ─── */}
+      <section className="page-hero">
+        <div className="page-hero-grid" aria-hidden />
+        <div className="relative z-10 container pt-24 pb-16 lg:pt-32 lg:pb-20 text-center">
+          <span className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-hero-accent">
+            <FiHelpCircle className="h-3 w-3" />
+            Help & Answers
+          </span>
+          <h1 className="mt-7 font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.05] max-w-3xl mx-auto">
             Frequently Asked Questions
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="mt-6 text-lg text-slate-300/90 max-w-2xl mx-auto leading-relaxed">
             Everything you need to know about CivicEye for your organization.
           </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <Link to="/book-demo" className="btn-cinematic-primary">
+              Book a Demo
+              <FiArrowRight className="h-5 w-5" />
+            </Link>
+            <Link to="/pricing" className="btn-cinematic-secondary">
+              View Pricing
+            </Link>
+          </div>
         </div>
+      </section>
+
+      <main className="page-container py-12 max-w-3xl">
 
         <div className="mt-10 space-y-8">
           {FAQ_SECTIONS.map((section) => (

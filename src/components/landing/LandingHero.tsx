@@ -89,15 +89,15 @@ export function LandingHero() {
             <div className="mt-9 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-slate-400/70">
               <span className="flex items-center gap-2">
                 <FiShield className="h-4 w-4 text-emerald-400" />
-                SOC 2 Compliant
+                Database-level data isolation
               </span>
               <span className="flex items-center gap-2">
                 <FiCheckCircle className="h-4 w-4 text-emerald-400" />
-                99.9% Uptime SLA
+                Role-based access control
               </span>
               <span className="flex items-center gap-2">
                 <FiClock className="h-4 w-4 text-emerald-400" />
-                30-min Setup
+                Full audit trail
               </span>
             </div>
           </div>
