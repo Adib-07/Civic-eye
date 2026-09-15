@@ -86,7 +86,7 @@ export function ProblemSection() {
               <Link to="/book-demo" className="btn-primary px-4 py-2.5 text-sm">
                 Book a Demo <FiArrowRight aria-hidden />
               </Link>
-              <Link to="/for-organizations" className="btn-secondary px-4 py-2.5 text-sm">
+              <Link to="/how-it-works" className="btn-secondary px-4 py-2.5 text-sm">
                 See How It Works
               </Link>
             </div>

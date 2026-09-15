@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 
 const marketingNavLinks = [
   { to: "/for-organizations", hash: undefined, label: "Product" },
-  { to: "/for-organizations", hash: "solutions", label: "Solutions" },
-  { to: "/for-organizations", hash: "workflow", label: "How It Works" },
+  { to: "/solutions", hash: undefined, label: "Solutions" },
+  { to: "/how-it-works", hash: undefined, label: "How It Works" },
   { to: "/pricing", hash: undefined, label: "Pricing" },
   { to: "/security", hash: undefined, label: "Security" },
 ] as const;

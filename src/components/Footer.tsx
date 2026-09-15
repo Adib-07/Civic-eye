@@ -38,9 +38,13 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/solutions" className="transition-colors hover:text-foreground font-medium">
+                Solutions
+              </Link>
+            </li>
+            <li>
               <Link
-                to="/for-organizations"
-                hash="workflow"
+                to="/how-it-works"
                 className="transition-colors hover:text-foreground font-medium"
               >
                 How It Works

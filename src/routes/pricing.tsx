@@ -1,25 +1,42 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { FiArrowRight, FiCheck, FiHelpCircle } from "react-icons/fi";
+import {
+  FiArrowRight,
+  FiCheck,
+  FiHelpCircle,
+  FiShield,
+  FiUsers,
+  FiClock,
+  FiTrendingUp,
+  FiStar,
+} from "react-icons/fi";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { PLANS, SALES_EMAIL, formatInr, type PlanTier } from "@/lib/plans";
 import { cn } from "@/lib/utils";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
-export const Route = createFileRoute("/pricing")({
-  head: () => ({
-    meta: [
-      { title: "Pricing — CivicEye" },
-      {
-        name: "description",
-        content:
-          "Organization-based pricing for CivicEye. Start a free pilot or choose a plan that fits your operations.",
-      },
-    ],
-  }),
-  component: PricingPage,
-});
+function RevealBlock({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const { ref, visible } = useScrollReveal();
+  return (
+    <div
+      ref={ref}
+      className={cn("reveal", visible && "visible", className)}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
 
 const PRICING_FAQS = [
   {
@@ -48,82 +65,169 @@ const PRICING_FAQS = [
   },
 ];
 
+const TRUST_ITEMS = [
+  { icon: FiShield, text: "Organization data isolation" },
+  { icon: FiUsers, text: "Role-based access control" },
+  { icon: FiClock, text: "SLA tracking on every plan" },
+  { icon: FiTrendingUp, text: "Scale as you grow" },
+];
+
+export const Route = createFileRoute("/pricing")({
+  head: () => ({
+    meta: [
+      { title: "Pricing — CivicEye" },
+      {
+        name: "description",
+        content:
+          "Organization-based pricing for CivicEye. Start a free pilot or choose a plan that fits your operations.",
+      },
+    ],
+  }),
+  component: PricingPage,
+});
+
 function PricingPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="page-container py-14 sm:py-20">
-        <div className="max-w-2xl">
-          <p className="section-label">Pricing</p>
-          <h1 className="mt-2 section-title text-3xl sm:text-4xl">
-            Plans for organizations, not reporters
-          </h1>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Your organization subscribes. Staff operate the platform. Residents and community
-            members report issues for free. All plans include organization-scoped data isolation and
-            role-based staff access.
-          </p>
-          <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
-            Pricing shown reflects our current early-stage commercial structure. Final pricing may
-            vary based on organization size, number of sites, staff users, issue volume, and
-            required integrations.
-          </p>
-        </div>
+      <main>
+        {/* ─── Hero ─── */}
+        <section className="page-hero">
+          <div className="page-hero-grid" aria-hidden />
+          <div className="relative z-10 container pt-24 pb-20 lg:pt-32 lg:pb-28 text-center">
+            <RevealBlock>
+              <span className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-hero-accent">
+                <FiStar className="h-3 w-3" />
+                Pricing
+              </span>
+            </RevealBlock>
 
-        <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {PLANS.filter((p) => p.tier !== "growth").map((plan) => (
-            <PricingCard key={plan.tier} plan={plan} />
-          ))}
-        </div>
+            <RevealBlock delay={100}>
+              <h1 className="mt-7 font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.05] max-w-4xl mx-auto">
+                Plans for <span className="text-hero-accent">organizations</span>, not reporters
+              </h1>
+            </RevealBlock>
 
-        <section className="surface-panel mt-14 p-6 sm:p-8">
-          <h2 className="section-title text-xl">How billing works</h2>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            <li className="flex items-start gap-2">
-              <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-              Organizations subscribe; end users never pay to report an issue.
-            </li>
-            <li className="flex items-start gap-2">
-              <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-              The Free Pilot is available for 30 days with plan limits enforced — no credit card
-              required.
-            </li>
-            <li className="flex items-start gap-2">
-              <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-              Paid plans are activated once online checkout is connected. Until then, contact us to
-              get started.
-            </li>
-            <li className="flex items-start gap-2">
-              <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-              No payment data is stored in the browser — billing runs server-side.
-            </li>
-            <li className="flex items-start gap-2">
-              <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-              Pricing may depend on organization size, number of sites, staff, issue volume, and
-              required integrations.
-            </li>
-          </ul>
-          <p className="mt-5 text-sm">
-            Questions about pricing?{" "}
-            <a href={`mailto:${SALES_EMAIL}`} className="font-medium text-primary hover:underline">
-              {SALES_EMAIL}
-            </a>
-          </p>
+            <RevealBlock delay={200}>
+              <p className="mt-6 text-lg text-slate-300/90 max-w-2xl mx-auto leading-relaxed">
+                Your organization subscribes. Staff operate the platform. Residents and community
+                members report issues for free. All plans include organization-scoped data isolation
+                and role-based staff access.
+              </p>
+            </RevealBlock>
+
+            <RevealBlock delay={300}>
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-400/70">
+                {TRUST_ITEMS.map((item) => (
+                  <span key={item.text} className="flex items-center gap-2">
+                    <item.icon className="h-4 w-4 text-emerald-400" />
+                    {item.text}
+                  </span>
+                ))}
+              </div>
+            </RevealBlock>
+          </div>
         </section>
 
-        <section className="mt-16">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="section-label">Pricing FAQ</p>
-            <h2 className="mt-2 section-title text-2xl sm:text-3xl">
-              Common questions about plans
-            </h2>
-          </div>
+        {/* ─── Pricing Cards ─── */}
+        <section className="inner-section bg-background">
+          <div className="container">
+            <div className="grid gap-6 lg:grid-cols-4 max-w-6xl mx-auto">
+              {PLANS.map((plan, i) => (
+                <RevealBlock key={plan.tier} delay={i * 100}>
+                  <PricingCard plan={plan} />
+                </RevealBlock>
+              ))}
+            </div>
 
-          <div className="mt-8 mx-auto max-w-3xl space-y-3">
-            {PRICING_FAQS.map((faq, i) => (
-              <PricingFaqItem key={i} faq={faq} />
-            ))}
+            <RevealBlock delay={400}>
+              <p className="mt-8 text-center text-xs text-muted-foreground max-w-2xl mx-auto">
+                Pricing shown reflects our current early-stage commercial structure. Final pricing
+                may vary based on organization size, number of sites, staff users, issue volume, and
+                required integrations.
+              </p>
+            </RevealBlock>
+          </div>
+        </section>
+
+        {/* ─── How Billing Works ─── */}
+        <section className="inner-section-tight bg-secondary/30 border-y border-border">
+          <div className="container max-w-4xl">
+            <RevealBlock>
+              <div className="surface-panel p-8 sm:p-10">
+                <h2 className="headline-3">How billing works</h2>
+                <ul className="mt-6 space-y-4">
+                  {[
+                    "Organizations subscribe; end users never pay to report an issue.",
+                    "The Free Pilot is available for 30 days with plan limits enforced — no credit card required.",
+                    "Paid plans are activated once online checkout is connected. Until then, contact us to get started.",
+                    "No payment data is stored in the browser — billing runs server-side.",
+                    "Pricing may depend on organization size, number of sites, staff, issue volume, and required integrations.",
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <FiCheck className="mt-0.5 h-4.5 w-4.5 shrink-0 text-success" />
+                      <span className="body-sm text-muted-foreground">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-6 body-sm">
+                  Questions about pricing?{" "}
+                  <a
+                    href={`mailto:${SALES_EMAIL}`}
+                    className="font-semibold text-primary hover:underline"
+                  >
+                    {SALES_EMAIL}
+                  </a>
+                </p>
+              </div>
+            </RevealBlock>
+          </div>
+        </section>
+
+        {/* ─── FAQ ─── */}
+        <section className="inner-section bg-background">
+          <div className="container max-w-3xl">
+            <RevealBlock>
+              <div className="text-center mb-12">
+                <p className="caption">FAQ</p>
+                <h2 className="mt-4 headline-2">Common questions about plans</h2>
+              </div>
+            </RevealBlock>
+
+            <div className="space-y-3">
+              {PRICING_FAQS.map((faq, i) => (
+                <RevealBlock key={i} delay={i * 60}>
+                  <PricingFaqItem faq={faq} />
+                </RevealBlock>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ─── CTA ─── */}
+        <section className="cta-banner py-20 lg:py-24 text-center">
+          <div className="container relative z-10 max-w-3xl mx-auto">
+            <RevealBlock>
+              <h2 className="headline-2 text-white">Not sure which plan is right?</h2>
+            </RevealBlock>
+            <RevealBlock delay={100}>
+              <p className="mt-5 body-lg text-slate-300/80 max-w-xl mx-auto">
+                Talk to our team. We will help you find the plan that fits your organization's size
+                and operational needs.
+              </p>
+            </RevealBlock>
+            <RevealBlock delay={200}>
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+                <Link to="/book-demo" className="btn-cinematic-primary">
+                  Book a Demo
+                  <FiArrowRight className="h-5 w-5" />
+                </Link>
+                <a href={`mailto:${SALES_EMAIL}`} className="btn-cinematic-secondary">
+                  Contact Sales
+                </a>
+              </div>
+            </RevealBlock>
           </div>
         </section>
       </main>
@@ -137,34 +241,45 @@ function PricingCard({ plan }: { plan: (typeof PLANS)[number] }) {
   return (
     <article
       className={cn(
-        "surface-panel flex flex-col p-6",
-        plan.highlighted && "ring-1 ring-primary/30",
+        "relative flex flex-col rounded-2xl border bg-card p-7 transition-all duration-200",
+        plan.highlighted
+          ? "pricing-popular border-primary"
+          : "border-border hover:border-primary/30 hover:shadow-lg",
       )}
     >
       {plan.highlighted && (
-        <span className="mb-3 inline-flex w-fit rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1 text-[11px] font-bold uppercase tracking-wide text-primary-foreground shadow-sm">
+          <FiStar className="h-3 w-3" />
           Recommended
         </span>
       )}
-      <h2 className="text-lg font-semibold">{plan.name}</h2>
-      <p className="mt-2 min-h-[2.5rem] text-sm text-muted-foreground">{plan.tagline}</p>
-      <p className="mt-5 font-display text-3xl font-semibold tabular-nums">
-        {formatInr(plan.monthlyPriceInr)}
-        {plan.monthlyPriceInr !== null && (
-          <span className="text-sm font-medium text-muted-foreground">/month</span>
-        )}
-      </p>
-      {plan.annualPriceInr !== null && plan.annualPriceInr > 0 && (
-        <p className="mt-1 text-xs text-muted-foreground">
-          or {formatInr(plan.annualPriceInr)}/year (annual billing)
-        </p>
-      )}
 
-      <ul className="mt-6 flex-1 space-y-2.5 text-sm">
+      <div>
+        <h3 className="headline-4">{plan.name}</h3>
+        <p className="mt-2 body-xs text-muted-foreground min-h-[2rem]">{plan.tagline}</p>
+      </div>
+
+      <div className="mt-6">
+        <p className="font-display text-4xl font-extrabold tabular-nums tracking-tight">
+          {formatInr(plan.monthlyPriceInr)}
+          {plan.monthlyPriceInr !== null && plan.monthlyPriceInr > 0 && (
+            <span className="text-sm font-medium text-muted-foreground ml-1">/month</span>
+          )}
+        </p>
+        {plan.annualPriceInr !== null && plan.annualPriceInr > 0 && (
+          <p className="mt-1.5 body-xs text-muted-foreground">
+            or {formatInr(plan.annualPriceInr)}/year (save ~2 months)
+          </p>
+        )}
+      </div>
+
+      <div className="my-6 h-px bg-border" />
+
+      <ul className="flex-1 space-y-3">
         {plan.features.map((f) => (
-          <li key={f} className="flex items-start gap-2">
-            <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-            <span>{f}</span>
+          <li key={f} className="flex items-start gap-2.5">
+            <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+            <span className="body-xs text-foreground">{f}</span>
           </li>
         ))}
       </ul>
@@ -184,10 +299,10 @@ function PlanCta({
   highlighted?: boolean;
 }) {
   const className = cn(
-    "mt-6 inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-colors",
-    highlighted || tier === "pilot"
-      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-      : "border border-border bg-background hover:bg-secondary",
+    "mt-7 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-all duration-200 w-full",
+    highlighted
+      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+      : "border border-border bg-background text-foreground hover:bg-secondary hover:border-primary/30 hover:-translate-y-0.5",
   );
 
   if (tier === "enterprise") {
@@ -209,25 +324,25 @@ function PricingFaqItem({ faq }: { faq: { q: string; a: string } }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="surface-panel overflow-hidden border border-border">
+    <div className="surface-panel overflow-hidden">
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="w-full flex items-center justify-between p-5 text-left text-sm font-semibold text-foreground hover:bg-secondary/40 transition-colors"
+        className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-secondary/40"
       >
         <span className="flex items-center gap-3 pr-4">
           <FiHelpCircle className="h-4 w-4 text-primary shrink-0" />
-          {faq.q}
+          <span className="text-sm font-semibold text-foreground">{faq.q}</span>
         </span>
         <FiArrowRight
           className={cn(
-            "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
+            "h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200",
             open && "rotate-90",
           )}
         />
       </button>
       {open && (
-        <div className="px-5 pb-5 pt-1 text-sm text-muted-foreground leading-relaxed border-t border-border/50 bg-secondary/20">
+        <div className="px-5 pb-5 pt-1 body-sm text-muted-foreground leading-relaxed border-t border-border/50 bg-secondary/20">
           {faq.a}
         </div>
       )}

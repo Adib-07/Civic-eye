@@ -94,7 +94,7 @@ export function SolutionsSection() {
                     {solution.description}
                   </p>
                   <Link
-                    to="/book-demo"
+                    to="/solutions"
                     className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-bold text-primary transition-colors hover:text-primary/80"
                   >
                     Explore solution

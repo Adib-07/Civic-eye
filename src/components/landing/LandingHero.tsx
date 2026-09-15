@@ -81,7 +81,7 @@ export function LandingHero() {
                 Book a Demo
                 <FiArrowRight className="h-5 w-5" />
               </Link>
-              <Link to="/for-organizations" className="btn-cinematic-secondary">
+              <Link to="/how-it-works" className="btn-cinematic-secondary">
                 See How It Works
               </Link>
             </div>

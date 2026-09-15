@@ -1439,3 +1439,284 @@ input:-moz-autofill {
     overflow: visible;
   }
 }
+
+/* ── Premium inner-page animations ─────────────────── */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 100ms; }
+.reveal-delay-2 { transition-delay: 200ms; }
+.reveal-delay-3 { transition-delay: 300ms; }
+.reveal-delay-4 { transition-delay: 400ms; }
+.reveal-delay-5 { transition-delay: 500ms; }
+
+/* ── Premium page hero (dark cinematic) ── */
+
+.page-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--hero-bg);
+  color: #fff;
+}
+
+.page-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 80% 55% at 50% -10%,
+      color-mix(in oklab, var(--hero-accent) 16%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--hero-accent) 8%, var(--hero-bg)) 0%,
+      var(--hero-bg) 50%,
+      var(--hero-bg) 100%
+    );
+}
+
+.page-hero-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--hero-accent) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--hero-accent) 12%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
+}
+
+/* ── Premium section layout ── */
+
+.inner-section {
+  padding-block: 5rem;
+}
+
+@media (min-width: 1024px) {
+  .inner-section {
+    padding-block: 7rem;
+  }
+}
+
+.inner-section-tight {
+  padding-block: 4rem;
+}
+
+@media (min-width: 1024px) {
+  .inner-section-tight {
+    padding-block: 5rem;
+  }
+}
+
+/* ── Premium feature card with image ── */
+
+.feature-visual-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.feature-visual-card:hover {
+  border-color: color-mix(in oklab, var(--primary) 25%, var(--surface-border));
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
+}
+
+/* ── Workflow visual timeline ── */
+
+.workflow-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.workflow-timeline::before {
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--primary), color-mix(in oklab, var(--primary) 30%, transparent));
+}
+
+@media (min-width: 768px) {
+  .workflow-timeline {
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .workflow-timeline::before {
+    left: 0;
+    right: 0;
+    top: 2rem;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    background: linear-gradient(to right, var(--primary), color-mix(in oklab, var(--primary) 30%, transparent));
+  }
+}
+
+/* ── Pricing popular card ── */
+
+.pricing-popular {
+  position: relative;
+  border: 2px solid var(--primary);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 20%, transparent),
+    var(--shadow-lg);
+}
+
+.pricing-popular::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--primary) 8%, transparent),
+    transparent 50%
+  );
+  pointer-events: none;
+}
+
+/* ── Security architecture visual ── */
+
+.security-layer {
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  overflow: hidden;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.security-layer:hover {
+  border-color: color-mix(in oklab, var(--primary) 20%, var(--surface-border));
+  box-shadow: var(--shadow-card-hover);
+}
+
+.security-layer-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-lg);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  border: 1px solid color-mix(in oklab, var(--primary) 20%, transparent);
+  flex-shrink: 0;
+}
+
+/* ── Solution split layout ── */
+
+.solution-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .solution-split {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+}
+
+.solution-split.reverse .solution-split-image {
+  order: 2;
+}
+
+@media (min-width: 768px) {
+  .solution-split.reverse .solution-split-image {
+    order: 1;
+  }
+}
+
+.solution-split-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.solution-split-image img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Stats bar ── */
+
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+@media (min-width: 640px) {
+  .stats-bar {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stats-bar-item {
+  background: var(--surface);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+/* ── CTA banner premium ── */
+
+.cta-banner {
+  position: relative;
+  overflow: hidden;
+  background: var(--hero-bg);
+  color: #fff;
+}
+
+.cta-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 30% 80%,
+      color-mix(in oklab, var(--hero-accent) 12%, transparent) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 70% 20%,
+      color-mix(in oklab, var(--hero-accent) 8%, transparent) 0%,
+      transparent 35%
+    );
+}

@@ -14,6 +14,7 @@ import { Route as BookDemoRouteImport } from './routes/book-demo'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ForOrganizationsRouteImport } from './routes/for-organizations'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -23,6 +24,7 @@ import { Route as ReportRouteImport } from './routes/report'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SolutionsRouteImport } from './routes/solutions'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
@@ -50,6 +52,11 @@ const FaqRoute = FaqRouteImport.update({
 const ForOrganizationsRoute = ForOrganizationsRouteImport.update({
   id: '/for-organizations',
   path: '/for-organizations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -97,6 +104,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SolutionsRoute = SolutionsRouteImport.update({
+  id: '/solutions',
+  path: '/solutions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StartRoute = StartRouteImport.update({
   id: '/start',
   path: '/start',
@@ -119,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
   '/for-organizations': typeof ForOrganizationsRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
   '/onboarding': typeof OnboardingRoute
@@ -128,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/reports': typeof ReportsRoute
   '/security': typeof SecurityRoute
   '/signup': typeof SignupRoute
+  '/solutions': typeof SolutionsRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -138,6 +152,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
   '/for-organizations': typeof ForOrganizationsRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
   '/onboarding': typeof OnboardingRoute
@@ -147,6 +162,7 @@ export interface FileRoutesByTo {
   '/reports': typeof ReportsRoute
   '/security': typeof SecurityRoute
   '/signup': typeof SignupRoute
+  '/solutions': typeof SolutionsRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -158,6 +174,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
   '/for-organizations': typeof ForOrganizationsRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
   '/onboarding': typeof OnboardingRoute
@@ -167,6 +184,7 @@ export interface FileRoutesById {
   '/reports': typeof ReportsRoute
   '/security': typeof SecurityRoute
   '/signup': typeof SignupRoute
+  '/solutions': typeof SolutionsRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -179,6 +197,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/faq'
     | '/for-organizations'
+    | '/how-it-works'
     | '/login'
     | '/map'
     | '/onboarding'
@@ -188,6 +207,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/security'
     | '/signup'
+    | '/solutions'
     | '/start'
     | '/terms'
     | '/auth/callback'
@@ -198,6 +218,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/faq'
     | '/for-organizations'
+    | '/how-it-works'
     | '/login'
     | '/map'
     | '/onboarding'
@@ -207,6 +228,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/security'
     | '/signup'
+    | '/solutions'
     | '/start'
     | '/terms'
     | '/auth/callback'
@@ -217,6 +239,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/faq'
     | '/for-organizations'
+    | '/how-it-works'
     | '/login'
     | '/map'
     | '/onboarding'
@@ -226,6 +249,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/security'
     | '/signup'
+    | '/solutions'
     | '/start'
     | '/terms'
     | '/auth/callback'
@@ -237,6 +261,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   FaqRoute: typeof FaqRoute
   ForOrganizationsRoute: typeof ForOrganizationsRoute
+  HowItWorksRoute: typeof HowItWorksRoute
   LoginRoute: typeof LoginRoute
   MapRoute: typeof MapRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -246,6 +271,7 @@ export interface RootRouteChildren {
   ReportsRoute: typeof ReportsRoute
   SecurityRoute: typeof SecurityRoute
   SignupRoute: typeof SignupRoute
+  SolutionsRoute: typeof SolutionsRoute
   StartRoute: typeof StartRoute
   TermsRoute: typeof TermsRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
@@ -286,6 +312,13 @@ declare module '@tanstack/react-router' {
       path: '/for-organizations'
       fullPath: '/for-organizations'
       preLoaderRoute: typeof ForOrganizationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -351,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/solutions': {
+      id: '/solutions'
+      path: '/solutions'
+      fullPath: '/solutions'
+      preLoaderRoute: typeof SolutionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/start': {
       id: '/start'
       path: '/start'
@@ -381,6 +421,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   FaqRoute: FaqRoute,
   ForOrganizationsRoute: ForOrganizationsRoute,
+  HowItWorksRoute: HowItWorksRoute,
   LoginRoute: LoginRoute,
   MapRoute: MapRoute,
   OnboardingRoute: OnboardingRoute,
@@ -390,6 +431,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReportsRoute: ReportsRoute,
   SecurityRoute: SecurityRoute,
   SignupRoute: SignupRoute,
+  SolutionsRoute: SolutionsRoute,
   StartRoute: StartRoute,
   TermsRoute: TermsRoute,
   AuthCallbackRoute: AuthCallbackRoute,
