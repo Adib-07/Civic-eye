@@ -42,17 +42,17 @@ CivicEye solves this by providing:
 
 ## Screenshots
 
-> Screenshots are pending capture. See [`docs/screenshots/`](docs/screenshots/) for the capture guide and required files.
+### Landing Page
 
-| Screen | Route | Description |
-|--------|-------|-------------|
-| Landing page | `/` | Hero, product tour, pricing teaser, FAQ |
-| Report submission | `/report` | 4-step wizard: photo, category, location, review |
-| Reports queue | `/reports` | Filterable list with status badges and SLA indicators |
-| Operations dashboard | `/dashboard` | Charts, stat cards, verification queue |
-| Interactive map | `/map` | Full-viewport Leaflet map with color-coded markers |
-| Issue detail | (modal from `/reports`) | Before/after evidence, activity history, mini-map |
-| Login | `/login` | Email/password authentication |
+![CivicEye Landing Page](docs/screenshots/landing.png)
+
+### Book a Demo
+
+![Request a Walkthrough](docs/screenshots/login.png)
+
+### How It Works
+
+![Issue Lifecycle Overview](docs/screenshots/report.png)
 
 ---
 
