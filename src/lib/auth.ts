@@ -2,7 +2,6 @@ import type { Session, User } from "@supabase/supabase-js";
 
 import type { Profile, UserRole } from "./types";
 import { getSupabase, requireSupabase } from "./supabase";
-import { isSupabaseConfigured } from "./env";
 
 export type AuthSession = {
   user: User;
@@ -125,22 +124,6 @@ export function onAuthStateChange(
   });
 
   return () => data.subscription.unsubscribe();
-}
-
-/** @deprecated Legacy localStorage session check — use useAuth instead */
-export function getSession(): { username: string; loginAt: string } | null {
-  if (!isSupabaseConfigured()) return null;
-  return null;
-}
-
-/** @deprecated */
-export function login(_username: string, _password: string): boolean {
-  return false;
-}
-
-/** @deprecated */
-export function logout() {
-  void signOut();
 }
 
 export type { Session };

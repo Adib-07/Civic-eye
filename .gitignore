@@ -1,3 +1,44 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+.output
+.nitro
+
+# Environment secrets — never commit
+.env
+.env.local
+.env.*.local
+
+# Supabase local dev
+supabase/.temp/
+supabase/.branches/
+
+# Framework / tool caches
+.tanstack/
+.vercel/
+.wrangler/
+.vinxi
+.playwright-cli/
+.lovable/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.cursor/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
 # Logs
 logs
 *.log
@@ -7,42 +48,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-.output
-.vercel
-.vinxi
-.tanstack/**
-.nitro
-*.local
-
-# Environment secrets — never commit
-.env
-.env.local
-.env.*.local
-
-# Supabase local dev
-supabase/.temp/
-
-# Wrangler / Cloudflare
-.wrangler/
-.dev.vars
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Test scripts (not application code)
+# Dev / test scripts (not application code)
 test-demo-submit.js
 verify-demo.ts
 
-# Accidentally committed directories
+# Misc
+.dev.vars
 Users/
+*.local
