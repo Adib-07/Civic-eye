@@ -149,7 +149,6 @@ export function FaqPage() {
       </section>
 
       <main className="page-container py-12 max-w-3xl">
-
         <div className="mt-10 space-y-8">
           {FAQ_SECTIONS.map((section) => (
             <div key={section.title}>

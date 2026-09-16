@@ -22,6 +22,9 @@ dist-ssr
 .env.local
 .env.*.local
 
+# Supabase local dev
+supabase/.temp/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
@@ -36,3 +39,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test scripts (not application code)
+test-demo-submit.js
+verify-demo.ts
+
+# Accidentally committed directories
+Users/

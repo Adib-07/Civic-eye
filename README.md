@@ -42,9 +42,7 @@ CivicEye solves this by providing:
 
 ## Screenshots
 
-> Screenshots will be added from the current application UI once captured. The repository includes landing page hero images in [`public/assets/`](public/assets/) but no application screenshots are available yet.
-
-Key screens to capture:
+> Screenshots are pending capture. See [`docs/screenshots/`](docs/screenshots/) for the capture guide and required files.
 
 | Screen | Route | Description |
 |--------|-------|-------------|
@@ -425,13 +423,14 @@ bun run build
 
 | Check | Command | Status |
 |-------|---------|--------|
-| Linting | `bun run lint` | Works (8 pre-existing warnings, 0 errors) |
+| Linting | `bun run lint` | Passes |
 | Type checking | `bun run typecheck` | Passes cleanly |
 | Production build | `bun run build` | Builds successfully |
 | Formatting | `bun run format` | Available via Prettier |
+| CI | `.github/workflows/ci.yml` | Lint, typecheck, and build on push/PR |
 | Automated tests | -- | **Not configured** (no test runner or test files) |
 
-> **Note:** No automated test suite is currently configured. The 8 lint warnings are `react-refresh/only-export-components` warnings from shadcn/ui component files that export both components and helper functions -- these are standard and expected.
+> **Note:** No automated test suite is currently configured. CI runs lint, typecheck, and build verification on every push and pull request.
 
 ---
 
@@ -496,7 +495,6 @@ For detailed security documentation, see [`docs/SECURITY_PHASE3.md`](docs/SECURI
 
 - **AI categorization is a placeholder.** The `predictCategory` function in `src/lib/ai.ts` classifies issues by filename keywords, not actual image analysis. The codebase is architected for real vision API integration (`ai_category` and `ai_confidence` fields exist in the schema).
 - **No automated tests.** No test runner, test files, or test configuration exists.
-- **No CI/CD pipeline.** No GitHub Actions or similar configuration.
 - **No real-time updates.** The dashboard does not use Supabase Realtime subscriptions; data refreshes on page load.
 - **Subscription billing is structural only.** The schema supports Stripe integration (`VITE_BILLING_PROVIDER`), but no payment processing is implemented.
 - **Single Supabase project per deployment.** Multi-tenancy is at the application level (organization scoping), not infrastructure level.
@@ -510,7 +508,6 @@ For detailed security documentation, see [`docs/SECURITY_PHASE3.md`](docs/SECURI
 - Add Supabase Realtime subscriptions for live dashboard updates
 - Implement Stripe payment processing for subscription tiers
 - Add automated tests (unit, integration, E2E)
-- Set up CI/CD with GitHub Actions
 - Add email/SMS notifications for status changes
 - Implement analytics and reporting dashboards with historical trends
 - Add bulk operations for staff (mass assignment, bulk status changes)
@@ -519,4 +516,4 @@ For detailed security documentation, see [`docs/SECURITY_PHASE3.md`](docs/SECURI
 
 ## License
 
-No license file is currently included in this repository.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
