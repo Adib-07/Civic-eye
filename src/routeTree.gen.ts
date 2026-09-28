@@ -16,6 +16,7 @@ import { Route as BookDemoRouteImport } from './routes/book-demo'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DiagnosticsRouteImport } from './routes/diagnostics'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as ForOrganizationsRouteImport } from './routes/for-organizations'
@@ -76,6 +77,11 @@ const ContactRoute = ContactRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnosticsRoute = DiagnosticsRouteImport.update({
+  id: '/diagnostics',
+  path: '/diagnostics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnostics': typeof DiagnosticsRoute
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
   '/for-organizations': typeof ForOrganizationsRoute
@@ -252,6 +259,7 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnostics': typeof DiagnosticsRoute
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
   '/for-organizations': typeof ForOrganizationsRoute
@@ -287,6 +295,7 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnostics': typeof DiagnosticsRoute
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
   '/for-organizations': typeof ForOrganizationsRoute
@@ -324,6 +333,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/contact'
     | '/dashboard'
+    | '/diagnostics'
     | '/faq'
     | '/features'
     | '/for-organizations'
@@ -359,6 +369,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/contact'
     | '/dashboard'
+    | '/diagnostics'
     | '/faq'
     | '/features'
     | '/for-organizations'
@@ -393,6 +404,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/contact'
     | '/dashboard'
+    | '/diagnostics'
     | '/faq'
     | '/features'
     | '/for-organizations'
@@ -429,6 +441,7 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
+  DiagnosticsRoute: typeof DiagnosticsRoute
   FaqRoute: typeof FaqRoute
   FeaturesRoute: typeof FeaturesRoute
   ForOrganizationsRoute: typeof ForOrganizationsRoute
@@ -502,6 +515,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnostics': {
+      id: '/diagnostics'
+      path: '/diagnostics'
+      fullPath: '/diagnostics'
+      preLoaderRoute: typeof DiagnosticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -715,6 +735,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
+  DiagnosticsRoute: DiagnosticsRoute,
   FaqRoute: FaqRoute,
   FeaturesRoute: FeaturesRoute,
   ForOrganizationsRoute: ForOrganizationsRoute,

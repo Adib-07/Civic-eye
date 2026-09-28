@@ -34,6 +34,29 @@ export const PROTECTED_ROUTE_PREFIXES = [
 /** Pages that make no sense once you are already signed in. */
 export const GUEST_ONLY_PATHS = ["/login", "/signup"] as const;
 
+/** Public pages, including the self-check at /diagnostics. */
+export const PUBLIC_ROUTE_PREFIXES = [
+  "/",
+  "/login",
+  "/signup",
+  "/diagnostics",
+  "/report",
+  "/accept-invite",
+  "/features",
+  "/solutions",
+  "/how-it-works",
+  "/pricing",
+  "/about",
+  "/contact",
+  "/faq",
+  "/security",
+  "/privacy",
+  "/terms",
+  "/start",
+  "/book-demo",
+  "/for-organizations",
+] as const;
+
 export function isProtectedPath(pathname: string): boolean {
   return PROTECTED_ROUTE_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),

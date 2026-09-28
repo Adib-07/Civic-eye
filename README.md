@@ -304,9 +304,11 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 VITE_DEFAULT_ORGANIZATION_ID=your-organization-id
 ```
 
-> **Sign-in failing?** Run `bun run check:auth` first. It will tell you which layer is
-> at fault instead of guessing. The most common cause is Supabase's **Confirm email**
-> setting, which blocks a brand-new account from signing in until verified.
+> **Sign-in failing?** Open **`/diagnostics`** in the deployed app and press *Run
+> diagnostics*. It tests each layer in your browser and names the broken one, with
+> the fix. Locally you can also run `bun run check:auth`. The most common cause is
+> Supabase's **Confirm email** setting, which blocks a brand-new account from
+> signing in until the address is verified.
 
 ### 3. Set Up the Database
 
@@ -445,6 +447,7 @@ Civic-eye/
 | `/book-demo` | Request a demo |
 | `/report` | Submit a civic issue |
 | `/accept-invite` | Accept a team invitation |
+| `/diagnostics` | In-browser auth self-check |
 
 **Authenticated** (any role)
 
@@ -514,7 +517,7 @@ bun run format      # Format code (Prettier)
 | Type checking | `bun run typecheck` | Passes, no errors |
 | Linting | `bun run lint` | Passes, 0 errors (9 pre-existing `react-refresh` warnings in shadcn/ui) |
 | Production build | `bun run build` | Passes |
-| Auth self-check | `bun run check:auth` | Run against your own Supabase project |
+| Auth self-check | `bun run check:auth`, or `/diagnostics` in-app | Reports the failing layer and the fix |
 | CI | `.github/workflows/ci.yml` | Lint, typecheck, and build on push/PR |
 
 ### Debugging sign-in
@@ -526,6 +529,9 @@ that is broken -- configuration, connectivity, the `profiles` table, the
 ```sh
 bun run check:auth
 ```
+
+Or open **`/diagnostics`** in the running app — it runs in the browser against the
+deployed build and reports the same layers, with a copy-to-clipboard report.
 
 The most common cause is **Confirm email** being enabled in Supabase. A new account
 cannot sign in until the address is verified, so turn it off for a demo:

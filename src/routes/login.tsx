@@ -49,6 +49,7 @@ export function LoginPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resending, setResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [failureDetail, setFailureDetail] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { session, loading, isConfigured, configError } = useAuth();
@@ -126,6 +127,7 @@ export function LoginPage() {
 
     setBusy(true);
     setLoginError(null);
+    setFailureDetail(null);
     setUnconfirmedEmail(null);
     setResendSuccess(false);
 
@@ -144,6 +146,7 @@ export function LoginPage() {
           ? err.message
           : "Incorrect email or password. Please check your details and try again.",
       );
+      setFailureDetail(describeFailure(err));
     } finally {
       setBusy(false);
     }
@@ -182,8 +185,15 @@ export function LoginPage() {
                 <p className="body-sm mt-1 text-muted-foreground">
                   Copy <code className="font-mono text-[11px]">.env.example</code> to{" "}
                   <code className="font-mono text-[11px]">.env</code> and set your Supabase
-                  credentials.
+                  credentials, then restart the dev server. If this is a deployed build, the
+                  variables are inlined at build time — add them in your host and redeploy.
                 </p>
+                <Link
+                  to="/diagnostics"
+                  className="mt-2 inline-block text-sm font-bold text-primary hover:underline"
+                >
+                  Run diagnostics →
+                </Link>
               </div>
             </div>
           </div>
@@ -198,6 +208,19 @@ export function LoginPage() {
               <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden />
               <span className="body-sm leading-relaxed">{loginError}</span>
             </div>
+
+            {failureDetail && (
+              <div className="pt-2 text-xs text-muted-foreground">
+                <p className="font-semibold uppercase tracking-wide">Technical detail</p>
+                <p className="mt-1 break-words font-mono">{failureDetail}</p>
+                <Link
+                  to="/diagnostics"
+                  className="mt-2 inline-block font-semibold text-primary hover:underline"
+                >
+                  Run full diagnostics →
+                </Link>
+              </div>
+            )}
 
             {unconfirmedEmail && (
               <div className="flex items-center gap-2 pt-2">
@@ -321,10 +344,31 @@ export function LoginPage() {
           </Link>
         </p>
 
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          <Link
+            to="/diagnostics"
+            className="font-semibold underline underline-offset-2 transition-colors hover:text-foreground"
+          >
+            Cannot sign in? Run diagnostics
+          </Link>
+        </p>
+
         <p className="mt-2 text-center text-xs text-muted-foreground/80">
           Staff and admin roles are assigned by your organization administrator.
         </p>
       </div>
     </main>
   );
+}
+
+/**
+ * A short, non-sensitive technical string for the error panel: the error code
+ * and message Supabase returned. It never contains the password or the token.
+ */
+function describeFailure(error: unknown): string | null {
+  if (!(error instanceof Error)) return null;
+  const cause = error.cause as { code?: string; message?: string } | undefined;
+  const code = cause?.code ? `${cause.code}: ` : "";
+  const message = cause?.message ?? error.message;
+  return `${code}${message}`.slice(0, 240);
 }
