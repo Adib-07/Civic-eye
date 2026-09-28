@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { SUPPORT_EMAIL, mailtoLink } from "@/lib/plans";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -106,7 +107,10 @@ export function TermsPage() {
             <h2 className="text-base font-bold text-foreground">7. Contact Information</h2>
             <p>
               Questions regarding these terms should be directed to{" "}
-              <a href="mailto:support@civiceye.in" className="text-primary hover:underline">
+              <a
+                href={mailtoLink(SUPPORT_EMAIL, "CivicEye terms question")}
+                className="text-primary hover:underline"
+              >
                 support@civiceye.in
               </a>
               .

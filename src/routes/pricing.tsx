@@ -13,7 +13,7 @@ import {
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
-import { PLANS, SALES_EMAIL, formatInr, type PlanTier } from "@/lib/plans";
+import { PLANS, SALES_EMAIL, formatInr, mailtoLink, type PlanTier } from "@/lib/plans";
 import { cn } from "@/lib/utils";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
@@ -174,7 +174,7 @@ function PricingPage() {
                 <p className="mt-6 body-sm">
                   Questions about pricing?{" "}
                   <a
-                    href={`mailto:${SALES_EMAIL}`}
+                    href={mailtoLink(SALES_EMAIL, "CivicEye pricing enquiry")}
                     className="font-semibold text-primary hover:underline"
                   >
                     {SALES_EMAIL}
@@ -223,7 +223,10 @@ function PricingPage() {
                   Book a Demo
                   <FiArrowRight className="h-5 w-5" />
                 </Link>
-                <a href={`mailto:${SALES_EMAIL}`} className="btn-cinematic-secondary">
+                <a
+                  href={mailtoLink(SALES_EMAIL, "CivicEye pricing enquiry")}
+                  className="btn-cinematic-secondary"
+                >
                   Contact Sales
                 </a>
               </div>

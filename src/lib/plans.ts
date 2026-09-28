@@ -113,5 +113,12 @@ export function formatInr(amount: number | null): string {
 }
 
 export const SALES_EMAIL = "sales@civiceye.in";
+export const SUPPORT_EMAIL = "support@civiceye.in";
+export const PRIVACY_EMAIL = "privacy@civiceye.in";
+
+/** Pre-filled mailto with a sensible default subject. */
+export function mailtoLink(email: string, subject = "CivicEye enquiry"): string {
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+}
 
 export const PILOT_DURATION_DAYS = 30;

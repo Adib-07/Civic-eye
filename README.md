@@ -304,6 +304,10 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 VITE_DEFAULT_ORGANIZATION_ID=your-organization-id
 ```
 
+> **Sign-in failing?** Run `bun run check:auth` first. It will tell you which layer is
+> at fault instead of guessing. The most common cause is Supabase's **Confirm email**
+> setting, which blocks a brand-new account from signing in until verified.
+
 ### 3. Set Up the Database
 
 Run the SQL migrations in `supabase/migrations/` against your Supabase project, **in order** (`001` through `011`), via the [Supabase SQL Editor](https://supabase.com/dashboard/project/_/sql/new) or the Supabase CLI.
@@ -510,7 +514,25 @@ bun run format      # Format code (Prettier)
 | Type checking | `bun run typecheck` | Passes, no errors |
 | Linting | `bun run lint` | Passes, 0 errors (9 pre-existing `react-refresh` warnings in shadcn/ui) |
 | Production build | `bun run build` | Passes |
+| Auth self-check | `bun run check:auth` | Run against your own Supabase project |
 | CI | `.github/workflows/ci.yml` | Lint, typecheck, and build on push/PR |
+
+### Debugging sign-in
+
+If sign-in fails, run the self-check. It tests each layer separately and names the one
+that is broken -- configuration, connectivity, the `profiles` table, the
+`ensure_profile()` RPC, email confirmation, and a real sign-in attempt.
+
+```sh
+bun run check:auth
+```
+
+The most common cause is **Confirm email** being enabled in Supabase. A new account
+cannot sign in until the address is verified, so turn it off for a demo:
+**Authentication → Providers → Email → Confirm email**.
+
+> `VITE_*` variables are inlined at **build** time. Adding one to Vercel after a
+> deployment has no effect until you redeploy.
 
 ### Browser test suites
 

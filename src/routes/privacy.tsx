@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { PRIVACY_EMAIL, mailtoLink } from "@/lib/plans";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -135,7 +136,10 @@ export function PrivacyPage() {
             <h2 className="text-base font-bold text-foreground">7. Contact Us</h2>
             <p>
               For privacy inquiries, data access requests, or deletion requests, contact us at{" "}
-              <a href="mailto:privacy@civiceye.in" className="text-primary hover:underline">
+              <a
+                href={mailtoLink(PRIVACY_EMAIL, "CivicEye privacy request")}
+                className="text-primary hover:underline"
+              >
                 privacy@civiceye.in
               </a>
               .

@@ -3,7 +3,7 @@
  * Connect Stripe or another provider server-side in a future phase.
  */
 
-import type { PlanTier } from "./plans";
+import { SALES_EMAIL, type PlanTier } from "./plans";
 
 export type BillingProvider = "none" | "manual" | "stripe";
 
@@ -30,7 +30,7 @@ export async function requestCheckout(_planTier: PlanTier): Promise<void> {
       "Online checkout is not configured. Submit a plan request and our team will activate billing.",
     );
   }
-  throw new Error("Checkout endpoint not implemented. Contact sales@civiceye.in.");
+  throw new Error(`Checkout endpoint not implemented. Contact ${SALES_EMAIL}.`);
 }
 
 export type WebhookEvent = {

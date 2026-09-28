@@ -321,7 +321,7 @@ function SignupPage() {
                     name="password"
                     value={form.password}
                     onChange={handleChange}
-                    placeholder="At least 6 characters"
+                    placeholder="At least 8 characters"
                     className="input-lg pl-11 pr-12"
                     required
                     autoComplete="new-password"

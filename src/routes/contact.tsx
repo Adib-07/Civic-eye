@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { isSupabaseConfigured } from "@/lib/env";
+import { mailtoLink } from "@/lib/plans";
 import { submitDemoRequest } from "@/lib/subscription";
 
 export const Route = createFileRoute("/contact")({
@@ -134,7 +135,13 @@ function ContactPage() {
               <div>
                 <h2 className="text-sm font-semibold">Email</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  sales@civiceye.in — we reply within one business day.
+                  <a
+                    href={mailtoLink("sales@civiceye.in", "CivicEye enquiry")}
+                    className="font-semibold text-primary hover:underline"
+                  >
+                    sales@civiceye.in
+                  </a>{" "}
+                  — we reply within one business day.
                 </p>
               </div>
             </div>

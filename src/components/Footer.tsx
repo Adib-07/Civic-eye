@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { FiEye } from "react-icons/fi";
 
+import { mailtoLink } from "@/lib/plans";
+
 export function Footer() {
   return (
     <footer className="border-t border-border bg-secondary/30">
@@ -81,6 +83,14 @@ export function Footer() {
               <Link to="/security" className="transition-colors hover:text-foreground font-medium">
                 Security
               </Link>
+            </li>
+            <li>
+              <a
+                href={mailtoLink("sales@civiceye.in", "CivicEye enquiry")}
+                className="transition-colors hover:text-foreground font-medium"
+              >
+                Email us
+              </a>
             </li>
             <li>
               <Link to="/contact" className="transition-colors hover:text-foreground font-medium">
