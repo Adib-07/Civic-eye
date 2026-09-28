@@ -119,8 +119,15 @@ function SignupPage() {
         navigate({ to: "/reports" });
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Sign up failed. Please try again.";
-      setSubmitError(message);
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === "string"
+            ? err
+            : "Sign up failed. Please try again.";
+      setSubmitError(
+        import.meta.env.DEV ? `Sign up failed: ${message}` : "Sign up failed. Please try again.",
+      );
     } finally {
       setBusy(false);
     }

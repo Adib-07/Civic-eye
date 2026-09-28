@@ -177,9 +177,17 @@ export function BookDemoPage() {
       setSubmittedEmail(formData.workEmail);
       setLoading(false);
       setSubmitted(true);
-    } catch {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : typeof error === "string"
+            ? error
+            : "Unknown error";
       setSubmitError(
-        "We could not record your demo request online. You can retry in a moment, or reach our operations team directly at demo@civiceye.com.",
+        import.meta.env.DEV
+          ? `We could not record your demo request online: ${message}. You can retry in a moment, or reach our operations team directly at demo@civiceye.com.`
+          : "We could not record your demo request online. You can retry in a moment, or reach our operations team directly at demo@civiceye.com.",
       );
       setLoading(false);
     }

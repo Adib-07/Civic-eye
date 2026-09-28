@@ -44,7 +44,7 @@ export function requireSupabase(): SupabaseClient<Database> {
   const sb = getSupabase();
   if (!sb) {
     throw new Error(
-      "Supabase is not configured. Copy .env.example to .env and set VITE_SUPABASE_URL plus VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).",
+      "Supabase is not configured. Copy .env.example to .env (or .env.local) and set VITE_SUPABASE_URL plus VITE_SUPABASE_ANON_KEY. Common fallbacks are SUPABASE_URL / SUPABASE_ANON_KEY or VITE_SUPABASE_PUBLISHABLE_KEY.",
     );
   }
   return sb;

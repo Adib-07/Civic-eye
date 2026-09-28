@@ -8,11 +8,16 @@
 
 const PLACEHOLDER_VALUES = new Set([
   "",
+  "undefined",
+  "null",
   "your-anon-key",
   "your-public-key",
   "your-publishable-key",
   "https://your-project.supabase.co",
   "your-project-id",
+  "your-project-ref",
+  "changeme",
+  "example",
 ]);
 
 /**
@@ -41,6 +46,16 @@ const _env: Record<string, string | undefined> = {
     string | undefined,
   VITE_MAP_TILE_URL: import.meta.env.VITE_MAP_TILE_URL as string | undefined,
   VITE_MAP_TILE_ATTRIBUTION: import.meta.env.VITE_MAP_TILE_ATTRIBUTION as string | undefined,
+  SUPABASE_URL: (import.meta.env.SUPABASE_URL as string | undefined) ?? undefined,
+  SUPABASE_ANON_KEY: (import.meta.env.SUPABASE_ANON_KEY as string | undefined) ?? undefined,
+  SUPABASE_PUBLISHABLE_KEY: (import.meta.env.SUPABASE_PUBLISHABLE_KEY as string | undefined) ?? undefined,
+  NEXT_PUBLIC_SUPABASE_URL: (import.meta.env.NEXT_PUBLIC_SUPABASE_URL as string | undefined) ?? undefined,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: (import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string | undefined) ?? undefined,
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+    (import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string | undefined) ?? undefined,
+  DEFAULT_ORGANIZATION_ID: (import.meta.env.DEFAULT_ORGANIZATION_ID as string | undefined) ?? undefined,
+  SUPABASE_DEFAULT_ORGANIZATION_ID: (import.meta.env.SUPABASE_DEFAULT_ORGANIZATION_ID as
+    string | undefined) ?? undefined,
 };
 
 /**
@@ -74,10 +89,14 @@ function readFirstEnv(...keys: string[]): string | undefined {
 }
 
 export function getSupabaseUrl(): string | undefined {
-  const direct = readEnv("VITE_SUPABASE_URL");
+  const direct = readFirstEnv(
+    "VITE_SUPABASE_URL",
+    "SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_URL",
+  );
   if (direct) return direct;
 
-  const projectId = readEnv("VITE_SUPABASE_PROJECT_ID");
+  const projectId = readFirstEnv("VITE_SUPABASE_PROJECT_ID", "SUPABASE_PROJECT_ID");
   if (projectId) return `https://${projectId}.supabase.co`;
 
   return undefined;
@@ -85,7 +104,14 @@ export function getSupabaseUrl(): string | undefined {
 
 /** Browser-safe Supabase key (anon / publishable). Never use service-role keys here. */
 export function getSupabaseAnonKey(): string | undefined {
-  return readFirstEnv("VITE_SUPABASE_ANON_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY");
+  return readFirstEnv(
+    "VITE_SUPABASE_ANON_KEY",
+    "SUPABASE_ANON_KEY",
+    "VITE_SUPABASE_PUBLISHABLE_KEY",
+    "SUPABASE_PUBLISHABLE_KEY",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+  );
 }
 
 /** True when Supabase URL and anon/publishable key are both set. */
@@ -158,7 +184,11 @@ if (typeof window !== "undefined" && !isSupabaseConfigured()) {
 
 /** Organization UUID for routing citizen reports. Required when Supabase is enabled. */
 export function getDefaultOrganizationId(): string | undefined {
-  return readEnv("VITE_DEFAULT_ORGANIZATION_ID");
+  return readFirstEnv(
+    "VITE_DEFAULT_ORGANIZATION_ID",
+    "DEFAULT_ORGANIZATION_ID",
+    "SUPABASE_DEFAULT_ORGANIZATION_ID",
+  );
 }
 
 export function requireDefaultOrganizationId(): string {
