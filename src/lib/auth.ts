@@ -53,6 +53,39 @@ export type SignUpResult = {
   requiresEmailConfirmation: boolean;
 };
 
+export async function ensureUserProfile(
+  userId: string,
+  input?: { email?: string | null; fullName?: string | null },
+): Promise<void> {
+  const sb = requireSupabase();
+
+  const { data: existing, error: existingError } = await sb
+    .from("profiles")
+    .select("id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (existingError && existingError.code !== "PGRST116") {
+    throw existingError;
+  }
+
+  if (existing) return;
+
+  const { error: insertError } = await sb.from("profiles").upsert(
+    {
+      id: userId,
+      email: input?.email ?? null,
+      full_name: input?.fullName?.trim() || null,
+      role: "citizen",
+    },
+    { onConflict: "id" },
+  );
+
+  if (insertError) {
+    throw insertError;
+  }
+}
+
 export async function signUp(
   email: string,
   password: string,
@@ -78,8 +111,19 @@ export async function signUp(
   );
 
   let profile: Profile | null = null;
-  if (data.session && data.user) {
-    profile = await fetchProfile(data.user.id);
+  if (data.user) {
+    try {
+      await ensureUserProfile(data.user.id, {
+        email: data.user.email,
+        fullName: meta?.fullName,
+      });
+    } catch (profileError) {
+      console.warn("Failed to ensure user profile after signup:", profileError);
+    }
+
+    if (data.session) {
+      profile = await fetchProfile(data.user.id);
+    }
   }
 
   return {
