@@ -48,14 +48,18 @@ const _env: Record<string, string | undefined> = {
   VITE_MAP_TILE_ATTRIBUTION: import.meta.env.VITE_MAP_TILE_ATTRIBUTION as string | undefined,
   SUPABASE_URL: (import.meta.env.SUPABASE_URL as string | undefined) ?? undefined,
   SUPABASE_ANON_KEY: (import.meta.env.SUPABASE_ANON_KEY as string | undefined) ?? undefined,
-  SUPABASE_PUBLISHABLE_KEY: (import.meta.env.SUPABASE_PUBLISHABLE_KEY as string | undefined) ?? undefined,
-  NEXT_PUBLIC_SUPABASE_URL: (import.meta.env.NEXT_PUBLIC_SUPABASE_URL as string | undefined) ?? undefined,
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: (import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string | undefined) ?? undefined,
+  SUPABASE_PUBLISHABLE_KEY:
+    (import.meta.env.SUPABASE_PUBLISHABLE_KEY as string | undefined) ?? undefined,
+  NEXT_PUBLIC_SUPABASE_URL:
+    (import.meta.env.NEXT_PUBLIC_SUPABASE_URL as string | undefined) ?? undefined,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY:
+    (import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string | undefined) ?? undefined,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
     (import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string | undefined) ?? undefined,
-  DEFAULT_ORGANIZATION_ID: (import.meta.env.DEFAULT_ORGANIZATION_ID as string | undefined) ?? undefined,
-  SUPABASE_DEFAULT_ORGANIZATION_ID: (import.meta.env.SUPABASE_DEFAULT_ORGANIZATION_ID as
-    string | undefined) ?? undefined,
+  DEFAULT_ORGANIZATION_ID:
+    (import.meta.env.DEFAULT_ORGANIZATION_ID as string | undefined) ?? undefined,
+  SUPABASE_DEFAULT_ORGANIZATION_ID:
+    (import.meta.env.SUPABASE_DEFAULT_ORGANIZATION_ID as string | undefined) ?? undefined,
 };
 
 /**
@@ -89,11 +93,7 @@ function readFirstEnv(...keys: string[]): string | undefined {
 }
 
 export function getSupabaseUrl(): string | undefined {
-  const direct = readFirstEnv(
-    "VITE_SUPABASE_URL",
-    "SUPABASE_URL",
-    "NEXT_PUBLIC_SUPABASE_URL",
-  );
+  const direct = readFirstEnv("VITE_SUPABASE_URL", "SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL");
   if (direct) return direct;
 
   const projectId = readFirstEnv("VITE_SUPABASE_PROJECT_ID", "SUPABASE_PROJECT_ID");

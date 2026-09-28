@@ -1,3 +1,4 @@
+import { requireSession } from "@/lib/route-guards";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { FiArrowRight, FiCamera, FiCheckCircle, FiMap, FiUsers } from "react-icons/fi";
@@ -6,6 +7,9 @@ import { AppShell } from "@/components/AppShell";
 import { dismissOnboarding } from "@/components/OnboardingBanner";
 
 export const Route = createFileRoute("/onboarding")({
+  beforeLoad: async ({ location }) => {
+    await requireSession(location);
+  },
   head: () => ({
     meta: [{ title: "Quick Tour — CivicEye" }],
   }),

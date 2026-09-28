@@ -5,7 +5,6 @@ import {
   FiEyeOff,
   FiMail,
   FiLock,
-  FiArrowLeft,
   FiCheckCircle,
   FiUser,
   FiAlertCircle,
@@ -13,14 +12,15 @@ import {
 import { z } from "zod";
 import { toast } from "sonner";
 
-import { signUp } from "@/lib/auth";
+import { AuthError, signUp } from "@/lib/auth";
 import { useAuth } from "@/lib/hooks";
+import { POST_LOGIN_PATH, sanitizeRedirect } from "@/lib/route-guards";
 
 const signupSchema = z
   .object({
-    fullName: z.string().min(2, "Full name must be at least 2 characters"),
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    fullName: z.string().trim().min(2, "Full name must be at least 2 characters"),
+    email: z.string().trim().email("Please enter a valid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -30,13 +30,21 @@ const signupSchema = z
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
+const signupSearchSchema = z.object({
+  redirect: z.string().optional(),
+});
+
 export const Route = createFileRoute("/signup")({
+  validateSearch: (search: Record<string, unknown>) =>
+    signupSearchSchema.parse({
+      redirect: sanitizeRedirect(search.redirect) ?? undefined,
+    }),
   head: () => ({
     meta: [
-      { title: "Sign up — CivicEye Admin" },
+      { title: "Create an account — CivicEye" },
       {
         name: "description",
-        content: "Create an account to access the CivicEye admin console.",
+        content: "Create a CivicEye account to report and track civic issues.",
       },
     ],
   }),
@@ -59,13 +67,15 @@ function SignupPage() {
   const [registeredEmail, setRegisteredEmail] = useState("");
 
   const navigate = useNavigate();
-  const { session, loading, isConfigured } = useAuth();
+  const { session, loading, isConfigured, configError } = useAuth();
+  const { redirect } = Route.useSearch();
+  const [existingAccountEmail, setExistingAccountEmail] = useState<string | null>(null);
 
+  // Never show the signup form to someone who is already signed in.
   useEffect(() => {
-    if (!loading && session) {
-      navigate({ to: "/reports" });
-    }
-  }, [loading, session, navigate]);
+    if (loading || !session) return;
+    void navigate({ to: redirect ?? POST_LOGIN_PATH, replace: true });
+  }, [loading, session, redirect, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -83,7 +93,7 @@ function SignupPage() {
     e.preventDefault();
 
     if (!isConfigured) {
-      setSubmitError("Supabase is not configured. Add credentials to your .env file.");
+      setSubmitError(configError ?? "Supabase is not configured.");
       return;
     }
 
@@ -103,10 +113,11 @@ function SignupPage() {
       return;
     }
 
+    const validated = validation.data;
     setBusy(true);
+    setExistingAccountEmail(null);
 
     try {
-      const validated = validation.data;
       const result = await signUp(validated.email, validated.password, {
         fullName: validated.fullName,
       });
@@ -115,18 +126,18 @@ function SignupPage() {
         setRegisteredEmail(validated.email);
         setNeedsEmailConfirmation(true);
       } else {
-        toast.success("Account created successfully");
-        navigate({ to: "/reports" });
+        toast.success("Account created — welcome to CivicEye");
+        await navigate({ to: redirect ?? POST_LOGIN_PATH, replace: true });
       }
     } catch (err: unknown) {
-      const message =
+      if (err instanceof AuthError && err.code === "user_already_exists") {
+        // No second profile is created — point the user at the sign-in form.
+        setExistingAccountEmail(validated.email);
+      }
+      setSubmitError(
         err instanceof Error
           ? err.message
-          : typeof err === "string"
-            ? err
-            : "Sign up failed. Please try again.";
-      setSubmitError(
-        import.meta.env.DEV ? `Sign up failed: ${message}` : "Sign up failed. Please try again.",
+          : "Sign up failed. Please check your details and try again.",
       );
     } finally {
       setBusy(false);
@@ -228,11 +239,20 @@ function SignupPage() {
             )}
 
             {submitError && (
-              <div role="alert" className="mb-6 card p-5 border-destructive/30 bg-destructive/10">
+              <div role="alert" className="card mb-6 border-destructive/30 bg-destructive/10 p-5">
                 <div className="flex items-start gap-2.5">
-                  <FiAlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                  <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden />
                   <span className="body-sm leading-relaxed">{submitError}</span>
                 </div>
+                {existingAccountEmail && (
+                  <Link
+                    to="/login"
+                    search={{ redirect }}
+                    className="btn-primary mt-4 w-full justify-center gap-2"
+                  >
+                    Go to sign in
+                  </Link>
+                )}
               </div>
             )}
 

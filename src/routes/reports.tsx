@@ -1,3 +1,4 @@
+import { requireStaff } from "@/lib/route-guards";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
@@ -61,6 +62,9 @@ const reportsSearchSchema = z.object({
 });
 
 export const Route = createFileRoute("/reports")({
+  beforeLoad: async ({ location }) => {
+    await requireStaff(location);
+  },
   validateSearch: (search: Record<string, unknown>) =>
     reportsSearchSchema.parse({
       assigned: search.assigned === "me" ? "me" : undefined,

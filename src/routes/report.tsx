@@ -44,6 +44,9 @@ const LocationPicker = lazy(() => import("@/components/LocationPicker"));
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024; // 8MB
 
+// Intentionally public: CivicEye supports low-friction citizen reporting.
+// RLS decides what an anonymous reporter may write and read, and the page
+// attributes the report to the signed-in user when there is one.
 export const Route = createFileRoute("/report")({
   head: () => ({
     meta: [

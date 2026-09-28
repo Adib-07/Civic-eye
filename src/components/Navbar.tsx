@@ -5,11 +5,12 @@ import { useTheme } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 
 const marketingNavLinks = [
-  { to: "/for-organizations", hash: undefined, label: "Product" },
+  { to: "/features", hash: undefined, label: "Features" },
   { to: "/solutions", hash: undefined, label: "Solutions" },
   { to: "/how-it-works", hash: undefined, label: "How It Works" },
   { to: "/pricing", hash: undefined, label: "Pricing" },
-  { to: "/security", hash: undefined, label: "Security" },
+  { to: "/about", hash: undefined, label: "About" },
+  { to: "/contact", hash: undefined, label: "Contact" },
 ] as const;
 
 export function Navbar({ variant = "default" }: { variant?: "default" | "cinematic" }) {

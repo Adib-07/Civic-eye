@@ -10,33 +10,67 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as BookDemoRouteImport } from './routes/book-demo'
+import { Route as ChatRouteImport } from './routes/chat'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as ForOrganizationsRouteImport } from './routes/for-organizations'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as IssuesRouteImport } from './routes/issues'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as OrganizationRouteImport } from './routes/organization'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SecurityRouteImport } from './routes/security'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SolutionsRouteImport } from './routes/solutions'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as OrganizationIndexRouteImport } from './routes/organization/index'
+import { Route as OrganizationBillingRouteImport } from './routes/organization/billing'
+import { Route as OrganizationSettingsRouteImport } from './routes/organization/settings'
+import { Route as OrganizationTeamRouteImport } from './routes/organization/team'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcceptInviteRoute = AcceptInviteRouteImport.update({
+  id: '/accept-invite',
+  path: '/accept-invite',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookDemoRoute = BookDemoRouteImport.update({
   id: '/book-demo',
   path: '/book-demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -49,6 +83,11 @@ const FaqRoute = FaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeaturesRoute = FeaturesRouteImport.update({
+  id: '/features',
+  path: '/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForOrganizationsRoute = ForOrganizationsRouteImport.update({
   id: '/for-organizations',
   path: '/for-organizations',
@@ -57,6 +96,11 @@ const ForOrganizationsRoute = ForOrganizationsRouteImport.update({
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IssuesRoute = IssuesRouteImport.update({
+  id: '/issues',
+  path: '/issues',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -69,9 +113,19 @@ const MapRoute = MapRouteImport.update({
   path: '/map',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizationRoute = OrganizationRouteImport.update({
+  id: '/organization',
+  path: '/organization',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricingRoute = PricingRouteImport.update({
@@ -82,6 +136,11 @@ const PricingRoute = PricingRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportRoute = ReportRouteImport.update({
@@ -97,6 +156,11 @@ const ReportsRoute = ReportsRouteImport.update({
 const SecurityRoute = SecurityRouteImport.update({
   id: '/security',
   path: '/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -124,152 +188,264 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrganizationIndexRoute = OrganizationIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrganizationRoute,
+} as any)
+const OrganizationBillingRoute = OrganizationBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => OrganizationRoute,
+} as any)
+const OrganizationSettingsRoute = OrganizationSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => OrganizationRoute,
+} as any)
+const OrganizationTeamRoute = OrganizationTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => OrganizationRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/accept-invite': typeof AcceptInviteRoute
   '/book-demo': typeof BookDemoRoute
+  '/chat': typeof ChatRoute
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
+  '/features': typeof FeaturesRoute
   '/for-organizations': typeof ForOrganizationsRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/issues': typeof IssuesRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
+  '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/organization': typeof OrganizationRouteWithChildren
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
   '/security': typeof SecurityRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/solutions': typeof SolutionsRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/organization/billing': typeof OrganizationBillingRoute
+  '/organization/settings': typeof OrganizationSettingsRoute
+  '/organization/team': typeof OrganizationTeamRoute
+  '/organization/': typeof OrganizationIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/accept-invite': typeof AcceptInviteRoute
   '/book-demo': typeof BookDemoRoute
+  '/chat': typeof ChatRoute
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
+  '/features': typeof FeaturesRoute
   '/for-organizations': typeof ForOrganizationsRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/issues': typeof IssuesRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
+  '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
   '/security': typeof SecurityRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/solutions': typeof SolutionsRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/organization/billing': typeof OrganizationBillingRoute
+  '/organization/settings': typeof OrganizationSettingsRoute
+  '/organization/team': typeof OrganizationTeamRoute
+  '/organization': typeof OrganizationIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/accept-invite': typeof AcceptInviteRoute
   '/book-demo': typeof BookDemoRoute
+  '/chat': typeof ChatRoute
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
+  '/features': typeof FeaturesRoute
   '/for-organizations': typeof ForOrganizationsRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/issues': typeof IssuesRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
+  '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/organization': typeof OrganizationRouteWithChildren
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/reports': typeof ReportsRoute
   '/security': typeof SecurityRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/solutions': typeof SolutionsRoute
   '/start': typeof StartRoute
   '/terms': typeof TermsRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/organization/billing': typeof OrganizationBillingRoute
+  '/organization/settings': typeof OrganizationSettingsRoute
+  '/organization/team': typeof OrganizationTeamRoute
+  '/organization/': typeof OrganizationIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/accept-invite'
     | '/book-demo'
+    | '/chat'
+    | '/contact'
     | '/dashboard'
     | '/faq'
+    | '/features'
     | '/for-organizations'
     | '/how-it-works'
+    | '/issues'
     | '/login'
     | '/map'
+    | '/notifications'
     | '/onboarding'
+    | '/organization'
     | '/pricing'
     | '/privacy'
+    | '/profile'
     | '/report'
     | '/reports'
     | '/security'
+    | '/settings'
     | '/signup'
     | '/solutions'
     | '/start'
     | '/terms'
     | '/auth/callback'
+    | '/organization/billing'
+    | '/organization/settings'
+    | '/organization/team'
+    | '/organization/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/accept-invite'
     | '/book-demo'
+    | '/chat'
+    | '/contact'
     | '/dashboard'
     | '/faq'
+    | '/features'
     | '/for-organizations'
     | '/how-it-works'
+    | '/issues'
     | '/login'
     | '/map'
+    | '/notifications'
     | '/onboarding'
     | '/pricing'
     | '/privacy'
+    | '/profile'
     | '/report'
     | '/reports'
     | '/security'
+    | '/settings'
     | '/signup'
     | '/solutions'
     | '/start'
     | '/terms'
     | '/auth/callback'
+    | '/organization/billing'
+    | '/organization/settings'
+    | '/organization/team'
+    | '/organization'
   id:
     | '__root__'
     | '/'
+    | '/about'
+    | '/accept-invite'
     | '/book-demo'
+    | '/chat'
+    | '/contact'
     | '/dashboard'
     | '/faq'
+    | '/features'
     | '/for-organizations'
     | '/how-it-works'
+    | '/issues'
     | '/login'
     | '/map'
+    | '/notifications'
     | '/onboarding'
+    | '/organization'
     | '/pricing'
     | '/privacy'
+    | '/profile'
     | '/report'
     | '/reports'
     | '/security'
+    | '/settings'
     | '/signup'
     | '/solutions'
     | '/start'
     | '/terms'
     | '/auth/callback'
+    | '/organization/billing'
+    | '/organization/settings'
+    | '/organization/team'
+    | '/organization/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AcceptInviteRoute: typeof AcceptInviteRoute
   BookDemoRoute: typeof BookDemoRoute
+  ChatRoute: typeof ChatRoute
+  ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   FaqRoute: typeof FaqRoute
+  FeaturesRoute: typeof FeaturesRoute
   ForOrganizationsRoute: typeof ForOrganizationsRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  IssuesRoute: typeof IssuesRoute
   LoginRoute: typeof LoginRoute
   MapRoute: typeof MapRoute
+  NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
+  OrganizationRoute: typeof OrganizationRouteWithChildren
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProfileRoute: typeof ProfileRoute
   ReportRoute: typeof ReportRoute
   ReportsRoute: typeof ReportsRoute
   SecurityRoute: typeof SecurityRoute
+  SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   SolutionsRoute: typeof SolutionsRoute
   StartRoute: typeof StartRoute
@@ -286,11 +462,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accept-invite': {
+      id: '/accept-invite'
+      path: '/accept-invite'
+      fullPath: '/accept-invite'
+      preLoaderRoute: typeof AcceptInviteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/book-demo': {
       id: '/book-demo'
       path: '/book-demo'
       fullPath: '/book-demo'
       preLoaderRoute: typeof BookDemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -307,6 +511,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/features': {
+      id: '/features'
+      path: '/features'
+      fullPath: '/features'
+      preLoaderRoute: typeof FeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/for-organizations': {
       id: '/for-organizations'
       path: '/for-organizations'
@@ -319,6 +530,13 @@ declare module '@tanstack/react-router' {
       path: '/how-it-works'
       fullPath: '/how-it-works'
       preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/issues': {
+      id: '/issues'
+      path: '/issues'
+      fullPath: '/issues'
+      preLoaderRoute: typeof IssuesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -335,11 +553,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MapRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/organization': {
+      id: '/organization'
+      path: '/organization'
+      fullPath: '/organization'
+      preLoaderRoute: typeof OrganizationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pricing': {
@@ -354,6 +586,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/report': {
@@ -375,6 +614,13 @@ declare module '@tanstack/react-router' {
       path: '/security'
       fullPath: '/security'
       preLoaderRoute: typeof SecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -412,24 +658,80 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/organization/': {
+      id: '/organization/'
+      path: '/'
+      fullPath: '/organization/'
+      preLoaderRoute: typeof OrganizationIndexRouteImport
+      parentRoute: typeof OrganizationRoute
+    }
+    '/organization/billing': {
+      id: '/organization/billing'
+      path: '/billing'
+      fullPath: '/organization/billing'
+      preLoaderRoute: typeof OrganizationBillingRouteImport
+      parentRoute: typeof OrganizationRoute
+    }
+    '/organization/settings': {
+      id: '/organization/settings'
+      path: '/settings'
+      fullPath: '/organization/settings'
+      preLoaderRoute: typeof OrganizationSettingsRouteImport
+      parentRoute: typeof OrganizationRoute
+    }
+    '/organization/team': {
+      id: '/organization/team'
+      path: '/team'
+      fullPath: '/organization/team'
+      preLoaderRoute: typeof OrganizationTeamRouteImport
+      parentRoute: typeof OrganizationRoute
+    }
   }
 }
 
+interface OrganizationRouteChildren {
+  OrganizationBillingRoute: typeof OrganizationBillingRoute
+  OrganizationSettingsRoute: typeof OrganizationSettingsRoute
+  OrganizationTeamRoute: typeof OrganizationTeamRoute
+  OrganizationIndexRoute: typeof OrganizationIndexRoute
+}
+
+const OrganizationRouteChildren: OrganizationRouteChildren = {
+  OrganizationBillingRoute: OrganizationBillingRoute,
+  OrganizationSettingsRoute: OrganizationSettingsRoute,
+  OrganizationTeamRoute: OrganizationTeamRoute,
+  OrganizationIndexRoute: OrganizationIndexRoute,
+}
+
+const OrganizationRouteWithChildren = OrganizationRoute._addFileChildren(
+  OrganizationRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AcceptInviteRoute: AcceptInviteRoute,
   BookDemoRoute: BookDemoRoute,
+  ChatRoute: ChatRoute,
+  ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   FaqRoute: FaqRoute,
+  FeaturesRoute: FeaturesRoute,
   ForOrganizationsRoute: ForOrganizationsRoute,
   HowItWorksRoute: HowItWorksRoute,
+  IssuesRoute: IssuesRoute,
   LoginRoute: LoginRoute,
   MapRoute: MapRoute,
+  NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,
+  OrganizationRoute: OrganizationRouteWithChildren,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  ProfileRoute: ProfileRoute,
   ReportRoute: ReportRoute,
   ReportsRoute: ReportsRoute,
   SecurityRoute: SecurityRoute,
+  SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   SolutionsRoute: SolutionsRoute,
   StartRoute: StartRoute,

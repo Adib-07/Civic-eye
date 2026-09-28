@@ -120,8 +120,55 @@ export interface CreateReportInput {
   wardId?: string | null;
 }
 
+export type InvitationStatus = "pending" | "accepted" | "revoked" | "expired";
+
+export interface OrganizationInvitation {
+  id: string;
+  organizationId: string;
+  email: string;
+  role: UserRole;
+  status: InvitationStatus;
+  token: string;
+  invitedBy: string | null;
+  inviterName: string | null;
+  createdAt: string;
+  expiresAt: string;
+  acceptedAt: string | null;
+}
+
+export interface OrganizationMember {
+  id: string;
+  fullName: string | null;
+  email: string | null;
+  role: UserRole;
+  createdAt: string | null;
+}
+
+export interface AppNotification {
+  id: string;
+  subject: string | null;
+  body: string | null;
+  channel: string;
+  readAt: string | null;
+  createdAt: string;
+  reportId: string | null;
+}
+
 export function isStaffRole(role: UserRole | null | undefined): boolean {
   return role === "ward_officer" || role === "admin" || role === "super_admin";
+}
+
+/** Organization admin — can manage team members and invitations. */
+export function isOrgAdmin(role: UserRole | null | undefined): boolean {
+  return role === "admin" || role === "super_admin";
+}
+
+/** Roles an organization admin is allowed to hand out when inviting a teammate. */
+export const INVITABLE_ROLES = ["ward_officer", "admin"] as const satisfies readonly UserRole[];
+export type InvitableRole = (typeof INVITABLE_ROLES)[number];
+
+export function isInvitableRole(role: string): role is InvitableRole {
+  return (INVITABLE_ROLES as readonly string[]).includes(role);
 }
 
 export function canManageReports(role: UserRole | null | undefined): boolean {

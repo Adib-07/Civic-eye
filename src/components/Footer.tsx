@@ -30,11 +30,16 @@ export function Footer() {
           <h4 className="caption mb-5">Product</h4>
           <ul className="space-y-3 text-sm text-muted-foreground">
             <li>
+              <Link to="/features" className="transition-colors hover:text-foreground font-medium">
+                Features
+              </Link>
+            </li>
+            <li>
               <Link
                 to="/for-organizations"
                 className="transition-colors hover:text-foreground font-medium"
               >
-                Features
+                For Organizations
               </Link>
             </li>
             <li>
@@ -68,8 +73,18 @@ export function Footer() {
           <h4 className="caption mb-5">Company</h4>
           <ul className="space-y-3 text-sm text-muted-foreground">
             <li>
+              <Link to="/about" className="transition-colors hover:text-foreground font-medium">
+                About
+              </Link>
+            </li>
+            <li>
               <Link to="/security" className="transition-colors hover:text-foreground font-medium">
                 Security
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact" className="transition-colors hover:text-foreground font-medium">
+                Contact
               </Link>
             </li>
             <li>

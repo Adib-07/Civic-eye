@@ -31,7 +31,11 @@ export function getSupabase(): SupabaseClient<Database> | null {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true,
+        // The /auth/callback route owns the PKCE code exchange so it can
+        // report failures and control the post-login destination. Letting the
+        // client auto-detect as well caused a double exchange race.
+        detectSessionInUrl: false,
+        flowType: "pkce",
       },
     });
   }

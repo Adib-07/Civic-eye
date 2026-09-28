@@ -1,3 +1,4 @@
+import { requireSession } from "@/lib/route-guards";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useMemo, useState } from "react";
 import { FiMapPin, FiPlusCircle, FiSearch } from "react-icons/fi";
@@ -13,6 +14,9 @@ import { cn } from "@/lib/utils";
 const MapView = lazy(() => import("@/components/MapView"));
 
 export const Route = createFileRoute("/map")({
+  beforeLoad: async ({ location }) => {
+    await requireSession(location);
+  },
   head: () => ({
     meta: [
       { title: "Live Issue Map — CivicEye" },
