@@ -182,7 +182,7 @@ function ReportsPage() {
   }, [query, cat, status, assignment, overdueOnly, sort]);
 
   const field =
-    "rounded-md border border-border bg-card px-3 py-2 text-sm outline-none transition-colors focus:border-primary";
+    "cursor-pointer rounded-xl border border-border bg-card/60 px-3 py-2.5 text-sm outline-none transition-colors hover:border-primary/40 focus:border-primary focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_16%,transparent)]";
 
   return (
     <AppShell
@@ -296,6 +296,16 @@ function ReportsPage() {
             placeholder="Search title, description, location, or reference ID"
             className="w-full bg-transparent py-2 text-sm outline-none"
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <FiX className="h-4 w-4" />
+            </button>
+          )}
         </div>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <select
