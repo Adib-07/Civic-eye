@@ -2,66 +2,84 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import type { AuthSession } from "./auth";
-import { getCurrentSession, onAuthStateChange } from "./auth";
-import { isSupabaseConfigured } from "./env";
+import { useAuthState } from "./auth-store";
+import { getSupabaseConfigError, isSupabaseConfigured, resolveOrganizationId } from "./env";
+import { fetchNotifications, fetchUnreadCount } from "./notifications";
 import {
   assignReport,
   createReport,
   deleteReport,
   fetchIssueStatusHistory,
   fetchOrganization,
+  fetchReportEvidence,
   fetchReports,
   fetchStaffMembers,
+  resolveReportWithEvidence,
   updateReport,
   verifyResolution,
 } from "./reports";
 import { fetchOrganizationSubscription } from "./subscription";
-import { getReports as getLocalReports } from "./storage";
-import type { CreateReportInput, Profile, Report, StaffMember } from "./types";
-import { getDefaultOrganizationId } from "./env";
+import { fetchOrganizationInvitations, fetchOrganizationMembers } from "./team";
+import type {
+  AppNotification,
+  CreateReportInput,
+  OrganizationInvitation,
+  OrganizationMember,
+  Profile,
+  Report,
+  StaffMember,
+} from "./types";
+import { isOrgAdmin, isStaffRole } from "./types";
 
 const REPORTS_KEY = ["reports"] as const;
-const AUTH_KEY = ["auth"] as const;
 const STAFF_KEY = ["staff"] as const;
 const ORG_KEY = ["organization"] as const;
 const SUBSCRIPTION_KEY = ["subscription"] as const;
 const HISTORY_KEY = ["issue-history"] as const;
+const EVIDENCE_KEY = ["issue-evidence"] as const;
+const NOTIFICATIONS_KEY = ["notifications"] as const;
+const INVITATIONS_KEY = ["invitations"] as const;
+const MEMBERS_KEY = ["org-members"] as const;
 
 export function useAuth() {
   const qc = useQueryClient();
+  const { status, session, user, profile } = useAuthState();
+  const configured = isSupabaseConfigured();
 
-  const { data, isLoading } = useQuery({
-    queryKey: AUTH_KEY,
-    queryFn: getCurrentSession,
-    staleTime: 30_000,
-    enabled: isSupabaseConfigured(),
-  });
-
+  // Invalidate cached org-scoped data whenever the signed-in user changes so a
+  // previous session's rows can never flash into the next session's views.
+  const userId = user?.id ?? null;
   useEffect(() => {
-    if (!isSupabaseConfigured()) return;
-    const unsub = onAuthStateChange(() => {
-      void qc.invalidateQueries({ queryKey: AUTH_KEY });
-      void qc.invalidateQueries({ queryKey: REPORTS_KEY });
-      void qc.invalidateQueries({ queryKey: STAFF_KEY });
-      void qc.invalidateQueries({ queryKey: SUBSCRIPTION_KEY });
-    });
-    return unsub;
-  }, [qc]);
+    if (!userId) return;
+    void qc.invalidateQueries({ queryKey: REPORTS_KEY });
+    void qc.invalidateQueries({ queryKey: STAFF_KEY });
+    void qc.invalidateQueries({ queryKey: SUBSCRIPTION_KEY });
+    void qc.invalidateQueries({ queryKey: ORG_KEY });
+    void qc.invalidateQueries({ queryKey: NOTIFICATIONS_KEY });
+    void qc.invalidateQueries({ queryKey: INVITATIONS_KEY });
+  }, [qc, userId]);
 
   return {
-    session: data ?? null,
-    user: data?.user ?? null,
-    profile: data?.profile ?? null,
-    loading: isSupabaseConfigured() ? isLoading : false,
-    isConfigured: isSupabaseConfigured(),
+    session,
+    user,
+    profile,
+    /** True while the initial session read is still in flight. */
+    loading: configured ? status === "loading" : false,
+    /** Session exists but the profile row has not resolved yet. */
+    profileLoading: status === "authenticated" && profile === null,
+    isConfigured: configured,
+    configError: getSupabaseConfigError(),
   };
 }
 
 export function useReports() {
   const configured = isSupabaseConfigured();
+  const configError = getSupabaseConfigError();
   const { profile } = useAuth();
-  const orgId = profile?.organizationId ?? getDefaultOrganizationId();
+  const orgId = resolveOrganizationId(profile);
   const orgConfigured = Boolean(orgId);
+  const staffOrgMissing = configured && isStaffRole(profile?.role) && !orgId;
+  const citizenOrgMissing = configured && !isStaffRole(profile?.role) && !orgId;
 
   const query = useQuery({
     queryKey: [...REPORTS_KEY, orgId],
@@ -77,59 +95,18 @@ export function useReports() {
     refetchInterval: 30_000,
   });
 
-  const [localReports, setLocalReports] = useState<Report[]>([]);
-  const [localLoading, setLocalLoading] = useState(!configured);
-
-  useEffect(() => {
-    if (configured) return;
-    const sync = () => {
-      const raw = getLocalReports();
-      setLocalReports(
-        raw.map((r) => ({
-          id: r.id,
-          organizationId: orgId ?? "local",
-          wardId: null,
-          title: r.title,
-          description: r.description,
-          category: r.category,
-          location: r.location,
-          lat: r.lat,
-          lng: r.lng,
-          image: r.image,
-          status: r.status as Report["status"],
-          aiCategory: r.aiCategory,
-          aiConfidence: r.aiConfidence,
-          createdBy: null,
-          assignedTo: null,
-          assignedAt: null,
-          assignedBy: null,
-          assigneeName: null,
-          slaDueAt: null,
-          slaBreached: false,
-          resolvedAt: null,
-          createdAt: r.createdAt,
-          updatedAt: r.createdAt,
-        })),
-      );
-      setLocalLoading(false);
-    };
-    sync();
-    window.addEventListener("civiceye:reports", sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener("civiceye:reports", sync);
-      window.removeEventListener("storage", sync);
-    };
-  }, [configured, orgId]);
+  const configErrorInstance = configError ? new Error(configError) : null;
 
   return {
-    reports: configured ? (query.data ?? []) : localReports,
-    loading: configured ? query.isLoading : localLoading,
-    error: query.error,
+    reports: configured ? (query.data ?? []) : [],
+    loading: configured && orgConfigured ? query.isLoading : false,
+    error: configErrorInstance ?? query.error,
     refetch: query.refetch,
     isConfigured: configured,
+    configError,
     orgId: orgId ?? null,
-    orgMissing: configured && !orgConfigured,
+    orgMissing: citizenOrgMissing,
+    staffOrgMissing,
   };
 }
 
@@ -166,12 +143,22 @@ export function useIssueStatusHistory(reportId: string | null | undefined) {
   });
 }
 
+export function useIssueEvidence(reportId: string | null | undefined) {
+  return useQuery({
+    queryKey: [...EVIDENCE_KEY, reportId],
+    queryFn: () => fetchReportEvidence(reportId!),
+    enabled: Boolean(reportId) && isSupabaseConfigured(),
+    staleTime: 15_000,
+  });
+}
+
 export function useReportMutations() {
   const qc = useQueryClient();
 
   const invalidate = () => {
     void qc.invalidateQueries({ queryKey: REPORTS_KEY });
     void qc.invalidateQueries({ queryKey: HISTORY_KEY });
+    void qc.invalidateQueries({ queryKey: EVIDENCE_KEY });
   };
 
   const create = useMutation({
@@ -209,7 +196,75 @@ export function useReportMutations() {
     onSuccess: invalidate,
   });
 
-  return { create, update, remove, assign, verify };
+  const resolveWithEvidence = useMutation({
+    mutationFn: ({ reportId, file, notes }: { reportId: string; file: File; notes: string }) =>
+      resolveReportWithEvidence({ reportId, file, notes }),
+    onSuccess: invalidate,
+  });
+
+  return { create, update, remove, assign, verify, resolveWithEvidence };
+}
+
+export function useNotifications() {
+  const { user } = useAuth();
+  const configured = isSupabaseConfigured();
+
+  const query = useQuery({
+    queryKey: NOTIFICATIONS_KEY,
+    queryFn: () => fetchNotifications(),
+    enabled: configured && Boolean(user),
+    staleTime: 30_000,
+  });
+
+  const notifications: AppNotification[] = query.data ?? [];
+  return {
+    notifications,
+    loading: query.isLoading && Boolean(user),
+    error: query.error,
+    refetch: query.refetch,
+    unreadCount: notifications.filter((n) => !n.readAt).length,
+  };
+}
+
+export function useUnreadNotificationCount() {
+  const { user } = useAuth();
+  const configured = isSupabaseConfigured();
+
+  const query = useQuery({
+    queryKey: [...NOTIFICATIONS_KEY, "unread"],
+    queryFn: fetchUnreadCount,
+    enabled: configured && Boolean(user),
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+  });
+
+  return query.data ?? 0;
+}
+
+export function useOrganizationMembers() {
+  const { profile, user } = useAuth();
+  const configured = isSupabaseConfigured();
+  const enabled = configured && Boolean(user) && isOrgAdmin(profile?.role);
+
+  return useQuery({
+    queryKey: MEMBERS_KEY,
+    queryFn: fetchOrganizationMembers,
+    enabled,
+    staleTime: 30_000,
+  });
+}
+
+export function useOrganizationInvitations() {
+  const { profile, user } = useAuth();
+  const configured = isSupabaseConfigured();
+  const enabled = configured && Boolean(user) && isOrgAdmin(profile?.role);
+
+  return useQuery({
+    queryKey: INVITATIONS_KEY,
+    queryFn: fetchOrganizationInvitations,
+    enabled,
+    staleTime: 15_000,
+  });
 }
 
 export function useTheme() {
@@ -258,4 +313,11 @@ export function useHydrated() {
   return hydrated;
 }
 
-export type { AuthSession, Profile, Report, StaffMember };
+export type {
+  AuthSession,
+  Profile,
+  Report,
+  StaffMember,
+  OrganizationInvitation,
+  OrganizationMember,
+};

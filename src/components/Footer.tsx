@@ -1,94 +1,140 @@
 import { Link } from "@tanstack/react-router";
-import { FiEye, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import { FiEye } from "react-icons/fi";
+
+import { mailtoLink } from "@/lib/plans";
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-border bg-secondary/50 sm:mt-24">
-      <div className="mx-auto grid w-[min(1200px,94vw)] gap-8 py-12 sm:grid-cols-2 sm:gap-10 sm:py-14 lg:grid-cols-4">
-        <div>
+    <footer className="border-t border-border bg-secondary/30">
+      <div className="container grid grid-cols-2 gap-x-8 gap-y-12 py-16 md:grid-cols-4 lg:grid-cols-5">
+        {/* Brand */}
+        <div className="lg:col-span-2 animate-slide-up">
           <div className="flex items-center gap-2.5">
-            <span
-              className="grid h-9 w-9 place-items-center rounded-xl text-primary-foreground shadow-[var(--shadow-xs)] ring-1 ring-inset ring-white/15"
-              style={{ background: "var(--gradient-brand)" }}
-            >
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
               <FiEye className="h-5 w-5" />
             </span>
-            <span className="font-display text-lg font-extrabold">
-              Civic<span className="text-primary">Eye</span>
+            <span className="font-display text-xl font-extrabold tracking-tight">CivicEye</span>
+          </div>
+          <p className="mt-5 max-w-xs text-sm text-muted-foreground leading-relaxed">
+            Operational issue management from report to verified resolution for facilities,
+            campuses, and communities.
+          </p>
+          <div className="mt-6 flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              Platform Live
             </span>
           </div>
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-            Photo-first civic issue reporting for residents and municipal ward teams across Indian
-            cities.
-          </p>
         </div>
 
-        <div>
-          <h4 className="text-sm font-bold">Product</h4>
-          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+        {/* Product */}
+        <div className="animate-slide-up stagger-1">
+          <h4 className="caption mb-5">Product</h4>
+          <ul className="space-y-3 text-sm text-muted-foreground">
             <li>
-              <Link to="/report" className="hover:text-foreground">
-                Report an issue
+              <Link to="/features" className="transition-colors hover:text-foreground font-medium">
+                Features
               </Link>
             </li>
             <li>
-              <Link to="/reports" className="hover:text-foreground">
-                Browse reports
+              <Link
+                to="/for-organizations"
+                className="transition-colors hover:text-foreground font-medium"
+              >
+                For Organizations
               </Link>
             </li>
             <li>
-              <Link to="/pricing" className="hover:text-foreground">
+              <Link to="/solutions" className="transition-colors hover:text-foreground font-medium">
+                Solutions
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/how-it-works"
+                className="transition-colors hover:text-foreground font-medium"
+              >
+                How It Works
+              </Link>
+            </li>
+            <li>
+              <Link to="/pricing" className="transition-colors hover:text-foreground font-medium">
                 Pricing
               </Link>
             </li>
             <li>
-              <Link to="/map" className="hover:text-foreground">
-                Live map
+              <Link to="/faq" className="transition-colors hover:text-foreground font-medium">
+                FAQ
               </Link>
             </li>
           </ul>
         </div>
 
-        <div>
-          <h4 className="text-sm font-bold">Team</h4>
-          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+        {/* Company */}
+        <div className="animate-slide-up stagger-2">
+          <h4 className="caption mb-5">Company</h4>
+          <ul className="space-y-3 text-sm text-muted-foreground">
             <li>
-              <Link to="/dashboard" className="hover:text-foreground">
-                Admin dashboard
+              <Link to="/about" className="transition-colors hover:text-foreground font-medium">
+                About
               </Link>
             </li>
             <li>
-              <Link to="/login" className="hover:text-foreground">
-                Sign in
+              <Link to="/security" className="transition-colors hover:text-foreground font-medium">
+                Security
+              </Link>
+            </li>
+            <li>
+              <a
+                href={mailtoLink("sales@civiceye.in", "CivicEye enquiry")}
+                className="transition-colors hover:text-foreground font-medium"
+              >
+                Email us
+              </a>
+            </li>
+            <li>
+              <Link to="/contact" className="transition-colors hover:text-foreground font-medium">
+                Contact
+              </Link>
+            </li>
+            <li>
+              <Link to="/book-demo" className="transition-colors hover:text-foreground font-medium">
+                Book a Demo
               </Link>
             </li>
           </ul>
         </div>
 
-        <div>
-          <h4 className="text-sm font-bold">Contact</h4>
-          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-center gap-2">
-              <FiMail className="h-4 w-4 shrink-0" />
-              <a href="mailto:support@civiceye.in" className="truncate hover:text-foreground">
-                support@civiceye.in
-              </a>
+        {/* Legal */}
+        <div className="animate-slide-up stagger-3">
+          <h4 className="caption mb-5">Legal</h4>
+          <ul className="space-y-3 text-sm text-muted-foreground">
+            <li>
+              <Link to="/privacy" className="transition-colors hover:text-foreground font-medium">
+                Privacy Policy
+              </Link>
             </li>
-            <li className="flex items-center gap-2">
-              <FiPhone className="h-4 w-4 shrink-0" />
-              <a href="tel:+918000000000" className="hover:text-foreground">
-                +91 80000 00000
-              </a>
-            </li>
-            <li className="flex items-start gap-2">
-              <FiMapPin className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>Mon–Sat, 10 am – 6 pm IST</span>
+            <li>
+              <Link to="/terms" className="transition-colors hover:text-foreground font-medium">
+                Terms of Service
+              </Link>
             </li>
           </ul>
         </div>
       </div>
-      <div className="border-t border-border py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} CivicEye. Built for cleaner, safer streets in every ward.
+
+      {/* Bottom bar */}
+      <div className="border-t border-border py-6">
+        <div className="container flex flex-col sm:flex-row items-center justify-between gap-4">
+          <span className="text-xs text-muted-foreground font-medium">
+            &copy; 2026 CivicEye. Issue management from report to verified resolution.
+          </span>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground font-medium">
+            <span>India</span>
+            <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
+            <span>Made with care</span>
+          </div>
+        </div>
       </div>
     </footer>
   );

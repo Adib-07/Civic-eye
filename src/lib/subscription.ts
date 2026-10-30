@@ -17,6 +17,23 @@ export type OrganizationSubscription = {
 
 type SubRow = Database["public"]["Tables"]["organization_subscriptions"]["Row"];
 
+/**
+ * Normalize DB tier names to frontend plan tiers.
+ * Migration 004 inserts 'starter'/'professional' but plans.ts expects 'community'/'growth'.
+ */
+const DB_TIER_TO_FRONTEND: Record<string, PlanTier> = {
+  pilot: "pilot",
+  starter: "community",
+  professional: "growth",
+  enterprise: "enterprise",
+  community: "community",
+  growth: "growth",
+};
+
+function normalizePlanTier(dbTier: string): PlanTier {
+  return DB_TIER_TO_FRONTEND[dbTier] ?? (dbTier as PlanTier);
+}
+
 function mapSubscription(row: SubRow): OrganizationSubscription {
   const now = Date.now();
   const trialEnd = row.trial_ends_at ? new Date(row.trial_ends_at).getTime() : null;
@@ -26,17 +43,19 @@ function mapSubscription(row: SubRow): OrganizationSubscription {
   const trialOk = row.status !== "pilot" || trialEnd === null || trialEnd > now;
   const periodOk = periodEnd === null || periodEnd > now;
 
+  const planTier = normalizePlanTier(row.plan_tier);
+
   return {
     id: row.id,
     organizationId: row.organization_id,
-    planTier: row.plan_tier as PlanTier,
+    planTier,
     status: row.status as SubscriptionStatus,
     startedAt: row.started_at,
     currentPeriodEnd: row.current_period_end,
     trialEndsAt: row.trial_ends_at,
     billingProvider: row.billing_provider,
     isActive: statusActive && trialOk && periodOk,
-    planName: getPlan(row.plan_tier as PlanTier).name,
+    planName: getPlan(planTier).name,
   };
 }
 
@@ -66,6 +85,17 @@ export type OnboardingInput = {
   selectedPlan: PlanTier;
 };
 
+/**
+ * Map frontend plan tier names to DB tier names for subscription_plans FK.
+ * DB migration 004 uses 'starter'/'professional'; frontend plans.ts uses 'community'/'growth'.
+ */
+const FRONTEND_TIER_TO_DB: Record<PlanTier, string> = {
+  pilot: "pilot",
+  community: "starter",
+  growth: "professional",
+  enterprise: "enterprise",
+};
+
 export async function submitOnboardingRequest(input: OnboardingInput): Promise<void> {
   const sb = requireSupabase();
 
@@ -76,11 +106,54 @@ export async function submitOnboardingRequest(input: OnboardingInput): Promise<v
     admin_email: input.adminEmail.trim().toLowerCase(),
     team_size: input.teamSize?.trim() || null,
     operational_area: input.operationalArea?.trim() || null,
-    selected_plan: input.selectedPlan,
+    selected_plan: FRONTEND_TIER_TO_DB[input.selectedPlan] ?? input.selectedPlan,
     status: "pending",
   });
 
   if (error) throw new Error(error.message);
+}
+
+export type DemoRequestInput = {
+  fullName: string;
+  workEmail: string;
+  organization: string;
+  role?: string;
+  orgType?: string;
+  siteCount?: string;
+  message?: string;
+};
+
+export async function submitDemoRequest(
+  inputOrFullName: string | DemoRequestInput,
+  workEmail?: string,
+  organization?: string,
+): Promise<void> {
+  const sb = requireSupabase();
+
+  const data: DemoRequestInput =
+    typeof inputOrFullName === "string"
+      ? {
+          fullName: inputOrFullName,
+          workEmail: workEmail ?? "",
+          organization: organization ?? "",
+        }
+      : inputOrFullName;
+
+  // Attempt insertion into public.demo_requests
+  const { error: demoError } = await sb.from("demo_requests").insert({
+    full_name: data.fullName.trim(),
+    work_email: data.workEmail.trim().toLowerCase(),
+    organization: data.organization.trim(),
+    role: data.role?.trim() || null,
+    org_type: data.orgType?.trim() || null,
+    site_count: data.siteCount?.trim() || null,
+    message: data.message?.trim() || null,
+    submitted_at: new Date().toISOString(),
+  });
+
+  if (demoError) {
+    throw new Error(demoError.message);
+  }
 }
 
 export function subscriptionStatusLabel(sub: OrganizationSubscription): string {

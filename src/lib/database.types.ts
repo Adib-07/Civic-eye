@@ -2,7 +2,8 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 export type UserRole = "citizen" | "ward_officer" | "admin" | "super_admin";
 export type SlaPriority = "low" | "normal" | "high" | "critical";
-export type ReportStatus = "Pending" | "In Progress" | "Resolved" | "Verified" | "Closed";
+export type ReportStatus =
+  "Pending" | "In Progress" | "Resolved" | "Verified" | "Closed" | "Reopened";
 export type VerificationStatus = "approved" | "rejected" | "pending";
 export type NotificationChannel = "in_app" | "email" | "sms" | "whatsapp";
 
@@ -131,6 +132,34 @@ export type Database = {
         };
         Relationships: [];
       };
+      demo_requests: {
+        Row: {
+          id: string;
+          full_name: string;
+          work_email: string;
+          organization: string;
+          role: string | null;
+          org_type: string | null;
+          site_count: string | null;
+          message: string | null;
+          submitted_at: string;
+        };
+        Insert: {
+          id?: string;
+          full_name: string;
+          work_email: string;
+          organization: string;
+          role?: string | null;
+          org_type?: string | null;
+          site_count?: string | null;
+          message?: string | null;
+          submitted_at?: string;
+        };
+        Update: {
+          [_ in never]: never;
+        };
+        Relationships: [];
+      };
       departments: {
         Row: {
           id: string;
@@ -185,6 +214,7 @@ export type Database = {
           role: UserRole;
           full_name: string | null;
           email: string | null;
+          categories: string[] | null;
           created_at: string;
         };
         Insert: {
@@ -194,6 +224,7 @@ export type Database = {
           role?: UserRole;
           full_name?: string | null;
           email?: string | null;
+          categories?: string[] | null;
           created_at?: string;
         };
         Update: {
@@ -202,6 +233,7 @@ export type Database = {
           role?: UserRole;
           full_name?: string | null;
           email?: string | null;
+          categories?: string[] | null;
         };
         Relationships: [];
       };
@@ -294,6 +326,7 @@ export type Database = {
           public_url: string | null;
           content_type: string | null;
           uploaded_by: string | null;
+          notes: string | null;
           created_at: string;
         };
         Insert: {
@@ -303,11 +336,13 @@ export type Database = {
           public_url?: string | null;
           content_type?: string | null;
           uploaded_by?: string | null;
+          notes?: string | null;
           created_at?: string;
         };
         Update: {
           public_url?: string | null;
           content_type?: string | null;
+          notes?: string | null;
         };
         Relationships: [];
       };
@@ -358,6 +393,41 @@ export type Database = {
           status?: VerificationStatus;
           notes?: string | null;
           verification_image_url?: string | null;
+        };
+        Relationships: [];
+      };
+      organization_invitations: {
+        Row: {
+          id: string;
+          organization_id: string;
+          email: string;
+          role: string;
+          token: string;
+          status: string;
+          invited_by: string | null;
+          created_at: string;
+          expires_at: string;
+          accepted_at: string | null;
+          accepted_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          email: string;
+          role: string;
+          token?: string;
+          status?: string;
+          invited_by?: string | null;
+          created_at?: string;
+          expires_at?: string;
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+        };
+        Update: {
+          status?: string;
+          expires_at?: string;
+          accepted_at?: string | null;
+          accepted_by?: string | null;
         };
         Relationships: [];
       };
@@ -432,6 +502,14 @@ export type Database = {
         Args: { org_id: string };
         Returns: boolean;
       };
+      is_org_admin: {
+        Args: { org_id: string };
+        Returns: boolean;
+      };
+      current_user_org_id: {
+        Args: Record<string, never>;
+        Returns: string | null;
+      };
       org_subscription_active: {
         Args: { org_id: string };
         Returns: boolean;
@@ -439,6 +517,78 @@ export type Database = {
       org_can_create_report: {
         Args: { org_id: string };
         Returns: boolean;
+      };
+      org_can_add_staff: {
+        Args: { org_id: string };
+        Returns: boolean;
+      };
+      /** Self-heal: create the caller's `profiles` row if the trigger did not. */
+      ensure_profile: {
+        Args: Record<string, never>;
+        Returns: DbProfile[];
+      };
+      /** Team directory for the caller's own organization. */
+      list_organization_members: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          full_name: string | null;
+          email: string | null;
+          role: string;
+          created_at: string | null;
+        }[];
+      };
+      list_organization_invitations: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          organization_id: string;
+          email: string;
+          role: string;
+          status: string;
+          token: string;
+          invited_by: string | null;
+          inviter_name: string | null;
+          created_at: string;
+          expires_at: string;
+          accepted_at: string | null;
+        }[];
+      };
+      create_organization_invitation: {
+        Args: { invite_email: string; invite_role: string };
+        Returns: DbOrganizationInvitation[];
+      };
+      revoke_organization_invitation: {
+        Args: { invite_id: string };
+        Returns: undefined;
+      };
+      resend_organization_invitation: {
+        Args: { invite_id: string };
+        Returns: undefined;
+      };
+      preview_organization_invitation: {
+        Args: { invite_token: string };
+        Returns: {
+          organization_name: string;
+          organization_slug: string;
+          email: string;
+          role: string;
+          invited_by_name: string | null;
+          status: string;
+          expires_at: string;
+        }[];
+      };
+      accept_organization_invitation: {
+        Args: { invite_token: string };
+        Returns: undefined;
+      };
+      admin_can_invite: {
+        Args: { org_id: string };
+        Returns: boolean;
+      };
+      mask_email: {
+        Args: { value: string };
+        Returns: string;
       };
     };
     Enums: {
@@ -459,3 +609,5 @@ export type DbIssueEvidence = Database["public"]["Tables"]["issue_evidence"]["Ro
 export type DbIssueStatusHistory = Database["public"]["Tables"]["issue_status_history"]["Row"];
 export type DbAuditLog = Database["public"]["Tables"]["audit_logs"]["Row"];
 export type DbNotification = Database["public"]["Tables"]["notifications"]["Row"];
+export type DbOrganizationInvitation =
+  Database["public"]["Tables"]["organization_invitations"]["Row"];

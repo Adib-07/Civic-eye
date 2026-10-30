@@ -1,6 +1,6 @@
 import type { Category } from "./types";
 
-const TITLE_TEMPLATES: Record<Category, string> = {
+const TITLE_TEMPLATES: Record<string, string> = {
   Pothole: "Pothole on the road",
   Garbage: "Garbage / waste issue",
   "Fallen Tree": "Fallen tree blocking the way",
@@ -9,7 +9,7 @@ const TITLE_TEMPLATES: Record<Category, string> = {
   "Road Damage": "Road damage or broken surface",
 };
 
-const DESCRIPTION_TEMPLATES: Record<Category, string> = {
+const DESCRIPTION_TEMPLATES: Record<string, string> = {
   Pothole: "A pothole was spotted and needs repair. It may be unsafe for vehicles and pedestrians.",
   Garbage: "Waste or an overflowing bin needs collection. There may be smell or hygiene concerns.",
   "Fallen Tree": "A fallen tree or branch is blocking the road or footpath.",
@@ -19,11 +19,11 @@ const DESCRIPTION_TEMPLATES: Record<Category, string> = {
 };
 
 export function suggestTitle(category: Category): string {
-  return TITLE_TEMPLATES[category];
+  return TITLE_TEMPLATES[category] ?? category;
 }
 
 export function suggestDescription(category: Category): string {
-  return DESCRIPTION_TEMPLATES[category];
+  return DESCRIPTION_TEMPLATES[category] ?? `Issue related to: ${category}`;
 }
 
 export function suggestLocationLabel(): string {
@@ -39,13 +39,15 @@ export function buildQuickReportPayload(input: {
   description?: string;
   location?: string;
 }) {
+  const catLabel = input.category;
+
   return {
-    title: input.title?.trim() || suggestTitle(input.category),
-    description: input.description?.trim() || suggestDescription(input.category),
+    title: input.title?.trim() || suggestTitle(catLabel),
+    description: input.description?.trim() || suggestDescription(catLabel),
     location: input.location?.trim() || suggestLocationLabel(),
     lat: input.lat,
     lng: input.lng,
-    category: input.category,
+    category: catLabel,
   };
 }
 

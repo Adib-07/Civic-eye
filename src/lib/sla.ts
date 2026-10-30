@@ -44,7 +44,11 @@ export async function resolveSlaDueAt(
 
 export async function refreshSlaBreaches(_organizationId?: string): Promise<void> {
   const sb = requireSupabase();
-  await sb.rpc("mark_sla_breaches");
+  const { error } = await sb.rpc("mark_sla_breaches");
+  if (error) {
+    // Non-fatal: anon may lack EXECUTE on this RPC; report listing must still work.
+    console.warn("[CivicEye] mark_sla_breaches skipped:", error.message);
+  }
 }
 
 export function isSlaBreached(report: {

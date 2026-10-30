@@ -6,7 +6,7 @@ const STEPS = ["Reported", "Assigned", "In progress", "Resolved", "Verified"] as
 function activeStepIndex(status: Status, assigned: boolean): number {
   if (status === "Verified" || status === "Closed") return 4;
   if (status === "Resolved") return 3;
-  if (status === "In Progress") return 2;
+  if (status === "In Progress" || status === "Reopened") return 2;
   if (status === "Pending" && assigned) return 1;
   return 0;
 }

@@ -1,3 +1,4 @@
+import { requireStaff } from "@/lib/route-guards";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
@@ -25,15 +26,18 @@ import { EmptyState, Loader, QueryError } from "@/components/EmptyState";
 import { ImageModal } from "@/components/ImageModal";
 import { IssueWorkflowBar } from "@/components/IssueWorkflowBar";
 import { OnboardingBanner } from "@/components/OnboardingBanner";
+import { ResolveIssueDialog } from "@/components/ResolveIssueDialog";
 import { SlaBadge } from "@/components/SlaBadge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ReportImage } from "@/components/ReportImage";
 import { VerifyDialog } from "@/components/VerifyDialog";
 import { ReportMiniMap } from "@/components/ReportMiniMap";
 import type { IssueStatusHistoryEntry } from "@/lib/reports";
-import { getDefaultOrganizationId, isSlaBreached } from "@/lib/sla";
+import { getDefaultOrganizationId } from "@/lib/env";
+import { isSlaBreached } from "@/lib/sla";
 import {
   useAuth,
+  useIssueEvidence,
   useIssueStatusHistory,
   useReportMutations,
   useReports,
@@ -58,6 +62,9 @@ const reportsSearchSchema = z.object({
 });
 
 export const Route = createFileRoute("/reports")({
+  beforeLoad: async ({ location }) => {
+    await requireStaff(location);
+  },
   validateSearch: (search: Record<string, unknown>) =>
     reportsSearchSchema.parse({
       assigned: search.assigned === "me" ? "me" : undefined,
@@ -87,11 +94,20 @@ function ReportsPage() {
     overdue: overdueSearch,
     submitted: submittedId,
   } = useSearch({ from: "/reports" });
-  const { reports, loading, error, refetch, isConfigured, orgMissing } = useReports();
+  const {
+    reports,
+    loading,
+    error,
+    refetch,
+    isConfigured,
+    configError,
+    orgMissing,
+    staffOrgMissing,
+  } = useReports();
   const { profile, user } = useAuth();
   const orgId = profile?.organizationId ?? getDefaultOrganizationId();
   const { data: staff = [] } = useStaffMembers(isConfigured ? orgId : null);
-  const { update, remove, assign, verify } = useReportMutations();
+  const { update, remove, assign, verify, resolveWithEvidence } = useReportMutations();
 
   const isStaff = canManageReports(profile?.role);
 
@@ -106,6 +122,7 @@ function ReportsPage() {
   const [toDelete, setToDelete] = useState<Report | null>(null);
   const [editing, setEditing] = useState<Report | null>(null);
   const [assignTarget, setAssignTarget] = useState<Report | null>(null);
+  const [resolveTarget, setResolveTarget] = useState<Report | null>(null);
   const [verifyTarget, setVerifyTarget] = useState<Report | null>(null);
   const [detail, setDetail] = useState<Report | null>(null);
   const [zoom, setZoom] = useState<string | null>(null);
@@ -177,9 +194,9 @@ function ReportsPage() {
             : "All reports"
       }
       subtitle={
-        isConfigured
-          ? `${reports.length} issues in your organization`
-          : `${reports.length} issues stored locally on this device`
+        !isConfigured && configError
+          ? "Supabase configuration required"
+          : `${reports.length} issues in your organization`
       }
     >
       <OnboardingBanner />
@@ -192,6 +209,13 @@ function ReportsPage() {
         />
       )}
 
+      {!isConfigured && configError && (
+        <div className="mb-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
+          <p className="font-bold text-destructive">Supabase not configured</p>
+          <p className="mt-1 text-muted-foreground">{configError}</p>
+        </div>
+      )}
+
       {orgMissing && (
         <div className="mb-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
           <p className="font-bold">Organization not configured</p>
@@ -202,14 +226,75 @@ function ReportsPage() {
         </div>
       )}
 
-      <div className="glass grid gap-3 rounded-2xl p-4 md:grid-cols-2 xl:grid-cols-3">
-        <div className="flex items-center gap-2 rounded-xl border border-border bg-card/60 px-3 transition-shadow focus-within:border-primary focus-within:shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_16%,transparent)] md:col-span-2 xl:col-span-3">
+      {/* WHAT NEEDS ATTENTION NOW Operational Banner */}
+      {reports.length > 0 && (
+        <div className="mb-4 grid gap-3 grid-cols-1 sm:grid-cols-3">
+          <button
+            type="button"
+            onClick={() => setOverdueOnly(true)}
+            className="surface-panel p-3.5 text-left border-l-4 border-l-destructive hover:border-destructive/80 transition-all cursor-pointer"
+          >
+            <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-destructive flex items-center justify-between">
+              <span>SLA Overdue</span>
+              <span className="h-2 w-2 rounded-full bg-destructive animate-ping" />
+            </p>
+            <p className="mt-1 font-display text-2xl font-bold tabular-nums text-foreground">
+              {
+                reports.filter(
+                  (r) => isSlaBreached(r) && r.status !== "Verified" && r.status !== "Closed",
+                ).length
+              }
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Click to view overdue queue</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setAssignment("unassigned");
+              setStatus("Pending");
+              setOverdueOnly(false);
+            }}
+            className="surface-panel p-3.5 text-left border-l-4 border-l-amber-500 hover:border-amber-400 transition-all cursor-pointer"
+          >
+            <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-amber-500">
+              Unassigned Intake
+            </p>
+            <p className="mt-1 font-display text-2xl font-bold tabular-nums text-foreground">
+              {reports.filter((r) => !r.assignedTo && r.status === "Pending").length}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Awaiting staff assignment</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setStatus("Resolved");
+              setOverdueOnly(false);
+            }}
+            className="surface-panel p-3.5 text-left border-l-4 border-l-emerald-500 hover:border-emerald-400 transition-all cursor-pointer"
+          >
+            <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-emerald-500">
+              Awaiting Verification
+            </p>
+            <p className="mt-1 font-display text-2xl font-bold tabular-nums text-foreground">
+              {reports.filter((r) => r.status === "Resolved").length}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              Staff resolved — ready for sign-off
+            </p>
+          </button>
+        </div>
+      )}
+
+      <div className="surface-panel space-y-3 p-4">
+        <div className="flex items-center gap-2 rounded-md border border-border bg-background px-3">
           <FiSearch className="h-4 w-4 shrink-0 text-muted-foreground" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search title, description or location"
-            className="w-full bg-transparent py-2.5 text-sm outline-none"
+            placeholder="Search title, description, location, or reference ID"
+            className="w-full bg-transparent py-2 text-sm outline-none"
           />
           {query && (
             <button
@@ -222,65 +307,71 @@ function ReportsPage() {
             </button>
           )}
         </div>
-        <select
-          value={cat}
-          onChange={(e) => setCat(e.target.value as Category | "All")}
-          className={field}
-        >
-          <option value="All">All categories</option>
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value as Status | "All")}
-          className={field}
-        >
-          <option value="All">All statuses</option>
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <select
-          value={assignment}
-          onChange={(e) => setAssignment(e.target.value as typeof assignment)}
-          className={field}
-        >
-          <option value="all">All assignments</option>
-          <option value="me">Assigned to me</option>
-          <option value="assigned">Assigned (anyone)</option>
-          <option value="unassigned">Unassigned only</option>
-        </select>
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as typeof sort)}
-          className={field}
-        >
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
-        </select>
-        <label className="flex items-center gap-2 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-sm">
-          <input
-            type="checkbox"
-            checked={overdueOnly}
-            onChange={(e) => setOverdueOnly(e.target.checked)}
-            className="rounded border-border"
-          />
-          <span className="font-semibold">SLA overdue only</span>
-        </label>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <select
+            value={cat}
+            onChange={(e) => setCat(e.target.value as Category | "All")}
+            className={field}
+          >
+            <option value="All">All categories</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as Status | "All")}
+            className={field}
+          >
+            <option value="All">All statuses</option>
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+          <select
+            value={assignment}
+            onChange={(e) => setAssignment(e.target.value as typeof assignment)}
+            className={field}
+          >
+            <option value="all">All assignments</option>
+            <option value="me">Assigned to me</option>
+            <option value="assigned">Assigned (anyone)</option>
+            <option value="unassigned">Unassigned only</option>
+          </select>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as typeof sort)}
+            className={field}
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
+          <label className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm xl:col-span-2">
+            <input
+              type="checkbox"
+              checked={overdueOnly}
+              onChange={(e) => setOverdueOnly(e.target.checked)}
+              className="rounded border-border"
+            />
+            <span className="font-medium">SLA overdue only</span>
+          </label>
+        </div>
       </div>
 
       {loading ? (
         <Loader label="Loading reports" />
-      ) : orgMissing ? (
+      ) : orgMissing || staffOrgMissing ? (
         <QueryError
-          title="Organization not configured"
-          message="Set VITE_DEFAULT_ORGANIZATION_ID in your .env file to connect to your Supabase organization."
+          title={staffOrgMissing ? "Staff profile not linked" : "Organization not configured"}
+          message={
+            staffOrgMissing
+              ? "Your Supabase profile must have organization_id set before you can view reports."
+              : "Set VITE_DEFAULT_ORGANIZATION_ID in your .env file to connect to your Supabase organization."
+          }
         />
       ) : error ? (
         <QueryError
@@ -307,151 +398,227 @@ function ReportsPage() {
           />
         </div>
       ) : (
-        <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          <AnimatePresence>
-            {visibleReports.map((r) => (
-              <motion.article
-                key={r.id}
-                layout
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                className={cn(
-                  "glass card-hover overflow-hidden rounded-2xl",
-                  submittedId === r.id && "ring-2 ring-success ring-offset-2 ring-offset-background",
-                )}
+        <>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm">
+            <p className="text-muted-foreground">
+              Showing{" "}
+              <span className="font-medium text-foreground">
+                {Math.min(visibleCount, filtered.length)}
+              </span>{" "}
+              of <span className="font-medium text-foreground">{filtered.length}</span> matching
+              {filtered.length !== reports.length && (
+                <>
+                  {" "}
+                  (<span className="font-medium text-foreground">{reports.length}</span> total)
+                </>
+              )}
+            </p>
+            {(assignment !== "all" ||
+              overdueOnly ||
+              cat !== "All" ||
+              status !== "All" ||
+              query) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  setCat("All");
+                  setStatus("All");
+                  setAssignment("all");
+                  setOverdueOnly(false);
+                }}
+                className="text-xs font-medium text-primary hover:underline"
               >
-                {r.image ? (
-                  <ReportImage
-                    src={r.image}
-                    alt={r.title}
-                    onClick={() => setZoom(r.image)}
-                    className="h-44 w-full cursor-zoom-in object-cover"
-                    placeholderClassName="h-44 w-full"
-                  />
-                ) : (
-                  <ReportImage
-                    src={null}
-                    alt=""
-                    placeholderClassName="h-44 w-full rounded-none"
-                    className="h-44 w-full"
-                  />
-                )}
-                <div className="p-5">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="truncate rounded-full bg-secondary px-2.5 py-1 text-xs font-bold text-primary">
-                      {r.category}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <SlaBadge report={r} />
-                      <StatusBadge status={r.status} />
+                Clear filters
+              </button>
+            )}
+          </div>
+
+          <div className="mt-3 surface-panel overflow-hidden">
+            <div className="hidden border-b border-border bg-secondary/80 md:grid md:grid-cols-[72px_minmax(0,1fr)_140px_120px_100px] md:gap-4 md:px-4 md:py-2.5">
+              <span className="section-label">Evidence</span>
+              <span className="section-label">Issue</span>
+              <span className="section-label">Status</span>
+              <span className="section-label">SLA</span>
+              <span className="section-label text-right">Actions</span>
+            </div>
+
+            <AnimatePresence>
+              {visibleReports.map((r) => (
+                <motion.article
+                  key={r.id}
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={cn(
+                    "border-b border-border transition-colors hover:bg-secondary/40",
+                    submittedId === r.id && "bg-success/5 ring-1 ring-inset ring-success/20",
+                  )}
+                >
+                  {/* Desktop row */}
+                  <div className="hidden md:grid md:grid-cols-[72px_minmax(0,1fr)_140px_120px_100px] md:items-center md:gap-4 md:px-4 md:py-3">
+                    <button
+                      type="button"
+                      onClick={() => (r.image ? setZoom(r.image) : setDetail(r))}
+                      className="h-14 w-14 overflow-hidden rounded-md border border-border bg-secondary"
+                    >
+                      <ReportImage
+                        src={r.image}
+                        alt={r.title}
+                        className="h-full w-full object-cover"
+                        placeholderClassName="h-full w-full rounded-none"
+                      />
+                    </button>
+                    <div className="min-w-0">
+                      <button
+                        type="button"
+                        onClick={() => setDetail(r)}
+                        className="truncate text-left text-sm font-semibold hover:text-primary"
+                      >
+                        {r.title}
+                      </button>
+                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                        #{r.id.slice(0, 8).toUpperCase()} · {r.category} ·{" "}
+                        {new Date(r.createdAt).toLocaleDateString()}
+                      </p>
+                      <p className="mt-1 flex items-center gap-1 truncate text-xs text-muted-foreground">
+                        <FiMapPin className="shrink-0" />{" "}
+                        {r.location || `${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}`}
+                      </p>
+                      {r.assigneeName && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Assigned: {r.assigneeName}
+                        </p>
+                      )}
+                    </div>
+                    <StatusBadge status={r.status} />
+                    <SlaBadge report={r} />
+                    <div className="flex justify-end gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setDetail(r)}
+                        className="rounded-md border border-border px-2 py-1 text-xs font-medium hover:bg-secondary"
+                      >
+                        View
+                      </button>
+                      {isStaff && !r.assignedTo && r.status === "Pending" && (
+                        <button
+                          type="button"
+                          onClick={() => setAssignTarget(r)}
+                          className="rounded-md border border-border px-2 py-1 text-xs font-medium hover:bg-secondary"
+                        >
+                          Assign
+                        </button>
+                      )}
                     </div>
                   </div>
-                  <h3
-                    className="mt-3 truncate text-lg font-bold hover:text-primary"
-                    onClick={() => setDetail(r)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => e.key === "Enter" && setDetail(r)}
-                  >
-                    {r.title}
-                  </h3>
-                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    #{r.id.slice(0, 8)} · {new Date(r.createdAt).toLocaleString()}
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{r.description}</p>
-                  <p className="mt-3 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
-                    <FiMapPin className="shrink-0" /> {r.location}
-                  </p>
-                  {r.assigneeName && (
-                    <p className="mt-2 text-xs font-semibold text-primary">
-                      Assigned: {r.assigneeName}
-                    </p>
-                  )}
-                  {r.aiCategory && (
-                    <p className="mt-2 text-xs font-semibold text-muted-foreground">
-                      Suggested: {r.aiCategory} ({r.aiConfidence}%)
-                    </p>
-                  )}
 
-                  {isStaff && (
-                    <div className="mt-4 flex flex-wrap gap-2">
+                  {/* Mobile card */}
+                  <div className="p-4 md:hidden">
+                    <div className="flex gap-3">
                       <button
-                        onClick={() => setDetail(r)}
-                        className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border py-2 text-xs font-bold hover:bg-secondary"
+                        type="button"
+                        onClick={() => (r.image ? setZoom(r.image) : setDetail(r))}
+                        className="h-16 w-16 shrink-0 overflow-hidden rounded-md border border-border"
                       >
-                        <FiEye /> Details
+                        <ReportImage
+                          src={r.image}
+                          alt={r.title}
+                          className="h-full w-full object-cover"
+                          placeholderClassName="h-full w-full"
+                        />
                       </button>
-                      {!r.assignedTo && r.status === "Pending" && (
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setDetail(r)}
+                            className="text-left text-sm font-semibold leading-snug"
+                          >
+                            {r.title}
+                          </button>
+                          <StatusBadge status={r.status} />
+                        </div>
+                        <p className="mt-1 text-[11px] font-medium text-muted-foreground">
+                          #{r.id.slice(0, 8).toUpperCase()} ·{" "}
+                          {new Date(r.createdAt).toLocaleString()}
+                        </p>
+                        <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                          {r.description}
+                        </p>
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <SlaBadge report={r} />
+                          <span className="rounded-md border border-border bg-secondary px-2 py-0.5 text-[11px] font-medium">
+                            {r.category}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {isStaff && (
+                      <div className="mt-3 flex flex-wrap gap-2">
                         <button
-                          onClick={() => setAssignTarget(r)}
-                          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-primary/30 py-2 text-xs font-bold text-primary hover:bg-primary/5"
+                          onClick={() => setDetail(r)}
+                          className="btn-secondary flex-1 py-2 text-xs"
                         >
-                          <FiUserPlus /> Assign
+                          <FiEye /> Details
                         </button>
-                      )}
-                      {r.status === "In Progress" && (
+                        {!r.assignedTo && r.status === "Pending" && (
+                          <button
+                            onClick={() => setAssignTarget(r)}
+                            className="btn-secondary flex-1 py-2 text-xs"
+                          >
+                            <FiUserPlus /> Assign
+                          </button>
+                        )}
+                        {(r.status === "In Progress" || r.status === "Reopened") && (
+                          <button
+                            onClick={() => setResolveTarget(r)}
+                            className="btn-secondary flex-1 py-2 text-xs text-success"
+                          >
+                            <FiCheck /> Resolve
+                          </button>
+                        )}
+                        {r.status === "Resolved" && canVerifyReport(profile?.role, r, user?.id) && (
+                          <button
+                            onClick={() => setVerifyTarget(r)}
+                            className="btn-secondary flex-1 py-2 text-xs"
+                          >
+                            <FiCheckCircle /> Verify
+                          </button>
+                        )}
                         <button
-                          onClick={async () => {
-                            try {
-                              if (isConfigured) {
-                                await update.mutateAsync({
-                                  id: r.id,
-                                  patch: { status: "Resolved" },
-                                });
-                              } else {
-                                const { setStatus } = await import("@/lib/storage");
-                                setStatus(r.id, "Resolved");
-                                window.dispatchEvent(new Event("civiceye:reports"));
-                              }
-                              toast.success("Marked as resolved — awaiting verification");
-                            } catch (e) {
-                              toast.error(e instanceof Error ? e.message : "Resolution failed");
-                            }
-                          }}
-                          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-success/30 py-2 text-xs font-bold text-success hover:bg-success/5"
+                          onClick={() => setEditing(r)}
+                          className="btn-secondary flex-1 py-2 text-xs"
                         >
-                          <FiCheck /> Resolve
+                          <FiEdit2 /> Edit
                         </button>
-                      )}
-                      {r.status === "Resolved" && canVerifyReport(profile?.role, r, user?.id) && (
+                        <button
+                          onClick={() => setToDelete(r)}
+                          className="btn-secondary flex-1 py-2 text-xs text-destructive"
+                        >
+                          <FiTrash2 /> Delete
+                        </button>
+                      </div>
+                    )}
+
+                    {!isStaff && canVerifyReport(profile?.role, r, user?.id) && (
+                      <div className="mt-3">
                         <button
                           onClick={() => setVerifyTarget(r)}
-                          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-success/30 py-2 text-xs font-bold text-success hover:bg-success/5"
+                          className="btn-secondary w-full py-2 text-xs"
                         >
-                          <FiCheckCircle /> Verify
+                          <FiCheckCircle /> Verify fix
                         </button>
-                      )}
-                      <button
-                        onClick={() => setEditing(r)}
-                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2 text-xs font-bold hover:bg-secondary"
-                      >
-                        <FiEdit2 /> Edit
-                      </button>
-                      <button
-                        onClick={() => setToDelete(r)}
-                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-destructive/40 py-2 text-xs font-bold text-destructive hover:bg-destructive/10"
-                      >
-                        <FiTrash2 /> Delete
-                      </button>
-                    </div>
-                  )}
-
-                  {!isStaff && canVerifyReport(profile?.role, r, user?.id) && (
-                    <div className="mt-4">
-                      <button
-                        onClick={() => setVerifyTarget(r)}
-                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-primary/30 py-2 text-xs font-bold text-primary hover:bg-primary/5"
-                      >
-                        <FiCheckCircle /> Verify fix
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </motion.article>
-            ))}
-          </AnimatePresence>
-        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.article>
+              ))}
+            </AnimatePresence>
+          </div>
+        </>
       )}
 
       {!loading && filtered.length > visibleCount && (
@@ -468,8 +635,7 @@ function ReportsPage() {
 
       {filtered.length > 0 && !loading && (
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          Showing {Math.min(visibleCount, filtered.length)} of {filtered.length} reports
-          {filtered.length !== reports.length && ` (${reports.length} total)`}
+          Click a row to view full details, evidence, and status history.
         </p>
       )}
 
@@ -481,12 +647,7 @@ function ReportsPage() {
         onConfirm={async () => {
           if (!toDelete) return;
           try {
-            if (isConfigured) {
-              await remove.mutateAsync(toDelete.id);
-            } else {
-              const { deleteReport } = await import("@/lib/storage");
-              deleteReport(toDelete.id);
-            }
+            await remove.mutateAsync(toDelete.id);
             toast.success("Report deleted");
           } catch (e) {
             toast.error(e instanceof Error ? e.message : "Delete failed");
@@ -499,6 +660,7 @@ function ReportsPage() {
         open={!!assignTarget}
         staff={staff}
         loading={assign.isPending}
+        category={assignTarget?.category}
         onCancel={() => setAssignTarget(null)}
         onAssign={async (staffId) => {
           if (!assignTarget) return;
@@ -512,6 +674,23 @@ function ReportsPage() {
         }}
       />
 
+      <ResolveIssueDialog
+        open={!!resolveTarget}
+        report={resolveTarget}
+        loading={resolveWithEvidence.isPending}
+        onCancel={() => setResolveTarget(null)}
+        onSubmit={async (file, notes) => {
+          if (!resolveTarget) return;
+          try {
+            await resolveWithEvidence.mutateAsync({ reportId: resolveTarget.id, file, notes });
+            toast.success("Resolution submitted successfully — pending reporter verification");
+            setResolveTarget(null);
+          } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Resolution submission failed");
+          }
+        }}
+      />
+
       <VerifyDialog
         open={!!verifyTarget}
         title={verifyTarget?.title ?? ""}
@@ -520,14 +699,8 @@ function ReportsPage() {
         onApprove={async (notes) => {
           if (!verifyTarget) return;
           try {
-            if (isConfigured) {
-              await verify.mutateAsync({ reportId: verifyTarget.id, approved: true, notes });
-            } else {
-              const { verifyReportLocal } = await import("@/lib/storage");
-              verifyReportLocal(verifyTarget.id, true);
-              window.dispatchEvent(new Event("civiceye:reports"));
-            }
-            toast.success("Resolution verified");
+            await verify.mutateAsync({ reportId: verifyTarget.id, approved: true, notes });
+            toast.success("Resolution verified — status updated to VERIFIED");
             setVerifyTarget(null);
           } catch (e) {
             toast.error(e instanceof Error ? e.message : "Verification failed");
@@ -536,14 +709,8 @@ function ReportsPage() {
         onReject={async (notes) => {
           if (!verifyTarget) return;
           try {
-            if (isConfigured) {
-              await verify.mutateAsync({ reportId: verifyTarget.id, approved: false, notes });
-            } else {
-              const { verifyReportLocal } = await import("@/lib/storage");
-              verifyReportLocal(verifyTarget.id, false);
-              window.dispatchEvent(new Event("civiceye:reports"));
-            }
-            toast.info("Issue reopened — sent back to In Progress");
+            await verify.mutateAsync({ reportId: verifyTarget.id, approved: false, notes });
+            toast.info("Reported as still unresolved — status updated to REOPENED");
             setVerifyTarget(null);
           } catch (e) {
             toast.error(e instanceof Error ? e.message : "Verification failed");
@@ -565,21 +732,9 @@ function ReportsPage() {
           if (liveDetail) setEditing(liveDetail);
           setDetail(null);
         }}
-        onResolve={async () => {
-          if (!liveDetail) return;
-          try {
-            if (isConfigured) {
-              await update.mutateAsync({ id: liveDetail.id, patch: { status: "Resolved" } });
-            } else {
-              const { setStatus } = await import("@/lib/storage");
-              setStatus(liveDetail.id, "Resolved");
-              window.dispatchEvent(new Event("civiceye:reports"));
-            }
-            toast.success("Marked as resolved");
-            setDetail(null);
-          } catch (e) {
-            toast.error(e instanceof Error ? e.message : "Resolution failed");
-          }
+        onResolve={() => {
+          if (liveDetail) setResolveTarget(liveDetail);
+          setDetail(null);
         }}
         onVerify={() => {
           if (liveDetail) setVerifyTarget(liveDetail);
@@ -595,32 +750,18 @@ function ReportsPage() {
         isConfigured={isConfigured}
         onSave={async (draft) => {
           try {
-            if (isConfigured) {
-              await update.mutateAsync({
-                id: draft.id,
-                patch: {
-                  title: draft.title,
-                  description: draft.description,
-                  category: draft.category,
-                  location: draft.location,
-                  lat: draft.lat,
-                  lng: draft.lng,
-                  status: draft.status,
-                },
-              });
-            } else {
-              const { updateReport } = await import("@/lib/storage");
-              updateReport(draft.id, {
+            await update.mutateAsync({
+              id: draft.id,
+              patch: {
                 title: draft.title,
                 description: draft.description,
                 category: draft.category,
                 location: draft.location,
                 lat: draft.lat,
                 lng: draft.lng,
-                status: draft.status as "Pending" | "In Progress" | "Resolved",
-              });
-              window.dispatchEvent(new Event("civiceye:reports"));
-            }
+                status: draft.status,
+              },
+            });
             toast.success("Report updated");
           } catch (e) {
             toast.error(e instanceof Error ? e.message : "Update failed");
@@ -656,7 +797,7 @@ function SubmissionConfirmation({
 
   return (
     <div
-      className="mb-4 rounded-2xl border border-success/30 bg-success/10 p-4 sm:p-5"
+      className="mb-4 surface-panel border-success/30 bg-success/5 p-4 sm:p-5"
       role="status"
       aria-live="polite"
     >
@@ -854,6 +995,8 @@ function IssueDetailDialog({
   history: IssueStatusHistoryEntry[];
   historyLoading: boolean;
 }) {
+  const { data: evidences = [], isLoading: evidenceLoading } = useIssueEvidence(report?.id);
+
   return (
     <AnimatePresence>
       {report && (
@@ -913,12 +1056,12 @@ function IssueDetailDialog({
                     Assign
                   </button>
                 )}
-                {isStaff && report.status === "In Progress" && (
+                {isStaff && (report.status === "In Progress" || report.status === "Reopened") && (
                   <button
                     onClick={onResolve}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-success/30 px-4 py-2 text-sm font-bold text-success hover:bg-success/5"
                   >
-                    Mark resolved
+                    Resolve issue
                   </button>
                 )}
                 {canVerify && isAwaitingCitizenVerification(report.status) && (
@@ -946,15 +1089,88 @@ function IssueDetailDialog({
 
                 <section className="mt-6">
                   <h4 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                    Evidence
+                    Evidence Comparison (Before &amp; After)
                   </h4>
-                  <ReportImage
-                    src={report.image}
-                    alt={report.title}
-                    onClick={report.image ? () => onZoomImage(report.image!) : undefined}
-                    className="mt-2 h-52 w-full rounded-xl object-cover sm:h-56"
-                    placeholderClassName="mt-2 h-52 w-full rounded-xl sm:h-56"
-                  />
+                  {evidenceLoading ? (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Loading resolution evidence…
+                    </p>
+                  ) : evidences.length > 0 ? (
+                    <div className="mt-3 grid gap-4 md:grid-cols-2">
+                      {/* Original Issue */}
+                      <div className="rounded-xl border border-border bg-card p-3.5 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-500">
+                            1. Original Report
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {new Date(report.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <ReportImage
+                          src={report.image}
+                          alt={report.title}
+                          onClick={report.image ? () => onZoomImage(report.image!) : undefined}
+                          className="h-40 w-full rounded-lg object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          placeholderClassName="h-40 w-full rounded-lg"
+                        />
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {report.description}
+                        </p>
+                      </div>
+
+                      {/* Resolution Evidence */}
+                      {evidences.map((ev) => (
+                        <div
+                          key={ev.id}
+                          className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3.5 space-y-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-500 flex items-center gap-1">
+                              <FiCheckCircle /> 2. Staff Resolution
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {new Date(ev.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {ev.publicUrl ? (
+                            <ReportImage
+                              src={ev.publicUrl}
+                              alt="Staff resolution evidence"
+                              onClick={() => onZoomImage(ev.publicUrl!)}
+                              className="h-40 w-full rounded-lg object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                              placeholderClassName="h-40 w-full rounded-lg"
+                            />
+                          ) : (
+                            <div className="h-40 w-full rounded-lg bg-secondary grid place-items-center text-xs text-muted-foreground">
+                              No resolution image
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-xs font-semibold text-foreground">
+                              By: {ev.uploaderName ?? "Staff Member"}
+                            </p>
+                            {ev.notes && (
+                              <p className="mt-1 text-xs text-muted-foreground bg-background/60 rounded-md p-2 border border-border/60">
+                                "{ev.notes}"
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-2">
+                      <p className="text-xs text-muted-foreground mb-1.5">Original issue photo:</p>
+                      <ReportImage
+                        src={report.image}
+                        alt={report.title}
+                        onClick={report.image ? () => onZoomImage(report.image!) : undefined}
+                        className="h-52 w-full rounded-xl object-cover sm:h-56 cursor-pointer"
+                        placeholderClassName="h-52 w-full rounded-xl sm:h-56"
+                      />
+                    </div>
+                  )}
                 </section>
 
                 <section className="mt-6">
@@ -981,19 +1197,48 @@ function IssueDetailDialog({
                       No status changes recorded yet.
                     </p>
                   ) : (
-                    <ul className="mt-3 space-y-2">
+                    <ul className="mt-3 space-y-2.5">
                       {history.map((entry) => (
                         <li
                           key={entry.id}
-                          className="rounded-xl border border-border bg-secondary/40 px-3 py-2 text-sm"
+                          className="rounded-xl border border-border bg-secondary/40 px-3.5 py-2.5 text-sm space-y-1"
                         >
-                          <p className="font-semibold">
-                            {entry.fromStatus ? `${entry.fromStatus} → ` : ""}
-                            {entry.toStatus}
-                          </p>
-                          <p className="mt-0.5 text-xs text-muted-foreground">
-                            {new Date(entry.createdAt).toLocaleString()}
-                          </p>
+                          <div className="flex items-center justify-between">
+                            <p className="font-semibold text-foreground flex items-center gap-1.5">
+                              <span>
+                                {entry.fromStatus ? `${entry.fromStatus} → ` : "Status set: "}
+                              </span>
+                              <span
+                                className={
+                                  entry.toStatus === "Verified"
+                                    ? "text-emerald-500 font-bold"
+                                    : entry.toStatus === "Reopened"
+                                      ? "text-rose-500 font-bold"
+                                      : entry.toStatus === "Resolved"
+                                        ? "text-amber-500 font-bold"
+                                        : ""
+                                }
+                              >
+                                {entry.toStatus}
+                              </span>
+                            </p>
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              {new Date(entry.createdAt).toLocaleString()}
+                            </span>
+                          </div>
+                          {entry.changedByName && (
+                            <p className="text-xs text-muted-foreground">
+                              Actor:{" "}
+                              <span className="font-medium text-foreground">
+                                {entry.changedByName}
+                              </span>
+                            </p>
+                          )}
+                          {entry.notes && (
+                            <p className="text-xs text-muted-foreground bg-background/50 rounded-md p-2 border border-border/40 mt-1">
+                              &ldquo;{entry.notes}&rdquo;
+                            </p>
+                          )}
                         </li>
                       ))}
                     </ul>

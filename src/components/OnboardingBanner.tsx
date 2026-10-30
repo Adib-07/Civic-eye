@@ -3,15 +3,18 @@ import { motion } from "framer-motion";
 import { FiArrowRight, FiX } from "react-icons/fi";
 import { useState } from "react";
 
+import { useHydrated } from "@/lib/hooks";
+
 const ONBOARDING_KEY = "civiceye_onboarding_dismissed";
 
 export function OnboardingBanner() {
-  const [dismissed, setDismissed] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return localStorage.getItem(ONBOARDING_KEY) === "1";
-  });
+  // localStorage is only read after hydration. Reading it in a useState
+  // initializer produces different markup on the server and the client, which
+  // React reports as a hydration mismatch.
+  const hydrated = useHydrated();
+  const [dismissed, setDismissed] = useState(false);
 
-  if (dismissed) return null;
+  if (!hydrated || dismissed || isDismissed()) return null;
 
   const dismiss = () => {
     localStorage.setItem(ONBOARDING_KEY, "1");
@@ -53,6 +56,12 @@ export function OnboardingBanner() {
   );
 }
 
+function isDismissed(): boolean {
+  if (typeof window === "undefined") return true;
+  return localStorage.getItem(ONBOARDING_KEY) === "1";
+}
+
 export function dismissOnboarding() {
+  if (typeof window === "undefined") return;
   localStorage.setItem(ONBOARDING_KEY, "1");
 }

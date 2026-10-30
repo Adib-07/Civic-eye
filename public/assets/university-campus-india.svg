@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Illustration of an Indian college campus with a hostel and academic block around a courtyard">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbe7c6" />
+      <stop offset="0.55" stop-color="#f6d6a8" />
+      <stop offset="1" stop-color="#f0c98f" />
+    </linearGradient>
+    <linearGradient id="block" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8d3a8" />
+      <stop offset="1" stop-color="#d8bd8c" />
+    </linearGradient>
+    <linearGradient id="block2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e0c193" />
+      <stop offset="1" stop-color="#cba972" />
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1600" height="900" fill="url(#sky)" />
+
+  <!-- Distant trees / haze -->
+  <g fill="#e9cfa0" opacity="0.55">
+    <circle cx="180" cy="360" r="120" />
+    <circle cx="1380" cy="350" r="140" />
+    <circle cx="1460" cy="400" r="90" />
+  </g>
+
+  <!-- Left hostel block (3 floors, balcony railings) -->
+  <g>
+    <rect x="120" y="300" width="430" height="470" fill="url(#block)" stroke="#b9985f" stroke-width="3" />
+    <!-- rooftop water tank (classic Indian campus feature) -->
+    <rect x="270" y="240" width="130" height="60" rx="14" fill="#c9a76a" stroke="#9c7b45" stroke-width="3" />
+    <rect x="255" y="300" width="160" height="14" fill="#b08a52" />
+    <!-- floor bands -->
+    <g stroke="#bf9c63" stroke-width="3">
+      <line x1="120" y1="410" x2="550" y2="410" />
+      <line x1="120" y1="520" x2="550" y2="520" />
+      <line x1="120" y1="630" x2="550" y2="630" />
+    </g>
+    <!-- balconies / railings -->
+    <g stroke="#a8854e" stroke-width="6">
+      <line x1="140" y1="410" x2="140" y2="440" />
+      <line x1="190" y1="410" x2="190" y2="440" />
+      <line x1="240" y1="410" x2="240" y2="440" />
+      <line x1="300" y1="410" x2="300" y2="440" />
+      <line x1="360" y1="410" x2="360" y2="440" />
+      <line x1="420" y1="410" x2="420" y2="440" />
+      <line x1="480" y1="410" x2="480" y2="440" />
+      <line x1="140" y1="520" x2="140" y2="550" />
+      <line x1="190" y1="520" x2="190" y2="550" />
+      <line x1="240" y1="520" x2="240" y2="550" />
+      <line x1="300" y1="520" x2="300" y2="550" />
+      <line x1="360" y1="520" x2="360" y2="550" />
+      <line x1="420" y1="520" x2="420" y2="550" />
+      <line x1="480" y1="520" x2="480" y2="550" />
+      <line x1="140" y1="630" x2="140" y2="660" />
+      <line x1="190" y1="630" x2="190" y2="660" />
+      <line x1="240" y1="630" x2="240" y2="660" />
+      <line x1="300" y1="630" x2="300" y2="660" />
+      <line x1="360" y1="630" x2="360" y2="660" />
+      <line x1="420" y1="630" x2="420" y2="660" />
+      <line x1="480" y1="630" x2="480" y2="660" />
+    </g>
+    <!-- windows -->
+    <g fill="#fbf3e2" stroke="#9c7b45" stroke-width="2">
+      <rect x="160" y="455" width="60" height="45" />
+      <rect x="260" y="455" width="60" height="45" />
+      <rect x="360" y="455" width="60" height="45" />
+      <rect x="460" y="455" width="60" height="45" />
+      <rect x="160" y="565" width="60" height="45" />
+      <rect x="260" y="565" width="60" height="45" />
+      <rect x="360" y="565" width="60" height="45" />
+      <rect x="460" y="565" width="60" height="45" />
+      <rect x="160" y="675" width="60" height="45" />
+      <rect x="260" y="675" width="60" height="45" />
+      <rect x="360" y="675" width="60" height="45" />
+      <rect x="460" y="675" width="60" height="45" />
+    </g>
+  </g>
+
+  <!-- Right academic block -->
+  <g>
+    <rect x="1050" y="330" width="430" height="440" fill="url(#block2)" stroke="#b9985f" stroke-width="3" />
+    <!-- sloped roof -->
+    <polygon points="1050,330 1265,270 1480,330" fill="#c9a76a" stroke="#9c7b45" stroke-width="3" />
+    <!-- arches / windows -->
+    <g fill="#fbf3e2" stroke="#9c7b45" stroke-width="3">
+      <path d="M1090 430 h70 v70 h-70 z" />
+      <path d="M1200 430 h70 v70 h-70 z" />
+      <path d="M1310 430 h70 v70 h-70 z" />
+      <path d="M1420 430 h70 v70 h-70 z" />
+      <path d="M1090 560 h70 v70 h-70 z" />
+      <path d="M1200 560 h70 v70 h-70 z" />
+      <path d="M1310 560 h70 v70 h-70 z" />
+      <path d="M1420 560 h70 v70 h-70 z" />
+    </g>
+    <!-- sign board -->
+    <rect x="1180" y="370" width="170" height="40" rx="6" fill="#2f6f5e" />
+    <text x="1265" y="396" fill="#ffffff" font-family="sans-serif" font-size="22" font-weight="700" text-anchor="middle">CAMPUS</text>
+  </g>
+
+  <!-- Courtyard ground -->
+  <rect x="0" y="700" width="1600" height="200" fill="#dcc28a" />
+  <path d="M550 770 L1050 770 L1180 900 L420 900 Z" fill="#cdb174" />
+
+  <!-- Central courtyard tree (neem/peepal style) -->
+  <g>
+    <rect x="775" y="560" width="20" height="160" fill="#7c5a32" />
+    <circle cx="785" cy="520" r="95" fill="#5f8f4e" />
+    <circle cx="710" cy="560" r="70" fill="#6fa05a" />
+    <circle cx="860" cy="560" r="70" fill="#6fa05a" />
+    <circle cx="785" cy="600" r="78" fill="#558544" />
+  </g>
+
+  <!-- Simple student figures in courtyard -->
+  <g>
+    <circle cx="640" cy="760" r="16" fill="#3a4a8a" />
+    <rect x="624" y="776" width="32" height="60" rx="12" fill="#3a4a8a" />
+    <circle cx="690" cy="775" r="15" fill="#a23b3b" />
+    <rect x="675" y="790" width="30" height="55" rx="11" fill="#a23b3b" />
+    <circle cx="930" cy="775" r="15" fill="#b5792a" />
+    <rect x="915" y="790" width="30" height="55" rx="11" fill="#b5792a" />
+    <circle cx="980" cy="765" r="16" fill="#2f6f5e" />
+    <rect x="964" y="781" width="32" height="60" rx="12" fill="#2f6f5e" />
+  </g>
+</svg>

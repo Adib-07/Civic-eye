@@ -1,3 +1,5 @@
+export const OTHER_CATEGORY = "Other" as const;
+
 export const CATEGORIES = [
   "Pothole",
   "Garbage",
@@ -5,16 +7,35 @@ export const CATEGORIES = [
   "Water Leakage",
   "Broken Street Light",
   "Road Damage",
+  OTHER_CATEGORY,
 ] as const;
 
-export type Category = (typeof CATEGORIES)[number];
+export type Category = (typeof CATEGORIES)[number] | string;
 
-export const STATUSES = ["Pending", "In Progress", "Resolved", "Verified", "Closed"] as const;
+export const STATUSES = [
+  "Pending",
+  "In Progress",
+  "Resolved",
+  "Verified",
+  "Closed",
+  "Reopened",
+] as const;
 
 export type Status = (typeof STATUSES)[number];
 
 export const USER_ROLES = ["citizen", "ward_officer", "admin", "super_admin"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
+
+const ROLE_LABELS: Record<UserRole, string> = {
+  citizen: "Reporter",
+  ward_officer: "Staff",
+  admin: "Admin",
+  super_admin: "Super Admin",
+};
+
+export function roleLabel(role: UserRole | string): string {
+  return ROLE_LABELS[role as UserRole] ?? role.replace(/_/g, " ");
+}
 
 export interface Report {
   id: string;
@@ -61,6 +82,8 @@ export interface StaffMember {
   fullName: string | null;
   email: string | null;
   role: UserRole;
+  /** Categories this staff member typically handles (category suggestions). */
+  categories?: string[] | null;
 }
 
 export interface SlaPolicy {
@@ -69,6 +92,18 @@ export interface SlaPolicy {
   priority: string;
   responseHours: number;
   resolutionHours: number;
+}
+
+export interface IssueEvidence {
+  id: string;
+  reportId: string;
+  storagePath: string;
+  publicUrl: string | null;
+  contentType: string | null;
+  uploadedBy: string | null;
+  uploaderName?: string | null;
+  notes: string | null;
+  createdAt: string;
 }
 
 export interface CreateReportInput {
@@ -85,8 +120,55 @@ export interface CreateReportInput {
   wardId?: string | null;
 }
 
+export type InvitationStatus = "pending" | "accepted" | "revoked" | "expired";
+
+export interface OrganizationInvitation {
+  id: string;
+  organizationId: string;
+  email: string;
+  role: UserRole;
+  status: InvitationStatus;
+  token: string;
+  invitedBy: string | null;
+  inviterName: string | null;
+  createdAt: string;
+  expiresAt: string;
+  acceptedAt: string | null;
+}
+
+export interface OrganizationMember {
+  id: string;
+  fullName: string | null;
+  email: string | null;
+  role: UserRole;
+  createdAt: string | null;
+}
+
+export interface AppNotification {
+  id: string;
+  subject: string | null;
+  body: string | null;
+  channel: string;
+  readAt: string | null;
+  createdAt: string;
+  reportId: string | null;
+}
+
 export function isStaffRole(role: UserRole | null | undefined): boolean {
   return role === "ward_officer" || role === "admin" || role === "super_admin";
+}
+
+/** Organization admin — can manage team members and invitations. */
+export function isOrgAdmin(role: UserRole | null | undefined): boolean {
+  return role === "admin" || role === "super_admin";
+}
+
+/** Roles an organization admin is allowed to hand out when inviting a teammate. */
+export const INVITABLE_ROLES = ["ward_officer", "admin"] as const satisfies readonly UserRole[];
+export type InvitableRole = (typeof INVITABLE_ROLES)[number];
+
+export function isInvitableRole(role: string): role is InvitableRole {
+  return (INVITABLE_ROLES as readonly string[]).includes(role);
 }
 
 export function canManageReports(role: UserRole | null | undefined): boolean {
